@@ -279,17 +279,25 @@ class Installer extends \Opencart\System\Engine\Controller {
 			$file = DIR_STORAGE . 'marketplace/' . $filename;
 
 			if (is_file($file)) {
-				$json['error'] = $this->language->get('error_file_exists');
-
-				unlink($this->request->files['file']['tmp_name']);
+				if (isset($this->request->get['override'])) {
+					unlink($file);
+				} else {
+					$json['error'] = $this->language->get('error_file_exists');
+				}
 			}
 
 			if ($this->request->files['file']['error'] != UPLOAD_ERR_OK) {
 				$json['error'] = $this->language->get('error_upload_' . $this->request->files['file']['error']);
 			}
 
-			if ($this->model_setting_extension->getInstallByCode($code)) {
-				$json['error'] = $this->language->get('error_installed');
+			$extension_install_info = $this->model_setting_extension->getInstallByCode($code);
+
+			if ($extension_install_info) {
+				if (isset($this->request->get['override'])) {
+					$this->model_setting_extension->deleteInstall($extension_install_info['extension_install_id']);
+				} else {
+					$json['error'] = $this->language->get('error_installed');
+				}
 			}
 		} else {
 			$json['error'] = $this->language->get('error_upload');
@@ -394,7 +402,7 @@ class Installer extends \Opencart\System\Engine\Controller {
 				$json['error'] = sprintf($this->language->get('error_file'), $extension_install_info['code'] . '.ocmod.zip');
 			}
 
-			if ($page == 1 && is_dir(DIR_EXTENSION . $extension_install_info['code'] . '/')) {
+			if (!isset($this->request->get['override']) && $page == 1 && is_dir(DIR_EXTENSION . $extension_install_info['code'] . '/')) {
 				$json['error'] = sprintf($this->language->get('error_directory_exists'), $extension_install_info['code'] . '/');
 			}
 
@@ -465,7 +473,7 @@ class Installer extends \Opencart\System\Engine\Controller {
 
 					// If check if the path is not directory and check there is no existing file
 					if (substr($source, -1) != '/') {
-						if (!is_file($base . $path) && file_put_contents($base . $path, $zip->getFromIndex($i)) !== false) {
+						if ((isset($this->request->get['override']) || !is_file($base . $path)) && file_put_contents($base . $path, $zip->getFromIndex($i)) !== false) {
 							$this->model_setting_extension->addPath($extension_install_id, $prefix . $path);
 						}
 					}
@@ -488,10 +496,18 @@ class Installer extends \Opencart\System\Engine\Controller {
 				$url .= '&extension_install_id=' . $this->request->get['extension_install_id'];
 			}
 
+			if (isset($this->request->get['override'])) {
+				$url .= '&override=' . $this->request->get['override'];
+			}
+
 			if ($end < $total) {
 				$json['next'] = $this->url->link('marketplace/installer.install', 'user_token=' . $this->session->data['user_token'] . $url . '&page=' . ($page + 1), true);
 			} else {
-				$json['next'] = $this->url->link('marketplace/installer.xml', 'user_token=' . $this->session->data['user_token'] . $url, true);
+				if (isset($this->request->get['override'])) {
+					$json['success'] = $this->language->get('text_success');
+				} else {
+					$json['next'] = $this->url->link('marketplace/installer.xml', 'user_token=' . $this->session->data['user_token'] . $url, true);
+				}
 			}
 		}
 
@@ -553,7 +569,7 @@ class Installer extends \Opencart\System\Engine\Controller {
 						// Check to see if the modification is already installed or not.
 						$modification_info = $this->model_setting_modification->getModificationByCode($code);
 
-						if (!$modification_info) {
+						if (!$modification_info || isset($this->request->get['override'])) {
 							$xml = $zip->getFromName($source);
 
 							if ($xml) {
@@ -613,7 +629,11 @@ class Installer extends \Opencart\System\Engine\Controller {
 										'status'               => 0
 									];
 
-									$this->model_setting_modification->addModification($modification_data);
+									if ($modification_info && isset($this->request->get['override'])) {
+										$this->model_setting_modification->editModification($modification_info['modification_id'], $modification_data);
+									} else {
+										$this->model_setting_modification->addModification($modification_data);
+									}
 								} catch (\Exception $exception) {
 									$json['error'] = sprintf($this->language->get('error_exception'), $exception->getCode(), $exception->getMessage(), $exception->getFile(), $exception->getLine());
 								}
@@ -629,7 +649,17 @@ class Installer extends \Opencart\System\Engine\Controller {
 		if (!$json) {
 			$json['text'] = $this->language->get('text_vendor');
 
-			$json['next'] = str_replace('&amp;', '&', $this->url->link('marketplace/installer.vendor', 'user_token=' . $this->session->data['user_token'], true));
+			$url = '';
+
+			if (isset($this->request->get['extension_install_id'])) {
+				$url .= '&extension_install_id=' . $this->request->get['extension_install_id'];
+			}
+
+			if (isset($this->request->get['override'])) {
+				$url .= '&override=' . $this->request->get['override'];
+			}
+
+			$json['next'] = str_replace('&amp;', '&', $this->url->link('marketplace/installer.vendor', 'user_token=' . $this->session->data['user_token'] . $url, true));
 		}
 
 		$this->response->addHeader('Content-Type: application/json');

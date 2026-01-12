@@ -2,7 +2,13 @@
 <div id="content">
   <div class="page-header">
     <div class="container-fluid">
-      <div class="float-end"><button type="button" id="button-upload" data-bs-toggle="tooltip" title="{{ button_upload }}" class="btn btn-primary"><i class="fa-solid fa-upload"></i></button></div>
+      <div class="float-end">
+        <div class="form-check form-check-inline">
+          <input type="checkbox" name="override" value="1" id="input-override" class="form-check-input"/>
+          <label for="input-override" class="form-check-label">Override / upgrade Only</label>
+        </div>
+        <button type="button" id="button-upload" data-bs-toggle="tooltip" title="{{ button_upload }}" class="btn btn-primary"><i class="fa-solid fa-upload"></i></button>
+      </div>
       <h1>{{ heading_title }}</h1>
       <ol class="breadcrumb">
         {% for breadcrumb in breadcrumbs %}
@@ -76,7 +82,7 @@ $('#button-upload').on('click', function() {
                 clearInterval(timer);
 
                 $.ajax({
-                    url: 'index.php?route=marketplace/installer.upload&user_token={{ user_token }}',
+                    url: 'index.php?route=marketplace/installer.upload&user_token={{ user_token }}' + ($('#input-override').prop('checked') ? '&override=1' : ''),
                     type: 'post',
                     data: new FormData($('#form-upload')[0]),
                     dataType: 'json',
@@ -117,7 +123,7 @@ $('#extension').on('click', '.btn-success, .btn-warning', function(e) {
 
     $(element).button('loading');
 
-    var next = $(element).attr('href');
+    var next = $(element).attr('href') + ($('#input-override').prop('checked') ? '&override=1' : '');
 
     $('#progress-bar').removeClass('bg-danger bg-success').css('width', '0%');
     $('#progress-text').html('');
