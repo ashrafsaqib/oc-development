@@ -1,0 +1,20 @@
+2026-01-12 13:58:14 - Error: Error: Could not make a database link using root@localhost!<br/>Message: Unknown database 'oc4development'
+File: /Users/saqibashraf/Desktop/oc/oc-development/system/library/db/mysqli.php
+Line: 86
+
+Backtrace: 0
+File: /Users/saqibashraf/Desktop/oc/oc-development/system/library/db.php
+Line: 40
+Class: Opencart\System\Library\DB\MySQLi
+Function: __construct
+
+Backtrace: 1
+File: /Users/saqibashraf/Desktop/oc/oc-development/system/framework.php
+Line: 148
+Class: Opencart\System\Library\DB
+Function: __construct
+
+Backtrace: 2
+File: /Users/saqibashraf/Desktop/oc/oc-development/index.php
+Line: 20
+Function: require_once
