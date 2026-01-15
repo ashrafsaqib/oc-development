@@ -696,10 +696,12 @@ class Installer extends \Opencart\System\Engine\Controller {
 
 			// Validate if extension being uninstalled
 			$extension_total = $this->model_setting_extension->getTotalExtensionsByExtension($extension_install_info['code']);
-
+			// uninstall these extensions / remove instead of throwing error
 			if ($extension_total) {
-				$json['error'] = sprintf($this->language->get('error_uninstall'), $extension_total);
-			}
+							// Auto-uninstall dependent extensions
+							$this->db->query("DELETE FROM `" . DB_PREFIX . "extension` WHERE `extension` = '" . $this->db->escape($extension_install_info['code']) . "'");
+						}
+			
 		} else {
 			$json['error'] = $this->language->get('error_extension');
 		}
