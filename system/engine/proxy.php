@@ -1,94 +1,54 @@
 <?php
 /**
- * @package        OpenCart
- *
- * @author         Daniel Kerr
- * @copyright      Copyright (c) 2005 - 2022, OpenCart, Ltd. (https://www.opencart.com/)
- * @license        https://opensource.org/licenses/GPL-3.0
- *
- * @see           https://www.opencart.com
- */
-namespace Opencart\System\Engine;
+ * @package		OpenCart
+ * @author		Daniel Kerr
+ * @copyright	Copyright (c) 2005 - 2017, OpenCart, Ltd. (https://www.opencart.com/)
+ * @license		https://opensource.org/licenses/GPL-3.0
+ * @link		https://www.opencart.com
+*/
+
 /**
- * Class Proxy
+* Proxy class
  *
- * @template TWraps of \Opencart\System\Engine\Model
+ * @template TWraps of Model
  *
  * @mixin TWraps
- */
-class Proxy {
-	/**
-	 * @var array<string, object>
-	 */
-	protected array $data = [];
+*/
+class Proxy extends \stdClass {
+    /**
+     * 
+     *
+     * @param	string	$key
+     */	
+	public function __get($key) {
+		return $this->{$key};
+	}	
 
-	/**
-	 * __get
-	 *
-	 * @param string $key
-	 *
-	 * @return mixed
-	 */
-	public function &__get(string $key) {
-		if (isset($this->data[$key])) {
-			return $this->data[$key];
-		} else {
-			throw new \Exception('Error: Could not call proxy key ' . $key . '!');
+    /**
+     * 
+     *
+     * @param	string	$key
+	 * @param	string	$value
+     */	
+	public function __set($key, $value) {
+		 $this->{$key} = $value;
+	}
+	
+	public function __call($key, $args) {
+		$arg_data = array();
+		
+		$args = func_get_args();
+		
+		foreach ($args as $arg) {
+			$arg_data[] =& $arg;
 		}
-	}
-
-	/**
-	 * __set
-	 *
-	 * @param string $key
-	 * @param object $value
-	 *
-	 * @return void
-	 */
-	public function __set(string $key, object $value): void {
-		$this->data[$key] = $value;
-	}
-
-	/**
-	 * __isset
-	 *
-	 * @param string $key
-	 *
-	 * @return bool
-	 */
-	public function __isset(string $key): bool {
-		return isset($this->data[$key]);
-	}
-
-	/**
-	 * __unset
-	 *
-	 * @param string $key
-	 *
-	 * @return void
-	 */
-	public function __unset(string $key): void {
-		unset($this->data[$key]);
-	}
-
-	/**
-	 * __call
-	 *
-	 * @param string               $method
-	 * @param array<string, mixed> $args
-	 *
-	 * @return mixed
-	 */
-	public function __call(string $method, array $args) {
-		// Hack for pass-by-reference
-		foreach ($args as $key => &$value);
-
-		if (isset($this->data[$method])) {
-			return ($this->data[$method])(...$args);
+		
+		if (isset($this->{$key})) {		
+			return call_user_func_array($this->{$key}, $arg_data);	
 		} else {
 			$trace = debug_backtrace();
-
-			throw new \Exception('<b>Notice</b>:  Undefined property: Proxy::' . $method . ' in <b>' . $trace[0]['file'] . '</b> on line <b>' . $trace[0]['line'] . '</b>');
+			
+			exit('<b>Notice</b>:  Undefined property: Proxy::' . $key . ' in <b>' . $trace[1]['file'] . '</b> on line <b>' . $trace[1]['line'] . '</b>');
 		}
 	}
 }

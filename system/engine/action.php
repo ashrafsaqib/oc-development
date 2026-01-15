@@ -1,101 +1,84 @@
 <?php
 /**
- * @package     OpenCart
- *
- * @author      Daniel Kerr
- * @copyright   Copyright (c) 2005 - 2017, OpenCart, Ltd. (https://www.opencart.com/)
- * @license     https://opensource.org/licenses/GPL-3.0
- *
- * @see        https://www.opencart.com
- */
-namespace Opencart\System\Engine;
+ * @package		OpenCart
+ * @author		Daniel Kerr
+ * @copyright	Copyright (c) 2005 - 2017, OpenCart, Ltd. (https://www.opencart.com/)
+ * @license		https://opensource.org/licenses/GPL-3.0
+ * @link		https://www.opencart.com
+*/
+
 /**
- * Class Action
- *
- * Allows the stored action to be passed around and be executed by the framework and events.
- *
- * @package Opencart\System\Engine
- */
+* Action class
+*/
 class Action {
-	/**
-	 * @var string
-	 */
-	private string $route;
-
-	/**
-	 * @var string
-	 */
-	private string $controller;
-
-	/**
-	 * @var string
-	 */
-	private string $method;
-
+	private $id;
+	private $route;
+	private $method = 'index';
+	
 	/**
 	 * Constructor
 	 *
-	 * @param string $route
-	 */
-	public function __construct(string $route) {
-		$this->route = preg_replace('/[^a-zA-Z0-9_|\/\.]/', '', $route);
+	 * @param	string	$route
+ 	*/
+	public function __construct($route) {
+		$this->id = $route;
+		
+		$parts = explode('/', preg_replace('/[^a-zA-Z0-9_\/]/', '', (string)$route));
 
-		$pos = strrpos($route, '.');
+		// Break apart the route
+		while ($parts) {
+			$file = DIR_APPLICATION . 'controller/' . implode('/', $parts) . '.php';
 
-		if ($pos !== false) {
-			$this->controller = substr($route, 0, $pos);
-			$this->method = substr($route, $pos + 1);
-		} else {
-			$this->controller = $route;
-			$this->method = 'index';
+			if (is_file($file)) {
+				$this->route = implode('/', $parts);		
+				
+				break;
+			} else {
+				$this->method = array_pop($parts);
+			}
 		}
 	}
 
 	/**
-	 * Get Id
+	 * 
 	 *
-	 * @return string
-	 */
-	public function getId(): string {
-		return $this->route;
+	 * @return	string
+	 *
+ 	*/	
+	public function getId() {
+		return $this->id;
 	}
-
+	
 	/**
-	 * Execute
+	 * 
 	 *
-	 * @param \Opencart\System\Engine\Registry $registry
-	 * @param array<mixed>                     $args
-	 *
-	 * @return mixed
-	 */
-	public function execute(\Opencart\System\Engine\Registry $registry, array &$args = []) {
+	 * @param	object	$registry
+	 * @param	array	$args
+ 	*/	
+	public function execute($registry, array $args = array()) {
 		// Stop any magical methods being called
 		if (substr($this->method, 0, 2) == '__') {
 			return new \Exception('Error: Calls to magic methods are not allowed!');
 		}
 
-		// Create a new key to store the model object
-		$key = 'fallback_controller_' . str_replace('/', '_', $this->controller);
-
-		if (!$registry->has($key)) {
-			$object = $registry->get('factory')->controller($this->controller);
+		$file  = DIR_APPLICATION . 'controller/' . $this->route . '.php';	
+		$class = 'Controller' . preg_replace('/[^a-zA-Z0-9]/', '', (string)$this->route);
+		
+		// Initialize the class
+		if (is_file($file)) {
+			include_once($file);
+		
+			$controller = new $class($registry);
 		} else {
-			$object = $registry->get($key);
+			return new \Exception('Error: Could not call ' . $this->route . '/' . $this->method . '!');
 		}
-
-		if ($object instanceof \Opencart\System\Engine\Controller) {
-			$registry->set($key, $object);
+		
+		$reflection = new ReflectionClass($class);
+		
+		if ($reflection->hasMethod($this->method) && $reflection->getMethod($this->method)->getNumberOfRequiredParameters() <= count($args)) {
+			return call_user_func_array(array($controller, $this->method), $args);
 		} else {
-			// If action cannot be executed, we return an error object.
-			return new \Exception('Error: Could not load controller ' . $this->route . '!');
-		}
-
-		$callable = [$object, $this->method];
-
-		if (is_callable($callable)) {
-			return $callable(...$args);
-		} else {
-			return new \Exception('Error: Could not call controller ' . $this->route . '!');
+			return new \Exception('Error: Could not call ' . $this->route . '/' . $this->method . '!');
 		}
 	}
 }

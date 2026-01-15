@@ -1,22 +1,41 @@
 <?php
 /**
  * @package		OpenCart
- *
  * @author		Daniel Kerr
- * @copyright	Copyright (c) 2005 - 2022, OpenCart, Ltd. (https://www.opencart.com/)
+ * @copyright	Copyright (c) 2005 - 2017, OpenCart, Ltd. (https://www.opencart.com/)
  * @license		https://opensource.org/licenses/GPL-3.0
- *
- * @see		https://www.opencart.com
- */
-namespace Opencart\System\Engine;
+ * @link		https://www.opencart.com
+*/
+
 /**
- * Class Registry
- */
-class Registry {
-	/**
-	 * @var array<string, object>
-	 */
-	private array $data = [];
+* Registry class
+ *
+ * @property Cache                         $cache
+ * @property Cart\Cart                     $cart
+ * @property Cart\Currency                 $currency
+ * @property Cart\Customer                 $customer
+ * @property Cart\Length                   $length
+ * @property Cart\Tax                      $tax
+ * @property ?Cart\User                    $user
+ * @property Cart\Weight                   $weight
+ * @property Config                        $config
+ * @property Config                        $setting
+ * @property DB                            $db
+ * @property Document                      $document
+ * @property Encryption                    $encryption
+ * @property Event                         $event
+ * @property googleshopping\Googleshopping $googleshopping
+ * @property Language                      $language
+ * @property Loader                        $load
+ * @property Log                           $log
+ * @property Request                       $request
+ * @property Response                      $response
+ * @property Session                       $session
+ * @property ?Squareup                     $squareup
+ * @property Url                           $url
+*/
+final class Registry {
+	private $data = array();
 
 	/**
 	 * __get
@@ -32,76 +51,34 @@ class Registry {
 	}
 
 	/**
-	 * __set
-	 *
-	 * https://www.php.net/manual/en/language.oop5.overloading.php#object.set
-	 *
-	 * @param string $key
-	 * @param object $value
-	 *
-	 * @return void
-	 */
-	public function __set(string $key, object $value): void {
-		$this->set($key, $value);
+     * 
+     *
+     * @param	string	$key
+	 * 
+	 * @return	mixed
+     */
+	public function get($key) {
+		return (isset($this->data[$key]) ? $this->data[$key] : null);
 	}
 
-	/**
-	 * __isset
-	 *
-	 * https://www.php.net/manual/en/language.oop5.overloading.php#object.set
-	 *
-	 * @param string $key
-	 *
-	 * @return bool
-	 */
-	public function __isset(string $key): bool {
-		return $this->has($key);
-	}
-
-	/**
-	 * Get
-	 *
-	 * @param string $key
-	 *
-	 * @return ?object
-	 */
-	public function get(string $key): ?object {
-		return $this->data[$key] ?? null;
-	}
-
-	/**
-	 * Set
-	 *
-	 * @param string $key
-	 * @param object $value
-	 *
-	 * @return void
-	 */
-	public function set(string $key, object $value): void {
+    /**
+     * 
+     *
+     * @param	string	$key
+	 * @param	string	$value
+     */	
+	public function set($key, $value) {
 		$this->data[$key] = $value;
 	}
-
-	/**
-	 * Has
+	
+    /**
+     * 
+     *
+     * @param	string	$key
 	 *
-	 * @param string $key
-	 *
-	 * @return bool
-	 */
-	public function has(string $key): bool {
+	 * @return	bool
+     */
+	public function has($key) {
 		return isset($this->data[$key]);
-	}
-
-	/**
-	 * Unset
-	 *
-	 * Unsets registry value by key.
-	 *
-	 * @param string $key
-	 *
-	 * @return void
-	 */
-	public function unset(string $key): void {
-		unset($this->data[$key]);
 	}
 }

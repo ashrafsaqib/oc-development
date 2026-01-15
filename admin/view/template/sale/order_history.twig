@@ -2,31 +2,31 @@
   <table class="table table-bordered">
     <thead>
       <tr>
-        <th>{{ column_date_added }}</th>
-        <th>{{ column_comment }}</th>
-        <th>{{ column_status }}</th>
-        <th>{{ column_notify }}</th>
+        <td class="text-left">{{ column_date_added }}</td>
+        <td class="text-left">{{ column_comment }}</td>
+        <td class="text-left">{{ column_status }}</td>
+        <td class="text-left">{{ column_notify }}</td>
       </tr>
     </thead>
     <tbody>
       {% if histories %}
-        {% for history in histories %}
-          <tr>
-            <td>{{ history.date_added }}</td>
-            <td>{{ history.comment }}</td>
-            <td>{{ history.order_status }}</td>
-            <td>{{ history.notify }}</td>
-          </tr>
-        {% endfor %}
+      {% for history in histories %}
+      <tr>
+        <td class="text-left">{{ history.date_added }}</td>
+        <td class="text-left">{{ history.comment }}</td>
+        <td class="text-left">{{ history.status }}</td>
+        <td class="text-left">{{ history.notify }}</td>
+      </tr>
+      {% endfor %}
       {% else %}
-        <tr>
-          <td class="text-center" colspan="4">{{ text_no_results }}</td>
-        </tr>
+      <tr>
+        <td class="text-center" colspan="4">{{ text_no_results }}</td>
+      </tr>
       {% endif %}
     </tbody>
   </table>
 </div>
 <div class="row">
-  <div class="col-sm-6 text-start">{{ pagination }}</div>
-  <div class="col-sm-6 text-end">{{ results }}</div>
+  <div class="col-sm-6 text-left">{{ pagination }}</div>
+  <div class="col-sm-6 text-right">{{ results }}</div>
 </div>

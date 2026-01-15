@@ -1,4 +1,4 @@
-user-agent: *
+User-agent: *
 Disallow: /*?page=$
 Disallow: /*&page=$
 Disallow: /*?sort=
@@ -13,5 +13,3 @@ Disallow: /*?filter_sub_category=
 Disallow: /*&filter_sub_category=
 Disallow: /*?filter_description=
 Disallow: /*&filter_description=
-Disallow: /*?filter_group=
-Disallow: /*&filter_group=

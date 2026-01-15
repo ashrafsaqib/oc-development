@@ -1,30 +1,21 @@
 <?php
-namespace Opencart\Catalog\Controller\Error;
-/**
- * Class Not Found
- *
- * @package Opencart\Catalog\Controller\Error
- */
-class NotFound extends \Opencart\System\Engine\Controller {
-	/**
-	 * Index
-	 *
-	 * @return void
-	 */
-	public function index(): void {
+class ControllerErrorNotFound extends Controller {
+	public function index() {
 		$this->load->language('error/not_found');
 
 		$this->document->setTitle($this->language->get('heading_title'));
 
-		$data['breadcrumbs'] = [];
+		$data['breadcrumbs'] = array();
 
-		$data['breadcrumbs'][] = [
+		$data['breadcrumbs'][] = array(
 			'text' => $this->language->get('text_home'),
-			'href' => $this->url->link('common/home', 'language=' . $this->config->get('config_language'))
-		];
+			'href' => $this->url->link('common/home')
+		);
 
 		if (isset($this->request->get['route'])) {
 			$url_data = $this->request->get;
+
+			unset($url_data['_route_']);
 
 			$route = $url_data['route'];
 
@@ -33,16 +24,16 @@ class NotFound extends \Opencart\System\Engine\Controller {
 			$url = '';
 
 			if ($url_data) {
-				$url .= '&' . urldecode(http_build_query($url_data, '', '&'));
+				$url = '&' . urldecode(http_build_query($url_data, '', '&'));
 			}
 
-			$data['breadcrumbs'][] = [
+			$data['breadcrumbs'][] = array(
 				'text' => $this->language->get('heading_title'),
-				'href' => $this->url->link($route, $url)
-			];
+				'href' => $this->url->link($route, $url, $this->request->server['HTTPS'])
+			);
 		}
 
-		$data['continue'] = $this->url->link('common/home', 'language=' . $this->config->get('config_language'));
+		$data['continue'] = $this->url->link('common/home');
 
 		$data['column_left'] = $this->load->controller('common/column_left');
 		$data['column_right'] = $this->load->controller('common/column_right');

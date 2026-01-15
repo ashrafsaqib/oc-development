@@ -1,19 +1,6 @@
 <?php
-namespace Opencart\Catalog\Controller\Common;
-/**
- * Class Maintenance
- *
- * Can be called from $this->load->controller('common/maintenance');
- *
- * @package Opencart\Catalog\Controller\Common
- */
-class Maintenance extends \Opencart\System\Engine\Controller {
-	/**
-	 * Index
-	 *
-	 * @return void
-	 */
-	public function index(): void {
+class ControllerCommonMaintenance extends Controller {
+	public function index() {
 		$this->load->language('common/maintenance');
 
 		$this->document->setTitle($this->language->get('heading_title'));
@@ -26,12 +13,12 @@ class Maintenance extends \Opencart\System\Engine\Controller {
 
 		$this->response->addHeader('Retry-After: 3600');
 
-		$data['breadcrumbs'] = [];
+		$data['breadcrumbs'] = array();
 
-		$data['breadcrumbs'][] = [
+		$data['breadcrumbs'][] = array(
 			'text' => $this->language->get('text_maintenance'),
-			'href' => $this->url->link('common/maintenance', 'language=' . $this->config->get('config_language'))
-		];
+			'href' => $this->url->link('common/maintenance')
+		);
 
 		$data['message'] = $this->language->get('text_message');
 

@@ -15,6 +15,3 @@ $_['text_lastname']       = 'Last Name:';
 $_['text_company']        = 'Company:';
 $_['text_email']          = 'E-Mail:';
 $_['text_telephone']      = 'Telephone:';
-
-// Button
-$_['button_login']        = 'Login';

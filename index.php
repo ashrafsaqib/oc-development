@@ -1,6 +1,6 @@
 <?php
 // Version
-define('VERSION', '4.1.0.3');
+define('VERSION', '3.0.4.1');
 
 // Configuration
 if (is_file('config.php')) {
@@ -10,11 +10,10 @@ if (is_file('config.php')) {
 // Install
 if (!defined('DIR_APPLICATION')) {
 	header('Location: install/index.php');
-	exit();
+	exit;
 }
 
 // Startup
 require_once(DIR_SYSTEM . 'startup.php');
 
-// Framework
-require_once(DIR_SYSTEM . 'framework.php');
+start('catalog');

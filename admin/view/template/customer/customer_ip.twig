@@ -2,33 +2,28 @@
   <table class="table table-bordered table-hover">
     <thead>
       <tr>
-        <th>{{ column_ip }}</th>
-        <th class="text-end">{{ column_account }}</th>
-        <th>{{ column_store }}</th>
-        <th>{{ column_country }}</th>
-        <th>{{ column_date_added }}</th>
+        <td class="text-left">{{ column_ip }}</td>
+        <td class="text-right">{{ column_total }}</td>
+        <td class="text-left">{{ column_date_added }}</td>
       </tr>
     </thead>
     <tbody>
       {% if ips %}
-        {% for ip in ips %}
-          <tr>
-            <td><a href="https://whatismyipaddress.com/ip/{{ ip.ip }}" target="_blank">{{ ip.ip }}</a></td>
-            <td class="text-end"><a href="{{ ip.filter_ip }}" target="_blank">{{ ip.account }}</a></td>
-            <td>{{ ip.store }}</td>
-            <td>{{ ip.country }}</td>
-            <td>{{ ip.date_added }}</td>
-          </tr>
-        {% endfor %}
+      {% for ip in ips %}
+      <tr>
+        <td class="text-left"><a href="https://whatismyipaddress.com/ip/{{ ip.ip }}" target="_blank">{{ ip.ip }}</a></td>
+        <td class="text-right"><a href="{{ ip.filter_ip }}" target="_blank">{{ ip.total }}</a></td>
+        <td class="text-left">{{ ip.date_added }}</td>      </tr>
+      {% endfor %}
       {% else %}
-        <tr>
-          <td class="text-center" colspan="5">{{ text_no_results }}</td>
-        </tr>
+      <tr>
+        <td class="text-center" colspan="3">{{ text_no_results }}</td>
+      </tr>
       {% endif %}
     </tbody>
   </table>
 </div>
 <div class="row">
-  <div class="col-sm-6 text-start">{{ pagination }}</div>
-  <div class="col-sm-6 text-end">{{ results }}</div>
+  <div class="col-sm-6 text-left">{{ pagination }}</div>
+  <div class="col-sm-6 text-right">{{ results }}</div>
 </div>

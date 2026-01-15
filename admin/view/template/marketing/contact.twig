@@ -2,36 +2,39 @@
 <div id="content">
   <div class="page-header">
     <div class="container-fluid">
-      <div class="float-end">
-        <button type="button" id="button-send" class="btn btn-primary"><i class="fa-solid fa-envelope"></i> {{ button_send }}</button></div>
+      <div class="pull-right">
+        <button id="button-send" data-loading-text="{{ text_loading }}" data-toggle="tooltip" title="{{ button_send }}" class="btn btn-primary" onclick="send('index.php?route=marketing/contact/send&user_token={{ user_token }}');"><i class="fa fa-envelope"></i></button>
+        <a href="{{ cancel }}" data-toggle="tooltip" title="{{ button_cancel }}" class="btn btn-default"><i class="fa fa-reply"></i></a></div>
       <h1>{{ heading_title }}</h1>
-      <ol class="breadcrumb">
+      <ul class="breadcrumb">
         {% for breadcrumb in breadcrumbs %}
-          <li class="breadcrumb-item"><a href="{{ breadcrumb.href }}">{{ breadcrumb.text }}</a></li>
+        <li><a href="{{ breadcrumb.href }}">{{ breadcrumb.text }}</a></li>
         {% endfor %}
-      </ol>
+      </ul>
     </div>
   </div>
   <div class="container-fluid">
-    <div class="card">
-      <div class="card-header"><i class="fa-solid fa-envelope"></i> {{ text_mail }}</div>
-      <div class="card-body">
-        <form>
-          <div class="row mb-3">
-            <label for="input-store" class="col-sm-2 col-form-label">{{ entry_store }}</label>
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title"><i class="fa fa-envelope"></i> {{ heading_title }}</h3>
+      </div>
+      <div class="panel-body">
+        <form class="form-horizontal">
+          <div class="form-group">
+            <label class="col-sm-2 control-label" for="input-store">{{ entry_store }}</label>
             <div class="col-sm-10">
-              <select name="store_id" id="input-store" class="form-select">
-                <option value="0">{{ text_default }}</option>
+              <select name="store_id" id="input-store" class="form-control">
+                <option value="0">{{ text_default }}</option>               
                 {% for store in stores %}
-                  <option value="{{ store.store_id }}">{{ store.name }}</option>
+                <option value="{{ store.store_id }}">{{ store.name }}</option>
                 {% endfor %}
               </select>
             </div>
           </div>
-          <div class="row mb-3">
-            <label for="input-to" class="col-sm-2 col-form-label">{{ entry_to }}</label>
+          <div class="form-group">
+            <label class="col-sm-2 control-label" for="input-to">{{ entry_to }}</label>
             <div class="col-sm-10">
-              <select name="to" id="input-to" class="form-select">
+              <select name="to" id="input-to" class="form-control">
                 <option value="newsletter">{{ text_newsletter }}</option>
                 <option value="customer_all">{{ text_customer_all }}</option>
                 <option value="customer_group">{{ text_customer_group }}</option>
@@ -42,260 +45,213 @@
               </select>
             </div>
           </div>
-          <div class="row mb-3 to" id="to-customer-group">
-            <label for="input-customer-group" class="col-sm-2 col-form-label">{{ entry_customer_group }}</label>
+          <div class="form-group to" id="to-customer-group">
+            <label class="col-sm-2 control-label" for="input-customer-group">{{ entry_customer_group }}</label>
             <div class="col-sm-10">
-              <select name="customer_group_id" id="input-customer-group" class="form-select">
+              <select name="customer_group_id" id="input-customer-group" class="form-control">
                 {% for customer_group in customer_groups %}
-                  <option value="{{ customer_group.customer_group_id }}">{{ customer_group.name }}</option>
+                <option value="{{ customer_group.customer_group_id }}">{{ customer_group.name }}</option>
                 {% endfor %}
               </select>
             </div>
           </div>
-          <div class="row mb-3 to" id="to-customer">
-            <label class="col-sm-2 col-form-label">{{ entry_customer }}</label>
+          <div class="form-group to" id="to-customer">
+            <label class="col-sm-2 control-label" for="input-customer"><span data-toggle="tooltip" title="{{ help_customer }}">{{ entry_customer }}</span></label>
             <div class="col-sm-10">
-              <input type="text" name="customers" value="" placeholder="{{ entry_customer }}" id="input-customer" data-oc-target="autocomplete-customer" class="form-control" autocomplete="off"/>
-              <ul id="autocomplete-customer" class="dropdown-menu"></ul>
-              <div class="form-control p-0" style="height: 150px; overflow: auto;">
-                <table id="mail-customer" class="table m-0">
-                  <tbody></tbody>
-                </table>
-              </div>
-              <div class="form-text">{{ help_customer }}</div>
+              <input type="text" name="customers" value="" placeholder="{{ entry_customer }}" id="input-customer" class="form-control" />
+              <div class="well well-sm" style="height: 150px; overflow: auto;"></div>
             </div>
           </div>
-          <div class="row mb-3 to" id="to-affiliate">
-            <label class="col-sm-2 col-form-label">{{ entry_affiliate }}</label>
+          <div class="form-group to" id="to-affiliate">
+            <label class="col-sm-2 control-label" for="input-affiliate"><span data-toggle="tooltip" title="{{ help_affiliate }}">{{ entry_affiliate }}</span></label>
             <div class="col-sm-10">
-              <input type="text" name="affiliates" value="" placeholder="{{ entry_affiliate }}" id="input-affiliate" data-oc-target="autocomplete-affiliate" class="form-control" autocomplete="off"/>
-              <ul id="autocomplete-affiliate" class="dropdown-menu"></ul>
-              <div class="form-control p-0" style="height: 150px; overflow: auto;">
-                <table id="mail-affiliate" class="table m-0">
-                  <tbody></tbody>
-                </table>
-              </div>
-              <div class="form-text">{{ help_affiliate }}</div>
+              <input type="text" name="affiliates" value="" placeholder="{{ entry_affiliate }}" id="input-affiliate" class="form-control" />
+              <div class="well well-sm" style="height: 150px; overflow: auto;"></div>
             </div>
           </div>
-          <div class="row mb-3 to" id="to-product">
-            <label class="col-sm-2 col-form-label">{{ entry_product }}</label>
+          <div class="form-group to" id="to-product">
+            <label class="col-sm-2 control-label" for="input-product"><span data-toggle="tooltip" title="{{ help_product }}">{{ entry_product }}</span></label>
             <div class="col-sm-10">
-              <input type="text" name="products" value="" placeholder="{{ entry_product }}" id="input-product" data-oc-target="autocomplete-product" class="form-control" autocomplete="off"/>
-              <ul id="autocomplete-product" class="dropdown-menu"></ul>
-              <div class="form-control p-0" style="height: 150px; overflow: auto;">
-                <table id="mail-product" class="table m-0">
-                  <tbody></tbody>
-                </table>
-              </div>
-              <div class="form-text">{{ help_product }}</div>
+              <input type="text" name="products" value="" placeholder="{{ entry_product }}" id="input-product" class="form-control" />
+              <div class="well well-sm" style="height: 150px; overflow: auto;"></div>
             </div>
           </div>
-          <div class="row mb-3 required">
-            <label for="input-subject" class="col-sm-2 col-form-label">{{ entry_subject }}</label>
+          <div class="form-group required">
+            <label class="col-sm-2 control-label" for="input-subject">{{ entry_subject }}</label>
             <div class="col-sm-10">
-              <input type="text" name="subject" value="" placeholder="{{ entry_subject }}" id="input-subject" class="form-control"/>
-              <div id="error-subject" class="invalid-feedback"></div>
+              <input type="text" name="subject" value="" placeholder="{{ entry_subject }}" id="input-subject" class="form-control" />
             </div>
           </div>
-          <div class="row mb-3 required">
-            <label for="input-message" class="col-sm-2 col-form-label">{{ entry_message }}</label>
+          <div class="form-group required">
+            <label class="col-sm-2 control-label" for="input-message">{{ entry_message }}</label>
             <div class="col-sm-10">
-              <div id="input-message">
-                <textarea name="message" placeholder="{{ entry_message }}" data-oc-toggle="ckeditor" data-lang="{{ ckeditor }}" class="form-control"></textarea>
-                <div id="error-message" class="invalid-feedback"></div>
-              </div>
+              <textarea name="message" placeholder="{{ entry_message }}" id="input-message" data-toggle="summernote" data-lang="{{ summernote }}" class="form-control"></textarea>
             </div>
           </div>
         </form>
       </div>
     </div>
   </div>
-</div>
-<script type="text/javascript"><!--
-$('#input-to').on('change', function() {
-    $('.to').hide();
+  <link href="view/javascript/codemirror/lib/codemirror.css" rel="stylesheet" />
+  <link href="view/javascript/codemirror/theme/monokai.css" rel="stylesheet" />
+  <script type="text/javascript" src="view/javascript/codemirror/lib/codemirror.js"></script> 
+  <script type="text/javascript" src="view/javascript/codemirror/lib/xml.js"></script> 
+  <script type="text/javascript" src="view/javascript/codemirror/lib/formatting.js"></script> 
+  <script type="text/javascript" src="view/javascript/summernote/summernote.min.js"></script>
+  <link href="view/javascript/summernote/summernote.min.css" rel="stylesheet" />
+  <script type="text/javascript" src="view/javascript/summernote/summernote-image-attributes.js"></script> 
+  <script type="text/javascript" src="view/javascript/summernote/opencart.js"></script> 
+  <script type="text/javascript"><!--
+$('select[name=\'to\']').on('change', function() {
+	$('.to').hide();
 
-    $('#to-' + this.value.replaceAll('_', '-')).show();
+	$('#to-' + this.value.replace('_', '-')).show();
 });
 
-$('#input-to').trigger('change');
-
+$('select[name=\'to\']').trigger('change');
+//--></script> 
+  <script type="text/javascript"><!--
 // Customers
-$('#input-customer').autocomplete({
-    'source': function(request, response) {
-        $.ajax({
-            url: 'index.php?route=customer/customer.autocomplete&user_token={{ user_token }}&filter_name=' + encodeURIComponent(request),
-            dataType: 'json',
-            success: function(json) {
-                response($.map(json, function(item) {
-                    return {
-                        label: item['name'],
-                        value: item['customer_id']
-                    }
-                }));
-            },
-            error: function(xhr, ajaxOptions, thrownError) {
-                console.log(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
-            }
-        });
-    },
-    'select': function(item) {
-        $('#input-customer').val('');
+$('input[name=\'customers\']').autocomplete({
+	'source': function(request, response) {
+		$.ajax({
+			url: 'index.php?route=customer/customer/autocomplete&user_token={{ user_token }}&filter_name=' +  encodeURIComponent(request),
+			dataType: 'json',
+			success: function(json) {
+				response($.map(json, function(item) {
+					return {
+						label: item['name'],
+						value: item['customer_id']
+					}
+				}));
+			},
+			error: function(xhr, ajaxOptions, thrownError) {
+				alert(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
+			}
+		});
+	},
+	'select': function(item) {
+		$('input[name=\'customers\']').val('');
 
-        $('#mail-customer-' + item['value']).remove();
+		$('#customer' + item['value']).remove();
 
-        html = '<tr id="mail-customer-' + item['value'] + '">';
-        html += '  <td>' + item['label'] + '<input type="hidden" name="customer[]" value="' + item['value'] + '"/></td>';
-        html += '  <td class="text-end"><button type="button" class="btn btn-danger"><i class="fa-solid fa-minus-circle"></i></button></td>';
-        html += '</tr>';
-
-        $('#mail-customer tbody').append(html);
-    }
+		$('#input-customer').parent().find('.well').append('<div id="customer' + item['value'] + '"><i class="fa fa-minus-circle"></i> ' + item['label'] + '<input type="hidden" name="customer[]" value="' + item['value'] + '" /></div>');
+	}
 });
 
-$('#mail-customer').on('click', '.btn', function() {
-    $(this).parent().parent().remove();
+$('#input-customer').parent().find('.well').delegate('.fa-minus-circle', 'click', function() {
+	$(this).parent().remove();
 });
 
 // Affiliates
-$('#input-affiliate').autocomplete({
-    'source': function(request, response) {
-        $.ajax({
-            url: 'index.php?route=customer/customer.autocomplete&user_token={{ user_token }}&filter_name=' + encodeURIComponent(request) + '&filter_affiliate=1',
-            dataType: 'json',
-            success: function(json) {
-                response($.map(json, function(item) {
-                    return {
-                        label: item['name'],
-                        value: item['customer_id']
-                    }
-                }));
-            },
-            error: function(xhr, ajaxOptions, thrownError) {
-                console.log(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
-            }
-        });
-    },
-    'select': function(item) {
-        $('#input-affiliate').val('');
+$('input[name=\'affiliates\']').autocomplete({
+	'source': function(request, response) {
+		$.ajax({
+			url: 'index.php?route=customer/customer/autocomplete&user_token={{ user_token }}&filter_name=' +  encodeURIComponent(request) + '&filter_affiliate=1',
+			dataType: 'json',
+			success: function(json) {
+				response($.map(json, function(item) {
+					return {
+						label: item['name'],
+						value: item['customer_id']
+					}
+				}));
+			},
+			error: function(xhr, ajaxOptions, thrownError) {
+				alert(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
+			}
+		});
+	},
+	'select': function(item) {
+		$('input[name=\'affiliates\']').val('');
 
-        $('#mail-affiliate-' + item['value']).remove();
+		$('#affiliate' + item['value']).remove();
 
-        html = '<tr id="mail-affiliate-' + item['value'] + '">';
-        html += '  <td>' + item['label'] + '<input type="hidden" name="affiliate[]" value="' + item['value'] + '"/></td>';
-        html += '  <td class="text-end"><button type="button" class="btn btn-danger"><i class="fa-solid fa-minus-circle"></i></button></td>';
-        html += '</tr>';
-
-        $('#mail-affiliate tbody').append(html);
-    }
+		$('#input-affiliate').parent().find('.well').append('<div id="affiliate' + item['value'] + '"><i class="fa fa-minus-circle"></i> ' + item['label'] + '<input type="hidden" name="affiliate[]" value="' + item['value'] + '" /></div>');
+	}
 });
 
-$('#input-affiliate').on('click', '.btn', function() {
-    $(this).parent().parent().remove();
+$('#input-affiliate').parent().find('.well').delegate('.fa-minus-circle', 'click', function() {
+	$(this).parent().remove();
 });
 
 // Products
-$('#input-product').autocomplete({
-    'source': function(request, response) {
-        $.ajax({
-            url: 'index.php?route=catalog/product.autocomplete&user_token={{ user_token }}&filter_name=' + encodeURIComponent(request),
-            dataType: 'json',
-            success: function(json) {
-                response($.map(json, function(item) {
-                    return {
-                        label: item['name'],
-                        value: item['product_id']
-                    }
-                }));
-            },
-            error: function(xhr, ajaxOptions, thrownError) {
-                console.log(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
-            }
-        });
-    },
-    'select': function(item) {
-        $('#input-product').val('');
+$('input[name=\'products\']').autocomplete({
+	'source': function(request, response) {
+		$.ajax({
+			url: 'index.php?route=catalog/product/autocomplete&user_token={{ user_token }}&filter_name=' +  encodeURIComponent(request),
+			dataType: 'json',
+			success: function(json) {
+				response($.map(json, function(item) {
+					return {
+						label: item['name'],
+						value: item['product_id']
+					}
+				}));
+			},
+			error: function(xhr, ajaxOptions, thrownError) {
+				alert(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
+			}
+		});
+	},
+	'select': function(item) {
+		$('input[name=\'products\']').val('');
 
-        $('#mail-product-' + item['value']).remove();
+		$('#product' + item['value']).remove();
 
-        html = '<tr id="mail-product-' + item['value'] + '">';
-        html += '  <td>' + item['label'] + '<input type="hidden" name="product[]" value="' + item['value'] + '"/></td>';
-        html += '  <td class="text-end"><button type="button" class="btn btn-danger"><i class="fa-solid fa-minus-circle"></i></button></td>';
-        html += '</tr>';
-
-        $('#mail-product tbody').append(html);
-    }
+		$('#input-product').parent().find('.well').append('<div id="product' + item['value'] + '"><i class="fa fa-minus-circle"></i> ' + item['label'] + '<input type="hidden" name="product[]" value="' + item['value'] + '" /></div>');
+	}
 });
 
-$('#mail-product').on('click', '.btn', function() {
-    $(this).parent().parent().remove();
+$('#input-product').parent().find('.well').delegate('.fa-minus-circle', 'click', function() {
+	$(this).parent().remove();
 });
 
-$('textarea[data-oc-toggle=\'ckeditor\']').ckeditor({
-    language: '{{ ckeditor }}'
-});
+function send(url) {
+	$.ajax({
+		url: url,
+		type: 'post',
+		data: $('#content select, #content input, #content textarea'),
+		dataType: 'json',
+		beforeSend: function() {
+			$('#button-send').button('loading');
+		},
+		success: function(json) {
+			$('.alert-dismissible, .text-danger').remove();
 
-$('#button-send').on('click', function() {
-    var element = this;
+			if (json['error']) {
+				if (json['error']['warning']) {
+					$('#content > .container-fluid').prepend('<div class="alert alert-danger alert-dismissible"><i class="fa fa-exclamation-circle"></i> ' + json['error']['warning'] + ' <button type="button" class="close" data-dismiss="alert">&times;</button></div>');
+				}
 
-    $(element).button('loading');
+				if (json['error']['email']) {
+					$('#content > .container-fluid').prepend('<div class="alert alert-danger alert-dismissible"><i class="fa fa-exclamation-circle"></i> ' + json['error']['email'] + ' <button type="button" class="close" data-dismiss="alert">&times;</button></div>');
+				}
 
-    for (instance in CKEDITOR.instances) {
-        CKEDITOR.instances[instance].updateElement();
-    }
+				if (json['error']['subject']) {
+					$('input[name=\'subject\']').after('<div class="text-danger">' + json['error']['subject'] + '</div>');
+				}
 
-    var next = 'index.php?route=marketing/contact.send&user_token={{ user_token }}';
+				if (json['error']['message']) {
+					$('textarea[name=\'message\']').parent().append('<div class="text-danger">' + json['error']['message'] + '</div>');
+				}
+			}
 
-    var send = function() {
-        return $.ajax({
-            url: next,
-            type: 'post',
-            data: $('#content form').serialize(),
-            dataType: 'json',
-            success: function(json) {
-                console.log(json);
-
-                $('.invalid-feedback').removeClass('d-block');
-
-                if (json['error']) {
-                    if (json['error']['warning']) {
-                        $('#alert').prepend('<div class="alert alert-danger alert-dismissible"><i class="fa-solid fa-circle-exclamation"></i> ' + json['error']['warning'] + ' <button type="button" class="btn-close" data-bs-dismiss="alert"></button></div>');
-                    }
-
-                    for (key in json['error']) {
-                        $('#input-' + key.replaceAll('_', '-')).addClass('is-invalid').find('.form-control, .form-select, .form-check-input, .form-check-label').addClass('is-invalid');
-                        $('#error-' + key.replaceAll('_', '-')).html(json['error'][key]).addClass('d-block');
-                    }
-
-                    $(element).button('reset');
-                }
-
-                if (json['text']) {
-                    $('#alert').prepend('<div class="alert alert-success alert-dismissible"><i class="fa-solid fa-check-circle-circle"></i> ' + json['text'] + ' <button type="button" class="btn-close" data-bs-dismiss="alert"></button></div>');
-                }
-
-                if (json['success']) {
-                    $('#alert').prepend('<div class="alert alert-success alert-dismissible"><i class="fa-solid fa-check-circle-circle"></i> ' + json['success'] + ' <button type="button" class="btn-close" data-bs-dismiss="alert"></button></div>');
-
-                    $(element).button('reset');
-                }
-
-                if (json['next']) {
-                    next = json['next'];
-
-                    chain.attach(send);
-                }
-            },
-            error: function(xhr, ajaxOptions, thrownError) {
-                console.log(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
-
-                $(element).button('reset');
-            }
-        });
-    };
-
-    chain.attach(send);
-});
-//--></script>
+			if (json['success']) {
+				$('#content > .container-fluid').prepend('<div class="alert alert-success alert-dismissible"><i class="fa fa-check-circle"></i>  ' + json['success'] + ' <button type="button" class="close" data-dismiss="alert">&times;</button></div>');
+			}
+				
+			if (json['next']) {
+				send(json['next']);
+			} else {
+				$('#button-send').button('reset');
+			}
+			
+		},
+		error: function(xhr, ajaxOptions, thrownError) {
+			alert(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
+		}
+	});
+}
+//--></script></div>
 {{ footer }}

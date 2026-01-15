@@ -1,103 +1,30 @@
 <?php
-namespace Opencart\System\Library\DB;
-/**
- * Class MySQLi
- *
- * @package Opencart\System\Library\DB
- */
+namespace DB;
 class MySQLi {
-	/**
-	 * @var ?\mysqli
-	 */
-	private ?\mysqli $connection;
+	private $connection;
 
-	/**
-	 * Constructor
-	 *
-	 * @param string $hostname
-	 * @param string $username
-	 * @param string $password
-	 * @param string $database
-	 * @param int    $port
-	 * @param string $ssl_key
-	 * @param string $ssl_cert
-	 * @param string $ssl_ca
-	 */
-	public function __construct(string $hostname, string $username, string $password, string $database, int $port = 0, string $ssl_key = '', string $ssl_cert = '', string $ssl_ca = '') {
-		if (!$port) {
-			$port = 3306;
-		}
-
-		// MSQL SSL connection
-		$temp_ssl_key_file = '';
-
-		if ($ssl_key) {
-			$temp_ssl_key_file = tempnam(sys_get_temp_dir(), 'mysqli_key_');
-
-			$handle = fopen($temp_ssl_key_file, 'w');
-
-			fwrite($handle, $ssl_key);
-
-			fclose($handle);
-		}
-
-		$temp_ssl_cert_file = '';
-
-		if ($ssl_cert) {
-			$temp_ssl_cert_file = tempnam(sys_get_temp_dir(), 'mysqli_cert_');
-
-			$handle = fopen($temp_ssl_cert_file, 'w');
-
-			fwrite($handle, $ssl_cert);
-
-			fclose($handle);
-		}
-
-		$temp_ssl_ca_file = '';
-
-		if ($ssl_ca) {
-			$temp_ssl_ca_file = tempnam(sys_get_temp_dir(), 'mysqli_ca_');
-
-			$handle = fopen($temp_ssl_ca_file, 'w');
-
-			fwrite($handle, '-----BEGIN CERTIFICATE-----' . PHP_EOL . $ssl_ca . PHP_EOL . '-----END CERTIFICATE-----');
-
-			fclose($handle);
-		}
-
+	public function __construct($hostname, $username, $password, $database, $port = '3306') {
 		try {
-			$this->connection = mysqli_init() ?: null;
-
-			if ($temp_ssl_key_file || $temp_ssl_cert_file || $temp_ssl_ca_file) {
-				$this->connection->ssl_set($temp_ssl_key_file, $temp_ssl_cert_file, $temp_ssl_ca_file, null, null);
-				$this->connection->real_connect($hostname, $username, $password, $database, $port, null, MYSQLI_CLIENT_SSL);
-			} else {
-				$this->connection->real_connect($hostname, $username, $password, $database, $port, null);
-			}
-
-			$this->connection->set_charset('utf8mb4');
-
-			$this->query("SET SESSION sql_mode = 'NO_ZERO_IN_DATE,NO_ENGINE_SUBSTITUTION'");
-			$this->query("SET FOREIGN_KEY_CHECKS = 0");
-
-			// Sync PHP and DB time zones
-			$this->query("SET `time_zone` = '" . $this->escape(date('P')) . "'");
+			$mysqli = @new \MySQLi($hostname, $username, $password, $database, $port);
 		} catch (\mysqli_sql_exception $e) {
-			throw new \Exception('Error: Could not make a database link using ' . $username . '@' . $hostname . '!<br/>Message: ' . $e->getMessage());
+			throw new \Exception('Error: Could not make a database link using ' . $username . '@' . $hostname . '!');
+		}
+
+		if (!$mysqli->connect_errno) {
+			mysqli_report(MYSQLI_REPORT_ERROR);
+			$this->connection = $mysqli;
+//			$this->connection->report_mode = MYSQLI_REPORT_ERROR;
+			$this->connection->set_charset('utf8');
+			$this->connection->query("SET SESSION sql_mode = 'NO_ZERO_IN_DATE,NO_ENGINE_SUBSTITUTION'");
+		} else {
+			throw new \Exception('Error: Could not make a database link using ' . $username . '@' . $hostname . '!');
 		}
 	}
 
-	/**
-	 * Query
-	 *
-	 * @param string $sql
-	 *
-	 * @return mixed
-	 */
-	public function query(string $sql) {
-		try {
-			$query = $this->connection->query($sql);
+	public function query($sql) {
+		$query = $this->connection->query($sql);
 
+		if (!$this->connection->errno) {
 			if ($query instanceof \mysqli_result) {
 				$data = [];
 
@@ -107,7 +34,7 @@ class MySQLi {
 
 				$result = new \stdClass();
 				$result->num_rows = $query->num_rows;
-				$result->row = $data[0] ?? [];
+				$result->row = isset($data[0]) ? $data[0] : [];
 				$result->rows = $data;
 
 				$query->close();
@@ -118,59 +45,42 @@ class MySQLi {
 			} else {
 				return true;
 			}
-		} catch (\mysqli_sql_exception $e) {
-			throw new \Exception('Error: ' . $this->connection->error . '<br/>Error No: ' . $this->connection->errno . '<br/>' . $sql);
+		} else {
+			throw new \Exception('Error: ' . $this->connection->error  . '<br />Error No: ' . $this->connection->errno . '<br />' . $sql);
+		}
+	}
+
+	public function escape($value) {
+		return $this->connection->real_escape_string(($value===null) ? '' : $value);
+	}
+
+	public function countAffected() {
+		return $this->connection->affected_rows;
+	}
+
+	public function getLastId() {
+		return $this->connection->insert_id;
+	}
+
+	public function isConnected() {
+		if ($this->connection) {
+			return $this->connection->ping();
+		} else {
+			return false;
 		}
 	}
 
 	/**
-	 * Escape
-	 *
-	 * @param string $value
-	 *
-	 * @return string
-	 */
-	public function escape(string $value): string {
-		return $this->connection->real_escape_string($value);
-	}
-
-	/**
-	 * Count Affected
-	 *
-	 * @return int
-	 */
-	public function countAffected(): int {
-		return $this->connection->affected_rows;
-	}
-
-	/**
-	 * Get Last Id
-	 *
-	 * @return int
-	 */
-	public function getLastId(): int {
-		return $this->connection->insert_id;
-	}
-
-	/**
-	 * Is Connected
-	 *
-	 * @return bool
-	 */
-	public function isConnected(): bool {
-		return $this->connection !== null;
-	}
-
-	/**
-	 * Destructor
+	 * __destruct
 	 *
 	 * Closes the DB connection when this object is destroyed.
+	 *
 	 */
 	public function __destruct() {
 		if ($this->connection) {
 			$this->connection->close();
 
-			$this->connection = null;
+			$this->connection = '';
 		}
 	}
 }

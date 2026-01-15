@@ -1,75 +1,28 @@
 <?php
-namespace Opencart\Catalog\Controller\Startup;
-/**
- * Class Session
- *
- * @package Opencart\Catalog\Controller\Startup
- */
-class Session extends \Opencart\System\Engine\Controller {
-	/**
-	 * Index
-	 *
-	 * @throws \Exception
-	 *
-	 * @return void
-	 */
-	public function index(): void {
-		$session = new \Opencart\System\Library\Session($this->config->get('session_engine'), $this->registry);
-		$this->registry->set('session', $session);
-
-		// API
-		if (isset($this->request->get['route']) && substr((string)$this->request->get['route'], 0, 4) == 'api/' && isset($this->request->get['api_token'])) {
-			$this->load->model('setting/api');
-
-			$this->model_setting_api->cleanSessions();
-
+class ControllerStartupSession extends Controller {
+	public function index() {
+		if (isset($this->request->get['api_token']) && isset($this->request->get['route']) && substr($this->request->get['route'], 0, 4) == 'api/') {
+			$this->db->query("DELETE FROM `" . DB_PREFIX . "api_session` WHERE TIMESTAMPADD(HOUR, 1, date_modified) < NOW()");
+					
 			// Make sure the IP is allowed
-			$api_info = $this->model_setting_api->getApiByToken($this->request->get['api_token']);
-
-			if ($api_info) {
+			$api_query = $this->db->query("SELECT DISTINCT * FROM `" . DB_PREFIX . "api` `a` LEFT JOIN `" . DB_PREFIX . "api_session` `as` ON (a.api_id = as.api_id) LEFT JOIN " . DB_PREFIX . "api_ip `ai` ON (a.api_id = ai.api_id) WHERE a.status = '1' AND `as`.`session_id` = '" . $this->db->escape($this->request->get['api_token']) . "' AND ai.ip = '" . $this->db->escape($this->request->server['REMOTE_ADDR']) . "'");
+		 
+			if ($api_query->num_rows) {
 				$this->session->start($this->request->get['api_token']);
-
-				$this->model_setting_api->updateSession($api_info['api_session_id']);
+				
+				// keep the session alive
+				$this->db->query("UPDATE `" . DB_PREFIX . "api_session` SET `date_modified` = NOW() WHERE `api_session_id` = '" . (int)$api_query->row['api_session_id'] . "'");
 			}
-
-			return;
-		}
-
-		/*
-		We are adding the session cookie outside of the session class as I believe
-		PHP messed up in a big way handling sessions. Why in the hell is it so hard to
-		have more than one concurrent session using cookies!
-
-		Is it not better to have multiple cookies when accessing parts of the system
-		that requires different cookie sessions for security reasons.
-		*/
-
-		// Update the session lifetime
-		if ($this->config->get('config_session_expire')) {
-			$this->config->set('session_expire', $this->config->get('config_session_expire'));
-		}
-
-		// Update the session SameSite
-		$this->config->set('session_samesite', $this->config->get('config_session_samesite'));
-
-		if (isset($this->request->cookie[$this->config->get('session_name')])) {
-			$session_id = $this->request->cookie[$this->config->get('session_name')];
 		} else {
-			$session_id = '';
+			if (isset($_COOKIE[$this->config->get('session_name')])) {
+				$session_id = $_COOKIE[$this->config->get('session_name')];
+			} else {
+				$session_id = '';
+			}
+			
+			$this->session->start($session_id);
+			
+			setcookie($this->config->get('session_name'), $this->session->getId(), (ini_get('session.cookie_lifetime') ? time() + ini_get('session.cookie_lifetime') : 0), ini_get('session.cookie_path'), ini_get('session.cookie_domain'));	
 		}
-
-		$session->start($session_id);
-
-		$option = [
-			'expires'  => time() + (int)$this->config->get('config_session_expire'),
-			'path'     => $this->config->get('session_path'),
-			'secure'   => $this->request->server['HTTPS'],
-			'httponly' => false,
-			'SameSite' => $this->config->get('session_samesite')
-		];
-
-		$this->response->addHeader('Cache-Control: no-store, no-cache, must-revalidate, post-check=0, pre-check=0');
-
-		setcookie($this->config->get('session_name'), $session->getId(), $option);
 	}
 }

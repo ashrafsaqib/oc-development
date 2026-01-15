@@ -1,86 +1,69 @@
 <?php
 /**
- * @package   OpenCart
- *
- * @author    Daniel Kerr
- * @copyright Copyright (c) 2005 - 2022, OpenCart, Ltd. (https://www.opencart.com/)
- * @license   https://opensource.org/licenses/GPL-3.0
- * @author    Daniel Kerr
- *
- * @see       https://www.opencart.com
- */
-namespace Opencart\System\Library;
-/**
- * Class URL
- */
-class Url {
-	/**
-	 * @var string
-	 */
-	private string $url;
-	/**
-	 * @var array<int, object>
-	 */
-	private array $rewrite = [];
+ * @package		OpenCart
+ * @author		Daniel Kerr
+ * @copyright	Copyright (c) 2005 - 2017, OpenCart, Ltd. (https://www.opencart.com/)
+ * @license		https://opensource.org/licenses/GPL-3.0
+ * @link		https://www.opencart.com
+*/
 
+/**
+* URL class
+*/
+class Url {
+	private $url;
+	private $ssl;
+	private $rewrite = array();
+	
 	/**
 	 * Constructor
 	 *
-	 * @param string $url
-	 */
-	public function __construct(string $url) {
+	 * @param	string	$url
+	 * @param	string	$ssl
+	 *
+ 	*/
+	public function __construct($url, $ssl = '') {
 		$this->url = $url;
+		$this->ssl = $ssl;
 	}
 
 	/**
-	 * Add Rewrite
 	 *
-	 * Add a rewrite method to the URL system
 	 *
-	 * @param \Opencart\System\Engine\Controller $rewrite
+	 * @param	object	$rewrite
+ 	*/	
+	public function addRewrite($rewrite) {
+		$this->rewrite[] = $rewrite;
+	}
+
+	/**
+	 * 
 	 *
-	 * @return void
-	 */
-	public function addRewrite(object $rewrite): void {
-		if (is_callable([$rewrite, 'rewrite'])) {
-			$this->rewrite[] = $rewrite;
+	 * @param	string		$route
+	 * @param	mixed		$args
+	 * @param	bool		$secure
+	 *
+	 * @return	string
+ 	*/
+	public function link($route, $args = '', $secure = false) {
+		if ($this->ssl && $secure) {
+			$url = $this->ssl . 'index.php?route=' . $route;
+		} else {
+			$url = $this->url . 'index.php?route=' . $route;
 		}
-	}
-
-	/**
-	 * Link
-	 *
-	 * Generates a URL
-	 *
-	 * @param string $route
-	 * @param mixed  $args
-	 * @param bool   $js
-	 *
-	 * @return string
-	 */
-	public function link(string $route, $args = '', bool $js = false): string {
-		$url = $this->url . 'index.php?route=' . $route;
-
+		
 		if ($args) {
 			if (is_array($args)) {
-				$url .= '&' . http_build_query($args);
+				$url .= '&amp;' . http_build_query($args);
 			} else {
-				$url .= '&' . trim($args, '&');
+				$url .= str_replace('&', '&amp;', '&' . ltrim($args, '&'));
 			}
 		}
-
+		
 		foreach ($this->rewrite as $rewrite) {
 			$url = $rewrite->rewrite($url);
 		}
-
-		// See https://stackoverflow.com/questions/78729429/403-forbidden-when-url-contains-get-with-encoded-question-mark-unsafeallow3f
-		// https://github.com/opencart/opencart/issues/14202
-		$url = str_replace('%3F', '?', $url);
-
-		if (!$js) {
-			return str_replace('&', '&amp;', $url);
-		} else {
-			return $url;
-		}
+		
+		return $url; 
 	}
 }

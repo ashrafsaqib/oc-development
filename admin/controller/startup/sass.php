@@ -1,19 +1,6 @@
 <?php
-namespace Opencart\Admin\Controller\Startup;
-/**
- * Class Sass
- *
- * @package Opencart\Admin\Controller\Startup
- */
-class Sass extends \Opencart\System\Engine\Controller {
-	/**
-	 * Index
-	 *
-	 * @throws \Exception\ScssPhp\ScssPhp\Exception\SassException
-	 *
-	 * @return void
-	 */
-	public function index(): void {
+class ControllerStartupSass extends Controller {
+	public function index() {
 		$files = glob(DIR_APPLICATION . 'view/stylesheet/*.scss');
 
 		if ($files) {

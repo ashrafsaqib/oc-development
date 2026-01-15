@@ -1,38 +1,25 @@
 <?php
-namespace Opencart\Catalog\Controller\Startup;
-/**
- * Class Maintenance
- *
- * @package Opencart\Catalog\Controller\Startup
- */
-class Maintenance extends \Opencart\System\Engine\Controller {
-	/**
-	 * Index
-	 *
-	 * @return \Opencart\System\Engine\Action|null
-	 */
-	public function index(): ?\Opencart\System\Engine\Action {
+class ControllerStartupMaintenance extends Controller {
+	public function index() {
 		if ($this->config->get('config_maintenance')) {
 			// Route
-			if (isset($this->request->get['route'])) {
+			if (isset($this->request->get['route']) && $this->request->get['route'] != 'startup/router') {
 				$route = $this->request->get['route'];
 			} else {
 				$route = $this->config->get('action_default');
-			}
-
-			$ignore = [
+			}			
+			
+			$ignore = array(
 				'common/language/language',
 				'common/currency/currency'
-			];
-
+			);
+			
 			// Show site if logged in as admin
-			$user = new \Opencart\System\Library\Cart\User($this->registry);
+			$this->user = new Cart\User($this->registry);
 
-			if (substr($route, 0, 3) != 'api' && !in_array($route, $ignore) && !$user->isLogged()) {
-				return new \Opencart\System\Engine\Action('common/maintenance');
+			if ((substr($route, 0, 17) != 'extension/payment' && substr($route, 0, 3) != 'api') && !in_array($route, $ignore) && !$this->user->isLogged()) {
+				return new Action('common/maintenance');
 			}
 		}
-
-		return null;
 	}
 }

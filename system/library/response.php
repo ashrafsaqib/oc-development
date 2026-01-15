@@ -1,104 +1,78 @@
 <?php
 /**
  * @package		OpenCart
- *
  * @author		Daniel Kerr
- * @copyright	Copyright (c) 2005 - 2022, OpenCart, Ltd. (https://www.opencart.com/)
+ * @copyright	Copyright (c) 2005 - 2017, OpenCart, Ltd. (https://www.opencart.com/)
  * @license		https://opensource.org/licenses/GPL-3.0
- *
- * @see		https://www.opencart.com
- */
-namespace Opencart\System\Library;
+ * @link		https://www.opencart.com
+*/
+
 /**
- * Class Response
- *
- * Stores the response so the correct headers can go out before the response output is shown.
- */
+* Response class
+*/
 class Response {
-	/**
-	 * @var array<int, string>
-	 */
-	private array $headers = [];
-	/**
-	 * @var int
-	 */
-	private int $level = 0;
-	/**
-	 * @var string
-	 */
-	private string $output = '';
+	private $headers = array();
+	private $level = 0;
+	private $output;
 
 	/**
 	 * Constructor
 	 *
-	 * @param string $header
-	 */
-	public function addHeader(string $header): void {
+	 * @param	string	$header
+	 *
+ 	*/
+	public function addHeader($header) {
 		$this->headers[] = $header;
 	}
-
+	
 	/**
-	 * Get Headers
+	 * 
 	 *
-	 * @return array<int, string>
-	 */
-	public function getHeaders(): array {
-		return $this->headers;
-	}
-
-	/**
-	 * Redirect
+	 * @param	string	$url
+	 * @param	int		$status
 	 *
-	 * @param string $url
-	 * @param int    $status
-	 *
-	 * @return void
-	 */
-	public function redirect(string $url, int $status = 302): void {
-		header('Location: ' . str_replace(['&amp;', "\n", "\r"], ['&', '', ''], $url), true, $status);
+ 	*/
+	public function redirect($url, $status = 302) {
+		header('Location: ' . str_replace(array('&amp;', "\n", "\r"), array('&', '', ''), $url), true, $status);
 		exit();
 	}
-
+	
 	/**
-	 * Set Compression
+	 * 
 	 *
-	 * @param int $level
-	 *
-	 * @return void
-	 */
-	public function setCompression(int $level): void {
+	 * @param	int		$level
+ 	*/
+	public function setCompression($level) {
 		$this->level = $level;
 	}
-
+	
 	/**
-	 * Set Output
+	 * 
 	 *
-	 * @param string $output
-	 *
-	 * @return void
-	 */
-	public function setOutput(string $output): void {
-		$this->output = $output;
-	}
-
-	/**
-	 * Get Output
-	 *
-	 * @return string
-	 */
-	public function getOutput(): string {
+	 * @return	array
+ 	*/
+	public function getOutput() {
 		return $this->output;
 	}
-
+	
 	/**
-	 * Compress
+	 * 
 	 *
-	 * @param string $data
-	 * @param int    $level
+	 * @param	string	$output
+ 	*/	
+	public function setOutput($output) {
+		$this->output = $output;
+	}
+	
+	/**
+	 * 
 	 *
-	 * @return string
-	 */
-	private function compress(string $data, int $level = 0): string {
+	 * @param	string	$data
+	 * @param	int		$level
+	 * 
+	 * @return	string
+ 	*/
+	private function compress($data, $level = 0) {
 		if (isset($_SERVER['HTTP_ACCEPT_ENCODING']) && (strpos($_SERVER['HTTP_ACCEPT_ENCODING'], 'gzip') !== false)) {
 			$encoding = 'gzip';
 		}
@@ -125,26 +99,22 @@ class Response {
 
 		$this->addHeader('Content-Encoding: ' . $encoding);
 
-		return gzencode($data, $level);
+		return gzencode($data, (int)$level);
 	}
-
+	
 	/**
-	 * Output
-	 *
-	 * Displays the set HTML output
-	 *
-	 * @return void
-	 */
-	public function output(): void {
+	 * 
+ 	*/
+	public function output() {
 		if ($this->output) {
 			$output = $this->level ? $this->compress($this->output, $this->level) : $this->output;
-
+			
 			if (!headers_sent()) {
 				foreach ($this->headers as $header) {
 					header($header, true);
 				}
 			}
-
+			
 			echo $output;
 		}
 	}
