@@ -1,92 +1,130 @@
 <?php
-namespace Opencart\Admin\Controller\Localisation;
-/**
- * Class Location
- *
- * @package Opencart\Admin\Controller\Localisation
- */
-class Location extends \Opencart\System\Engine\Controller {
-	/**
-	 * Index
-	 *
-	 * @return void
-	 */
-	public function index(): void {
+class ControllerLocalisationLocation extends Controller {
+	private $error = array();
+
+	public function index() {
 		$this->load->language('localisation/location');
 
 		$this->document->setTitle($this->language->get('heading_title'));
 
-		$url = '';
+		$this->load->model('localisation/location');
 
-		if (isset($this->request->get['sort'])) {
-			$url .= '&sort=' . $this->request->get['sort'];
-		}
-
-		if (isset($this->request->get['order'])) {
-			$url .= '&order=' . $this->request->get['order'];
-		}
-
-		if (isset($this->request->get['page'])) {
-			$url .= '&page=' . $this->request->get['page'];
-		}
-
-		$data['breadcrumbs'] = [];
-
-		$data['breadcrumbs'][] = [
-			'text' => $this->language->get('text_home'),
-			'href' => $this->url->link('common/dashboard', 'user_token=' . $this->session->data['user_token'])
-		];
-
-		$data['breadcrumbs'][] = [
-			'text' => $this->language->get('heading_title'),
-			'href' => $this->url->link('localisation/location', 'user_token=' . $this->session->data['user_token'] . $url)
-		];
-
-		$data['add'] = $this->url->link('localisation/location.form', 'user_token=' . $this->session->data['user_token'] . $url);
-		$data['delete'] = $this->url->link('localisation/location.delete', 'user_token=' . $this->session->data['user_token']);
-
-		$data['list'] = $this->getList();
-
-		$data['user_token'] = $this->session->data['user_token'];
-
-		$data['header'] = $this->load->controller('common/header');
-		$data['column_left'] = $this->load->controller('common/column_left');
-		$data['footer'] = $this->load->controller('common/footer');
-
-		$this->response->setOutput($this->load->view('localisation/location', $data));
+		$this->getList();
 	}
 
-	/**
-	 * List
-	 *
-	 * @return void
-	 */
-	public function list(): void {
+	public function add() {
 		$this->load->language('localisation/location');
 
-		$this->response->setOutput($this->getList());
+		$this->document->setTitle($this->language->get('heading_title'));
+
+		$this->load->model('localisation/location');
+
+		if (($this->request->server['REQUEST_METHOD'] == 'POST') && $this->validateForm()) {
+			$this->model_localisation_location->addLocation($this->request->post);
+
+			$this->session->data['success'] = $this->language->get('text_success');
+
+			$url = '';
+
+			if (isset($this->request->get['sort'])) {
+				$url .= '&sort=' . $this->request->get['sort'];
+			}
+
+			if (isset($this->request->get['order'])) {
+				$url .= '&order=' . $this->request->get['order'];
+			}
+
+			if (isset($this->request->get['page'])) {
+				$url .= '&page=' . $this->request->get['page'];
+			}
+
+			$this->response->redirect($this->url->link('localisation/location', 'token=' . $this->session->data['token'] . $url, true));
+		}
+
+		$this->getForm();
 	}
 
-	/**
-	 * Get List
-	 *
-	 * @return string
-	 */
-	public function getList(): string {
+	public function edit() {
+		$this->load->language('localisation/location');
+
+		$this->document->setTitle($this->language->get('heading_title'));
+
+		$this->load->model('localisation/location');
+
+		if (($this->request->server['REQUEST_METHOD'] == 'POST') && $this->validateForm()) {
+			$this->model_localisation_location->editLocation($this->request->get['location_id'], $this->request->post);
+
+			$this->session->data['success'] = $this->language->get('text_success');
+
+			$url = '';
+
+			if (isset($this->request->get['sort'])) {
+				$url .= '&sort=' . $this->request->get['sort'];
+			}
+
+			if (isset($this->request->get['order'])) {
+				$url .= '&order=' . $this->request->get['order'];
+			}
+
+			if (isset($this->request->get['page'])) {
+				$url .= '&page=' . $this->request->get['page'];
+			}
+
+			$this->response->redirect($this->url->link('localisation/location', 'token=' . $this->session->data['token'] . $url, true));
+		}
+
+		$this->getForm();
+	}
+
+	public function delete() {
+		$this->load->language('localisation/location');
+
+		$this->document->setTitle($this->language->get('heading_title'));
+
+		$this->load->model('localisation/location');
+
+		if (isset($this->request->post['selected']) && $this->validateDelete()) {
+			foreach ($this->request->post['selected'] as $location_id) {
+				$this->model_localisation_location->deleteLocation($location_id);
+			}
+
+			$this->session->data['success'] = $this->language->get('text_success');
+
+			$url = '';
+
+			if (isset($this->request->get['sort'])) {
+				$url .= '&sort=' . $this->request->get['sort'];
+			}
+
+			if (isset($this->request->get['order'])) {
+				$url .= '&order=' . $this->request->get['order'];
+			}
+
+			if (isset($this->request->get['page'])) {
+				$url .= '&page=' . $this->request->get['page'];
+			}
+
+			$this->response->redirect($this->url->link('localisation/location', 'token=' . $this->session->data['token'] . $url, true));
+		}
+
+		$this->getList();
+	}
+
+	protected function getList() {
 		if (isset($this->request->get['sort'])) {
-			$sort = (string)$this->request->get['sort'];
+			$sort = $this->request->get['sort'];
 		} else {
 			$sort = 'name';
 		}
 
 		if (isset($this->request->get['order'])) {
-			$order = (string)$this->request->get['order'];
+			$order = $this->request->get['order'];
 		} else {
 			$order = 'ASC';
 		}
 
 		if (isset($this->request->get['page'])) {
-			$page = (int)$this->request->get['page'];
+			$page = $this->request->get['page'];
 		} else {
 			$page = 1;
 		}
@@ -105,24 +143,75 @@ class Location extends \Opencart\System\Engine\Controller {
 			$url .= '&page=' . $this->request->get['page'];
 		}
 
-		$data['action'] = $this->url->link('localisation/location.list', 'user_token=' . $this->session->data['user_token'] . $url);
+		$data['breadcrumbs'] =   array();
 
-		// Location
-		$data['locations'] = [];
+		$data['breadcrumbs'][] =   array(
+			'text' =>  $this->language->get('text_home'),
+			'href' => $this->url->link('common/dashboard', 'token=' . $this->session->data['token'], true)
+		);
 
-		$filter_data = [
+		$data['breadcrumbs'][] =   array(
+			'text' =>  $this->language->get('heading_title'),
+			'href' =>  $this->url->link('localisation/location', 'token=' . $this->session->data['token'] . $url, true)
+		);
+
+		$data['add'] = $this->url->link('localisation/location/add', 'token=' . $this->session->data['token'] . $url, true);
+		$data['delete'] = $this->url->link('localisation/location/delete', 'token=' . $this->session->data['token'] . $url, true);
+
+		$data['location'] = array();
+
+		$filter_data = array(
 			'sort'  => $sort,
 			'order' => $order,
-			'start' => ($page - 1) * $this->config->get('config_pagination_admin'),
-			'limit' => $this->config->get('config_pagination_admin')
-		];
+			'start' => ($page - 1) * $this->config->get('config_limit_admin'),
+			'limit' => $this->config->get('config_limit_admin')
+		);
 
-		$this->load->model('localisation/location');
+		$location_total = $this->model_localisation_location->getTotalLocations();
 
 		$results = $this->model_localisation_location->getLocations($filter_data);
 
 		foreach ($results as $result) {
-			$data['locations'][] = ['edit' => $this->url->link('localisation/location.form', 'user_token=' . $this->session->data['user_token'] . '&location_id=' . $result['location_id'] . $url)] + $result;
+			$data['location'][] =   array(
+				'location_id' => $result['location_id'],
+				'name'        => $result['name'],
+				'address'     => $result['address'],
+				'edit'        => $this->url->link('localisation/location/edit', 'token=' . $this->session->data['token'] . '&location_id=' . $result['location_id'] . $url, true)
+			);
+		}
+
+		$data['heading_title'] = $this->language->get('heading_title');
+
+		$data['text_list'] = $this->language->get('text_list');
+		$data['text_no_results'] = $this->language->get('text_no_results');
+		$data['text_confirm'] = $this->language->get('text_confirm');
+
+		$data['column_name'] = $this->language->get('column_name');
+		$data['column_address'] = $this->language->get('column_address');
+		$data['column_action'] = $this->language->get('column_action');
+
+		$data['button_add'] = $this->language->get('button_add');
+		$data['button_edit'] = $this->language->get('button_edit');
+		$data['button_delete'] = $this->language->get('button_delete');
+
+		if (isset($this->error['warning'])) {
+			$data['error_warning'] = $this->error['warning'];
+		} else {
+			$data['error_warning'] = '';
+		}
+
+		if (isset($this->session->data['success'])) {
+			$data['success'] = $this->session->data['success'];
+
+			unset($this->session->data['success']);
+		} else {
+			$data['success'] = '';
+		}
+
+		if (isset($this->request->post['selected'])) {
+			$data['selected'] = (array)$this->request->post['selected'];
+		} else {
+			$data['selected'] = array();
 		}
 
 		$url = '';
@@ -133,8 +222,12 @@ class Location extends \Opencart\System\Engine\Controller {
 			$url .= '&order=ASC';
 		}
 
-		$data['sort_name'] = $this->url->link('localisation/location.list', 'user_token=' . $this->session->data['user_token'] . '&sort=name' . $url);
-		$data['sort_address'] = $this->url->link('localisation/location.list', 'user_token=' . $this->session->data['user_token'] . '&sort=address' . $url);
+		if (isset($this->request->get['page'])) {
+			$url .= '&page=' . $this->request->get['page'];
+		}
+
+		$data['sort_name'] = $this->url->link('localisation/location', 'token=' . $this->session->data['token'] . '&sort=name' . $url, true);
+		$data['sort_address'] = $this->url->link('localisation/location', 'token=' . $this->session->data['token'] . '&sort=address' . $url, true);
 
 		$url = '';
 
@@ -146,34 +239,74 @@ class Location extends \Opencart\System\Engine\Controller {
 			$url .= '&order=' . $this->request->get['order'];
 		}
 
-		$location_total = $this->model_localisation_location->getTotalLocations();
+		$pagination = new Pagination();
+		$pagination->total = $location_total;
+		$pagination->page = $page;
+		$pagination->limit = $this->config->get('config_limit_admin');
+		$pagination->url = $this->url->link('localisation/location', 'token=' . $this->session->data['token'] . $url . '&page={page}', true);
 
-		$data['pagination'] = $this->load->controller('common/pagination', [
-			'total' => $location_total,
-			'page'  => $page,
-			'limit' => $this->config->get('config_pagination_admin'),
-			'url'   => $this->url->link('localisation/location.list', 'user_token=' . $this->session->data['user_token'] . $url . '&page={page}')
-		]);
+		$data['pagination'] = $pagination->render();
 
-		$data['results'] = sprintf($this->language->get('text_pagination'), ($location_total) ? (($page - 1) * $this->config->get('config_pagination_admin')) + 1 : 0, ((($page - 1) * $this->config->get('config_pagination_admin')) > ($location_total - $this->config->get('config_pagination_admin'))) ? $location_total : ((($page - 1) * $this->config->get('config_pagination_admin')) + $this->config->get('config_pagination_admin')), $location_total, ceil($location_total / $this->config->get('config_pagination_admin')));
+		$data['results'] = sprintf($this->language->get('text_pagination'), ($location_total) ? (($page - 1) * $this->config->get('config_limit_admin')) + 1 : 0, ((($page - 1) * $this->config->get('config_limit_admin')) > ($location_total - $this->config->get('config_limit_admin'))) ? $location_total : ((($page - 1) * $this->config->get('config_limit_admin')) + $this->config->get('config_limit_admin')), $location_total, ceil($location_total / $this->config->get('config_limit_admin')));
 
 		$data['sort'] = $sort;
 		$data['order'] = $order;
 
-		return $this->load->view('localisation/location_list', $data);
+		$data['header'] = $this->load->controller('common/header');
+		$data['column_left'] = $this->load->controller('common/column_left');
+		$data['footer'] = $this->load->controller('common/footer');
+
+		$this->response->setOutput($this->load->view('localisation/location_list', $data));
 	}
 
-	/**
-	 * Form
-	 *
-	 * @return void
-	 */
-	public function form(): void {
-		$this->load->language('localisation/location');
-
-		$this->document->setTitle($this->language->get('heading_title'));
+	protected function getForm() {
+		$data['heading_title'] = $this->language->get('heading_title');
 
 		$data['text_form'] = !isset($this->request->get['location_id']) ? $this->language->get('text_add') : $this->language->get('text_edit');
+		$data['text_select'] = $this->language->get('text_select');
+		$data['text_none'] = $this->language->get('text_none');
+		$data['text_default'] = $this->language->get('text_default');
+		$data['text_geocode'] = $this->language->get('text_geocode');
+
+		$data['entry_name'] = $this->language->get('entry_name');
+		$data['entry_address'] = $this->language->get('entry_address');
+		$data['entry_geocode'] = $this->language->get('entry_geocode');
+		$data['entry_telephone'] = $this->language->get('entry_telephone');
+		$data['entry_fax'] = $this->language->get('entry_fax');
+		$data['entry_image'] = $this->language->get('entry_image');
+		$data['entry_open'] = $this->language->get('entry_open');
+		$data['entry_comment'] = $this->language->get('entry_comment');
+
+		$data['help_geocode'] = $this->language->get('help_geocode');
+		$data['help_open'] = $this->language->get('help_open');
+		$data['help_comment'] = $this->language->get('help_comment');
+
+		$data['button_save'] = $this->language->get('button_save');
+		$data['button_cancel'] = $this->language->get('button_cancel');
+
+		if (isset($this->error['warning'])) {
+			$data['error_warning'] = $this->error['warning'];
+		} else {
+			$data['error_warning'] = '';
+		}
+
+		if (isset($this->error['name'])) {
+			$data['error_name'] = $this->error['name'];
+		} else {
+			$data['error_name'] = '';
+		}
+
+		if (isset($this->error['address'])) {
+			$data['error_address'] = $this->error['address'];
+		} else {
+			$data['error_address'] = '';
+		}
+
+		if (isset($this->error['telephone'])) {
+			$data['error_telephone'] = $this->error['telephone'];
+		} else {
+			$data['error_telephone'] = '';
+		}
 
 		$url = '';
 
@@ -189,87 +322,109 @@ class Location extends \Opencart\System\Engine\Controller {
 			$url .= '&page=' . $this->request->get['page'];
 		}
 
-		$data['breadcrumbs'] = [];
+		$data['breadcrumbs'] = array();
 
-		$data['breadcrumbs'][] = [
+		$data['breadcrumbs'][] = array(
 			'text' => $this->language->get('text_home'),
-			'href' => $this->url->link('common/dashboard', 'user_token=' . $this->session->data['user_token'])
-		];
+			'href' => $this->url->link('common/dashboard', 'token=' . $this->session->data['token'], true)
+		);
 
-		$data['breadcrumbs'][] = [
+		$data['breadcrumbs'][] = array(
 			'text' => $this->language->get('heading_title'),
-			'href' => $this->url->link('localisation/location', 'user_token=' . $this->session->data['user_token'] . $url)
-		];
+			'href' => $this->url->link('localisation/location', 'token=' . $this->session->data['token'] . $url, true)
+		);
 
-		$data['save'] = $this->url->link('localisation/location.save', 'user_token=' . $this->session->data['user_token']);
-		$data['back'] = $this->url->link('localisation/location', 'user_token=' . $this->session->data['user_token'] . $url);
-
-		if (isset($this->request->get['location_id'])) {
-			$this->load->model('localisation/location');
-
-			$location_info = $this->model_localisation_location->getLocation((int)$this->request->get['location_id']);
-		}
-
-		if (!empty($location_info)) {
-			$data['location_id'] = $location_info['location_id'];
+		if (!isset($this->request->get['location_id'])) {
+			$data['action'] = $this->url->link('localisation/location/add', 'token=' . $this->session->data['token'] . $url, true);
 		} else {
-			$data['location_id'] = 0;
+			$data['action'] = $this->url->link('localisation/location/edit', 'token=' . $this->session->data['token'] .  '&location_id=' . $this->request->get['location_id'] . $url, true);
 		}
 
-		if (!empty($location_info)) {
+		$data['cancel'] = $this->url->link('localisation/location', 'token=' . $this->session->data['token'] . $url, true);
+
+		if (isset($this->request->get['location_id']) && ($this->request->server['REQUEST_METHOD'] != 'POST')) {
+			$location_info = $this->model_localisation_location->getLocation($this->request->get['location_id']);
+		}
+
+		$data['token'] = $this->session->data['token'];
+
+		$this->load->model('setting/store');
+
+		if (isset($this->request->post['name'])) {
+			$data['name'] = $this->request->post['name'];
+		} elseif (!empty($location_info)) {
 			$data['name'] = $location_info['name'];
 		} else {
-			$data['name'] = '';
+			$data['name'] =   '';
 		}
 
-		if (!empty($location_info)) {
+		if (isset($this->request->post['address'])) {
+			$data['address'] = $this->request->post['address'];
+		} elseif (!empty($location_info)) {
 			$data['address'] = $location_info['address'];
 		} else {
 			$data['address'] = '';
 		}
 
-		if (!empty($location_info)) {
+		if (isset($this->request->post['geocode'])) {
+			$data['geocode'] = $this->request->post['geocode'];
+		} elseif (!empty($location_info)) {
 			$data['geocode'] = $location_info['geocode'];
 		} else {
 			$data['geocode'] = '';
 		}
 
-		if (!empty($location_info)) {
+		if (isset($this->request->post['telephone'])) {
+			$data['telephone'] = $this->request->post['telephone'];
+		} elseif (!empty($location_info)) {
 			$data['telephone'] = $location_info['telephone'];
 		} else {
 			$data['telephone'] = '';
 		}
 
-		if (!empty($location_info)) {
+		if (isset($this->request->post['fax'])) {
+			$data['fax'] = $this->request->post['fax'];
+		} elseif (!empty($location_info)) {
+			$data['fax'] = $location_info['fax'];
+		} else {
+			$data['fax'] = '';
+		}
+
+		if (isset($this->request->post['image'])) {
+			$data['image'] = $this->request->post['image'];
+		} elseif (!empty($location_info)) {
 			$data['image'] = $location_info['image'];
 		} else {
 			$data['image'] = '';
 		}
 
-		// Image
 		$this->load->model('tool/image');
 
-		$data['placeholder'] = $this->model_tool_image->resize('no_image.png', $this->config->get('config_image_default_width'), $this->config->get('config_image_default_height'));
-
-		if ($data['image'] && is_file(DIR_IMAGE . html_entity_decode($data['image'], ENT_QUOTES, 'UTF-8'))) {
-			$data['thumb'] = $this->model_tool_image->resize($data['image'], $this->config->get('config_image_default_width'), $this->config->get('config_image_default_height'));
+		if (isset($this->request->post['image']) && is_file(DIR_IMAGE . $this->request->post['image'])) {
+			$data['thumb'] = $this->model_tool_image->resize($this->request->post['image'], 100, 100);
+		} elseif (!empty($location_info) && is_file(DIR_IMAGE . $location_info['image'])) {
+			$data['thumb'] = $this->model_tool_image->resize($location_info['image'], 100, 100);
 		} else {
-			$data['thumb'] = $data['placeholder'];
+			$data['thumb'] = $this->model_tool_image->resize('no_image.png', 100, 100);
 		}
 
-		if (!empty($location_info)) {
+		$data['placeholder'] = $this->model_tool_image->resize('no_image.png', 100, 100);
+
+		if (isset($this->request->post['open'])) {
+			$data['open'] = $this->request->post['open'];
+		} elseif (!empty($location_info)) {
 			$data['open'] = $location_info['open'];
 		} else {
 			$data['open'] = '';
 		}
 
-		if (!empty($location_info)) {
+		if (isset($this->request->post['comment'])) {
+			$data['comment'] = $this->request->post['comment'];
+		} elseif (!empty($location_info)) {
 			$data['comment'] = $location_info['comment'];
 		} else {
 			$data['comment'] = '';
 		}
-
-		$data['user_token'] = $this->session->data['user_token'];
 
 		$data['header'] = $this->load->controller('common/header');
 		$data['column_left'] = $this->load->controller('common/column_left');
@@ -278,92 +433,31 @@ class Location extends \Opencart\System\Engine\Controller {
 		$this->response->setOutput($this->load->view('localisation/location_form', $data));
 	}
 
-	/**
-	 * Save
-	 *
-	 * @return void
-	 */
-	public function save(): void {
-		$this->load->language('localisation/location');
-
-		$json = [];
-
+	protected function validateForm() {
 		if (!$this->user->hasPermission('modify', 'localisation/location')) {
-			$json['error']['warning'] = $this->language->get('error_permission');
+			$this->error['warning'] = $this->language->get('error_permission');
 		}
 
-		$required = [
-			'location_id' => 0,
-			'name'        => '',
-			'address'     => '',
-			'geocode'     => '',
-			'telephone'   => '',
-			'image'       => '',
-			'open'        => '',
-			'comment'     => ''
-		];
-
-		$post_info = $this->request->post + $required;
-
-		if (!oc_validate_length($post_info['name'], 3, 32)) {
-			$json['error']['name'] = $this->language->get('error_name');
+		if ((utf8_strlen($this->request->post['name']) < 3) || (utf8_strlen($this->request->post['name']) > 32)) {
+			$this->error['name'] = $this->language->get('error_name');
 		}
 
-		if (!oc_validate_length($post_info['address'], 3, 128)) {
-			$json['error']['address'] = $this->language->get('error_address');
+		if ((utf8_strlen($this->request->post['address']) < 3) || (utf8_strlen($this->request->post['address']) > 128)) {
+			$this->error['address'] = $this->language->get('error_address');
 		}
 
-		if (!oc_validate_length($post_info['telephone'], 3, 32)) {
-			$json['error']['telephone'] = $this->language->get('error_telephone');
+		if ((utf8_strlen($this->request->post['telephone']) < 3) || (utf8_strlen($this->request->post['telephone']) > 32)) {
+			$this->error['telephone'] = $this->language->get('error_telephone');
 		}
 
-		if (!$json) {
-			$this->load->model('localisation/location');
-
-			if (!$post_info['location_id']) {
-				$json['location_id'] = $this->model_localisation_location->addLocation($post_info);
-			} else {
-				$this->model_localisation_location->editLocation($post_info['location_id'], $post_info);
-			}
-
-			$json['success'] = $this->language->get('text_success');
-		}
-
-		$this->response->addHeader('Content-Type: application/json');
-		$this->response->setOutput(json_encode($json));
+		return !$this->error;
 	}
 
-	/**
-	 * Delete
-	 *
-	 * @return void
-	 */
-	public function delete(): void {
-		$this->load->language('localisation/location');
-
-		$json = [];
-
-		if (isset($this->request->post['selected'])) {
-			$selected = (array)$this->request->post['selected'];
-		} else {
-			$selected = [];
-		}
-
+	protected function validateDelete() {
 		if (!$this->user->hasPermission('modify', 'localisation/location')) {
-			$json['error'] = $this->language->get('error_permission');
+			$this->error['warning'] = $this->language->get('error_permission');
 		}
 
-		if (!$json) {
-			$this->load->model('localisation/location');
-
-			foreach ($selected as $location_id) {
-				$this->model_localisation_location->deleteLocation($location_id);
-			}
-
-			$json['success'] = $this->language->get('text_success');
-		}
-
-		$this->response->addHeader('Content-Type: application/json');
-		$this->response->setOutput(json_encode($json));
+		return !$this->error;
 	}
 }

@@ -1,115 +1,80 @@
 <?php
-/**
- * @package		OpenCart
- *
- * @author		Daniel Kerr
- * @copyright	Copyright (c) 2005 - 2022, OpenCart, Ltd. (https://www.opencart.com/)
- * @license		https://opensource.org/licenses/GPL-3.0
- *
- * @see		https://www.opencart.com
- */
-namespace Opencart\System\Library;
-/**
- * Class Session
- */
 class Session {
-	/**
-	 * @var object
-	 */
-	protected object $adaptor;
-	/**
-	 * @var string
-	 */
-	protected string $session_id;
-	/**
-	 * @var array<mixed>
-	 */
-	public array $data = [];
+	public $session_id = '';
+	public $data = array();
 
-	/**
-	 * Constructor
-	 *
-	 * @param string                           $adaptor
-	 * @param \Opencart\System\Engine\Registry $registry
-	 */
-	public function __construct(string $adaptor, \Opencart\System\Engine\Registry $registry) {
-		$class = 'Opencart\System\Library\Session\\' . $adaptor;
-
+	public function __construct($adaptor = 'native') {
+		$class = 'Session\\' . $adaptor;
+		
 		if (class_exists($class)) {
-			$this->adaptor = new $class($registry);
-			register_shutdown_function([&$this, 'close']);
-			register_shutdown_function([&$this, 'gc']);
+			$this->adaptor = new $class($this);
 		} else {
 			throw new \Exception('Error: Could not load session adaptor ' . $adaptor . ' session!');
+		}		
+		
+		if ($this->adaptor) {
+			session_set_save_handler($this->adaptor);
 		}
+			
+		if ($this->adaptor && !session_id()) {
+			ini_set('session.use_only_cookies', 'Off');
+			ini_set('session.use_cookies', 'On');
+			ini_set('session.use_trans_sid', 'Off');
+			ini_set('session.cookie_httponly', 'On');
+		
+			if (isset($_COOKIE[session_name()]) && !preg_match('/^[a-zA-Z0-9,\-]{22,52}$/', $_COOKIE[session_name()])) {
+				exit('Error: Invalid session ID!');
+			}
+			
+			session_set_cookie_params(0, '/');
+			session_start();
+		}			
 	}
+		
+	public function start($key = 'default', $value = '') {
+		if ($value) {
+			$this->session_id = $value;
+		} elseif (isset($_COOKIE[$key])) {
+			$this->session_id = $_COOKIE[$key];
+		} else {
+			$this->session_id = $this->createId();
+		}	
+		
+		if (!isset($_SESSION[$this->session_id])) {
+			$_SESSION[$this->session_id] = array();
+		}
+		
+		$this->data = &$_SESSION[$this->session_id];
+		
+		if ($key != 'PHPSESSID') {
+			setcookie($key, $this->session_id, ini_get('session.cookie_lifetime'), ini_get('session.cookie_path'), ini_get('session.cookie_domain'), ini_get('session.cookie_secure'), ini_get('session.cookie_httponly'));
+		}
+		
+		return $this->session_id;
+	}	
 
-	/**
-	 * Get Session ID
-	 *
-	 * @return string
-	 */
-	public function getId(): string {
+	public function getId() {
 		return $this->session_id;
 	}
-
-	/**
-	 * Start
-	 *
-	 * Starts a session.
-	 *
-	 * @param string $session_id
-	 *
-	 * @return string returns the current session ID
-	 */
-	public function start(string $session_id = ''): string {
-		if (!$session_id) {
-			$session_id = substr(bin2hex(openssl_random_pseudo_bytes(26)), 0, 26);
-		}
-
-		if (preg_match('/^[a-zA-Z0-9,\-]{22,52}$/', $session_id)) {
-			$this->session_id = $session_id;
+	
+	public function createId() {
+		if (version_compare(phpversion(), '5.5.4', '>') == true) {
+			return $this->adaptor->create_sid();
+		} elseif (function_exists('random_bytes')) {
+        	return substr(bin2hex(random_bytes(26)), 0, 26);
+		} elseif (function_exists('openssl_random_pseudo_bytes')) {
+			return substr(bin2hex(openssl_random_pseudo_bytes(26)), 0, 26);
 		} else {
-			throw new \Exception('Error: Invalid session ID!');
+			// Temporary insecure fallback for sandbox use only
+			return substr(md5(uniqid(mt_rand(), true)), 0, 26);
 		}
-
-		$this->data = $this->adaptor->read($session_id);
-
-		return $session_id;
 	}
-
-	/**
-	 * Close
-	 *
-	 * Writes the session data to storage
-	 *
-	 * @return void
-	 */
-	public function close(): void {
-		$this->adaptor->write($this->session_id, $this->data);
-	}
-
-	/**
-	 * Destroy
-	 *
-	 * Deletes the current session from storage
-	 *
-	 * @return void
-	 */
-	public function destroy(): void {
-		$this->data = [];
-
-		$this->adaptor->destroy($this->session_id);
-	}
-
-	/**
-	 * GC
-	 *
-	 * Garbage Collection
-	 *
-	 * @return void
-	 */
-	public function gc(): void {
-		$this->adaptor->gc();
+		
+	public function destroy($key = 'default') {
+		if (isset($_SESSION[$key])) {
+			unset($_SESSION[$key]);
+		}
+		
+		setcookie($key, '', time() - 42000, ini_get('session.cookie_path'), ini_get('session.cookie_domain'));
 	}
 }

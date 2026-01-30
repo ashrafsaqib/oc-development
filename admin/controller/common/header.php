@@ -1,118 +1,136 @@
 <?php
-namespace Opencart\Admin\Controller\Common;
-/**
- * Class Header
- *
- * Can be loaded using $this->load->controller('common/header');
- *
- * @package Opencart\Admin\Controller\Common
- */
-class Header extends \Opencart\System\Engine\Controller {
-	/**
-	 * Index
-	 *
-	 * @return string
-	 */
-	public function index(): string {
-		$data['lang'] = $this->language->get('code');
-		$data['direction'] = $this->language->get('direction');
-
+class ControllerCommonHeader extends Controller {
+	public function index() {
 		$data['title'] = $this->document->getTitle();
-		$data['base'] = HTTP_SERVER;
+
+		if ($this->request->server['HTTPS']) {
+			$data['base'] = HTTPS_SERVER;
+		} else {
+			$data['base'] = HTTP_SERVER;
+		}
+
 		$data['description'] = $this->document->getDescription();
 		$data['keywords'] = $this->document->getKeywords();
-
-		// Hard coding css so they can be replaced via the event's system.
-		$data['bootstrap'] = 'view/stylesheet/bootstrap.css';
-		$data['icons'] = 'view/stylesheet/fonts/fontawesome/css/all.min.css';
-		$data['stylesheet'] = 'view/stylesheet/stylesheet.css';
-
-		// Hard coding scripts so they can be replaced via the event's system.
-		$data['jquery'] = 'view/javascript/jquery/jquery-3.7.1.min.js';
-
 		$data['links'] = $this->document->getLinks();
 		$data['styles'] = $this->document->getStyles();
 		$data['scripts'] = $this->document->getScripts();
+		$data['lang'] = $this->language->get('code');
+		$data['direction'] = $this->language->get('direction');
 
 		$this->load->language('common/header');
 
-		if (!isset($this->request->get['user_token']) || !isset($this->session->data['user_token']) || ($this->request->get['user_token'] != $this->session->data['user_token'])) {
-			$data['logged'] = false;
+		$data['heading_title'] = $this->language->get('heading_title');
 
-			$data['home'] = $this->url->link('common/login');
+		$data['text_order'] = $this->language->get('text_order');
+		$data['text_processing_status'] = $this->language->get('text_processing_status');
+		$data['text_complete_status'] = $this->language->get('text_complete_status');
+		$data['text_return'] = $this->language->get('text_return');
+		$data['text_customer'] = $this->language->get('text_customer');
+		$data['text_online'] = $this->language->get('text_online');
+		$data['text_approval'] = $this->language->get('text_approval');
+		$data['text_product'] = $this->language->get('text_product');
+		$data['text_stock'] = $this->language->get('text_stock');
+		$data['text_review'] = $this->language->get('text_review');
+		$data['text_affiliate'] = $this->language->get('text_affiliate');
+		$data['text_store'] = $this->language->get('text_store');
+		$data['text_front'] = $this->language->get('text_front');
+		$data['text_help'] = $this->language->get('text_help');
+		$data['text_homepage'] = $this->language->get('text_homepage');
+		$data['text_documentation'] = $this->language->get('text_documentation');
+		$data['text_support'] = $this->language->get('text_support');
+		$data['text_logged'] = sprintf($this->language->get('text_logged'), $this->user->getUserName());
+		$data['text_logout'] = $this->language->get('text_logout');
+
+		if (!isset($this->request->get['token']) || !isset($this->session->data['token']) || ($this->request->get['token'] != $this->session->data['token'])) {
+			$data['logged'] = '';
+
+			$data['home'] = $this->url->link('common/dashboard', '', true);
 		} else {
 			$data['logged'] = true;
 
-			$data['home'] = $this->url->link('common/dashboard', 'user_token=' . $this->session->data['user_token']);
+			$data['home'] = $this->url->link('common/dashboard', 'token=' . $this->session->data['token'], true);
+			$data['logout'] = $this->url->link('common/logout', 'token=' . $this->session->data['token'], true);
 
-			$data['language'] = $this->load->controller('common/language');
+			// Orders
+			$this->load->model('sale/order');
 
-			// Notifications
-			$filter_data = [
-				'start' => 0,
-				'limit' => 5
-			];
+			// Processing Orders
+			$data['processing_status_total'] = $this->model_sale_order->getTotalOrders(array('filter_order_status' => implode(',', $this->config->get('config_processing_status'))));
+			$data['processing_status'] = $this->url->link('sale/order', 'token=' . $this->session->data['token'] . '&filter_order_status=' . implode(',', $this->config->get('config_processing_status')), true);
 
-			$data['notifications'] = [];
+			// Complete Orders
+			$data['complete_status_total'] = $this->model_sale_order->getTotalOrders(array('filter_order_status' => implode(',', $this->config->get('config_complete_status'))));
+			$data['complete_status'] = $this->url->link('sale/order', 'token=' . $this->session->data['token'] . '&filter_order_status=' . implode(',', $this->config->get('config_complete_status')), true);
 
-			$this->load->model('tool/notification');
+			// Returns
+			$this->load->model('sale/return');
 
-			$results = $this->model_tool_notification->getNotifications($filter_data);
+			$return_total = $this->model_sale_return->getTotalReturns(array('filter_return_status_id' => $this->config->get('config_return_status_id')));
 
-			foreach ($results as $result) {
-				$data['notifications'][] = [
-					'title' => $result['title'],
-					'href'  => $this->url->link('tool/notification.info', 'user_token=' . $this->session->data['user_token'] . '&notification_id=' . $result['notification_id'])
-				];
-			}
+			$data['return_total'] = $return_total;
 
-			$data['notification_all'] = $this->url->link('tool/notification', 'user_token=' . $this->session->data['user_token']);
-			$data['notification_total'] = $this->model_tool_notification->getTotalNotifications(['filter_status' => 0]);
+			$data['return'] = $this->url->link('sale/return', 'token=' . $this->session->data['token'], true);
 
-			$data['profile'] = $this->url->link('user/profile', 'user_token=' . $this->session->data['user_token']);
+			// Customers
+			$this->load->model('report/customer');
 
-			// User
-			$this->load->model('user/user');
+			$data['online_total'] = $this->model_report_customer->getTotalCustomersOnline();
 
-			$user_info = $this->model_user_user->getUser($this->user->getId());
+			$data['online'] = $this->url->link('report/customer_online', 'token=' . $this->session->data['token'], true);
 
-			if ($user_info) {
-				$data['firstname'] = $user_info['firstname'];
-				$data['lastname'] = $user_info['lastname'];
-			} else {
-				$data['firstname'] = '';
-				$data['lastname'] = '';
-			}
+			$this->load->model('customer/customer');
 
-			// Image
-			$this->load->model('tool/image');
+			$customer_total = $this->model_customer_customer->getTotalCustomers(array('filter_approved' => false));
 
-			if ($user_info['image'] && is_file(DIR_IMAGE . html_entity_decode($user_info['image'], ENT_QUOTES, 'UTF-8'))) {
-				$data['image'] = $this->model_tool_image->resize($user_info['image'], 45, 45);
-			} else {
-				$data['image'] = $this->model_tool_image->resize('profile.png', 45, 45);
-			}
+			$data['customer_total'] = $customer_total;
+			$data['customer_approval'] = $this->url->link('customer/customer', 'token=' . $this->session->data['token'] . '&filter_approved=0', true);
 
-			// Store
-			$data['stores'] = [];
+			// Products
+			$this->load->model('catalog/product');
 
-			$data['stores'][] = [
+			$product_total = $this->model_catalog_product->getTotalProducts(array('filter_quantity' => 0));
+
+			$data['product_total'] = $product_total;
+
+			$data['product'] = $this->url->link('catalog/product', 'token=' . $this->session->data['token'] . '&filter_quantity=0', true);
+
+			// Reviews
+			$this->load->model('catalog/review');
+
+			$review_total = $this->model_catalog_review->getTotalReviews(array('filter_status' => 0));
+
+			$data['review_total'] = $review_total;
+
+			$data['review'] = $this->url->link('catalog/review', 'token=' . $this->session->data['token'] . '&filter_status=0', true);
+
+			// Affliate
+			$this->load->model('marketing/affiliate');
+
+			$affiliate_total = $this->model_marketing_affiliate->getTotalAffiliates(array('filter_approved' => false));
+
+			$data['affiliate_total'] = $affiliate_total;
+			$data['affiliate_approval'] = $this->url->link('marketing/affiliate', 'token=' . $this->session->data['token'] . '&filter_approved=1', true);
+
+			$data['alerts'] = $customer_total + $product_total + $review_total + $return_total + $affiliate_total;
+
+			// Online Stores
+			$data['stores'] = array();
+
+			$data['stores'][] = array(
 				'name' => $this->config->get('config_name'),
 				'href' => HTTP_CATALOG
-			];
+			);
 
 			$this->load->model('setting/store');
 
 			$results = $this->model_setting_store->getStores();
 
 			foreach ($results as $result) {
-				$data['stores'][] = [
+				$data['stores'][] = array(
 					'name' => $result['name'],
 					'href' => $result['url']
-				];
+				);
 			}
-
-			$data['logout'] = $this->url->link('common/logout', 'user_token=' . $this->session->data['user_token']);
 		}
 
 		return $this->load->view('common/header', $data);

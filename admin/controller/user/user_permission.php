@@ -1,92 +1,130 @@
 <?php
-namespace Opencart\Admin\Controller\User;
-/**
- * Class User Permission
- *
- * @package Opencart\Admin\Controller\User
- */
-class UserPermission extends \Opencart\System\Engine\Controller {
-	/**
-	 * Index
-	 *
-	 * @return void
-	 */
-	public function index(): void {
+class ControllerUserUserPermission extends Controller {
+	private $error = array();
+
+	public function index() {
 		$this->load->language('user/user_group');
 
 		$this->document->setTitle($this->language->get('heading_title'));
 
-		$url = '';
+		$this->load->model('user/user_group');
 
-		if (isset($this->request->get['sort'])) {
-			$url .= '&sort=' . $this->request->get['sort'];
-		}
-
-		if (isset($this->request->get['order'])) {
-			$url .= '&order=' . $this->request->get['order'];
-		}
-
-		if (isset($this->request->get['page'])) {
-			$url .= '&page=' . $this->request->get['page'];
-		}
-
-		$data['breadcrumbs'] = [];
-
-		$data['breadcrumbs'][] = [
-			'text' => $this->language->get('text_home'),
-			'href' => $this->url->link('common/dashboard', 'user_token=' . $this->session->data['user_token'])
-		];
-
-		$data['breadcrumbs'][] = [
-			'text' => $this->language->get('heading_title'),
-			'href' => $this->url->link('user/user_permission', 'user_token=' . $this->session->data['user_token'] . $url)
-		];
-
-		$data['add'] = $this->url->link('user/user_permission.form', 'user_token=' . $this->session->data['user_token'] . $url);
-		$data['delete'] = $this->url->link('user/user_permission.delete', 'user_token=' . $this->session->data['user_token']);
-
-		$data['list'] = $this->getList();
-
-		$data['user_token'] = $this->session->data['user_token'];
-
-		$data['header'] = $this->load->controller('common/header');
-		$data['column_left'] = $this->load->controller('common/column_left');
-		$data['footer'] = $this->load->controller('common/footer');
-
-		$this->response->setOutput($this->load->view('user/user_group', $data));
+		$this->getList();
 	}
 
-	/**
-	 * List
-	 *
-	 * @return void
-	 */
-	public function list(): void {
+	public function add() {
 		$this->load->language('user/user_group');
 
-		$this->response->setOutput($this->getList());
+		$this->document->setTitle($this->language->get('heading_title'));
+
+		$this->load->model('user/user_group');
+
+		if (($this->request->server['REQUEST_METHOD'] == 'POST') && $this->validateForm()) {
+			$this->model_user_user_group->addUserGroup($this->request->post);
+
+			$this->session->data['success'] = $this->language->get('text_success');
+
+			$url = '';
+
+			if (isset($this->request->get['sort'])) {
+				$url .= '&sort=' . $this->request->get['sort'];
+			}
+
+			if (isset($this->request->get['order'])) {
+				$url .= '&order=' . $this->request->get['order'];
+			}
+
+			if (isset($this->request->get['page'])) {
+				$url .= '&page=' . $this->request->get['page'];
+			}
+
+			$this->response->redirect($this->url->link('user/user_permission', 'token=' . $this->session->data['token'] . $url, true));
+		}
+
+		$this->getForm();
 	}
 
-	/**
-	 * Get List
-	 *
-	 * @return string
-	 */
-	public function getList(): string {
+	public function edit() {
+		$this->load->language('user/user_group');
+
+		$this->document->setTitle($this->language->get('heading_title'));
+
+		$this->load->model('user/user_group');
+
+		if (($this->request->server['REQUEST_METHOD'] == 'POST') && $this->validateForm()) {
+			$this->model_user_user_group->editUserGroup($this->request->get['user_group_id'], $this->request->post);
+
+			$this->session->data['success'] = $this->language->get('text_success');
+
+			$url = '';
+
+			if (isset($this->request->get['sort'])) {
+				$url .= '&sort=' . $this->request->get['sort'];
+			}
+
+			if (isset($this->request->get['order'])) {
+				$url .= '&order=' . $this->request->get['order'];
+			}
+
+			if (isset($this->request->get['page'])) {
+				$url .= '&page=' . $this->request->get['page'];
+			}
+
+			$this->response->redirect($this->url->link('user/user_permission', 'token=' . $this->session->data['token'] . $url, true));
+		}
+
+		$this->getForm();
+	}
+
+	public function delete() {
+		$this->load->language('user/user_group');
+
+		$this->document->setTitle($this->language->get('heading_title'));
+
+		$this->load->model('user/user_group');
+
+		if (isset($this->request->post['selected']) && $this->validateDelete()) {
+			foreach ($this->request->post['selected'] as $user_group_id) {
+				$this->model_user_user_group->deleteUserGroup($user_group_id);
+			}
+
+			$this->session->data['success'] = $this->language->get('text_success');
+
+			$url = '';
+
+			if (isset($this->request->get['sort'])) {
+				$url .= '&sort=' . $this->request->get['sort'];
+			}
+
+			if (isset($this->request->get['order'])) {
+				$url .= '&order=' . $this->request->get['order'];
+			}
+
+			if (isset($this->request->get['page'])) {
+				$url .= '&page=' . $this->request->get['page'];
+			}
+
+			$this->response->redirect($this->url->link('user/user_permission', 'token=' . $this->session->data['token'] . $url, true));
+		}
+
+		$this->getList();
+	}
+
+	protected function getList() {
 		if (isset($this->request->get['sort'])) {
-			$sort = (string)$this->request->get['sort'];
+			$sort = $this->request->get['sort'];
 		} else {
 			$sort = 'name';
 		}
 
 		if (isset($this->request->get['order'])) {
-			$order = (string)$this->request->get['order'];
+			$order = $this->request->get['order'];
 		} else {
 			$order = 'ASC';
 		}
 
 		if (isset($this->request->get['page'])) {
-			$page = (int)$this->request->get['page'];
+			$page = $this->request->get['page'];
 		} else {
 			$page = 1;
 		}
@@ -105,24 +143,73 @@ class UserPermission extends \Opencart\System\Engine\Controller {
 			$url .= '&page=' . $this->request->get['page'];
 		}
 
-		$data['action'] = $this->url->link('user/user_permission.list', 'user_token=' . $this->session->data['user_token'] . $url);
+		$data['breadcrumbs'] = array();
 
-		// User Group
-		$data['user_groups'] = [];
+		$data['breadcrumbs'][] = array(
+			'text' => $this->language->get('text_home'),
+			'href' => $this->url->link('common/dashboard', 'token=' . $this->session->data['token'], true)
+		);
 
-		$filter_data = [
+		$data['breadcrumbs'][] = array(
+			'text' => $this->language->get('heading_title'),
+			'href' => $this->url->link('user/user_permission', 'token=' . $this->session->data['token'] . $url, true)
+		);
+
+		$data['add'] = $this->url->link('user/user_permission/add', 'token=' . $this->session->data['token'] . $url, true);
+		$data['delete'] = $this->url->link('user/user_permission/delete', 'token=' . $this->session->data['token'] . $url, true);
+
+		$data['user_groups'] = array();
+
+		$filter_data = array(
 			'sort'  => $sort,
 			'order' => $order,
-			'start' => ($page - 1) * $this->config->get('config_pagination_admin'),
-			'limit' => $this->config->get('config_pagination_admin')
-		];
+			'start' => ($page - 1) * $this->config->get('config_limit_admin'),
+			'limit' => $this->config->get('config_limit_admin')
+		);
 
-		$this->load->model('user/user_group');
+		$user_group_total = $this->model_user_user_group->getTotalUserGroups();
 
 		$results = $this->model_user_user_group->getUserGroups($filter_data);
 
 		foreach ($results as $result) {
-			$data['user_groups'][] = ['edit' => $this->url->link('user/user_permission.form', 'user_token=' . $this->session->data['user_token'] . '&user_group_id=' . $result['user_group_id'] . $url)] + $result;
+			$data['user_groups'][] = array(
+				'user_group_id' => $result['user_group_id'],
+				'name'          => $result['name'],
+				'edit'          => $this->url->link('user/user_permission/edit', 'token=' . $this->session->data['token'] . '&user_group_id=' . $result['user_group_id'] . $url, true)
+			);
+		}
+
+		$data['heading_title'] = $this->language->get('heading_title');
+		
+		$data['text_list'] = $this->language->get('text_list');
+		$data['text_no_results'] = $this->language->get('text_no_results');
+		$data['text_confirm'] = $this->language->get('text_confirm');
+
+		$data['column_name'] = $this->language->get('column_name');
+		$data['column_action'] = $this->language->get('column_action');
+
+		$data['button_add'] = $this->language->get('button_add');
+		$data['button_edit'] = $this->language->get('button_edit');
+		$data['button_delete'] = $this->language->get('button_delete');
+
+		if (isset($this->error['warning'])) {
+			$data['error_warning'] = $this->error['warning'];
+		} else {
+			$data['error_warning'] = '';
+		}
+
+		if (isset($this->session->data['success'])) {
+			$data['success'] = $this->session->data['success'];
+
+			unset($this->session->data['success']);
+		} else {
+			$data['success'] = '';
+		}
+
+		if (isset($this->request->post['selected'])) {
+			$data['selected'] = (array)$this->request->post['selected'];
+		} else {
+			$data['selected'] = array();
 		}
 
 		$url = '';
@@ -133,7 +220,11 @@ class UserPermission extends \Opencart\System\Engine\Controller {
 			$url .= '&order=ASC';
 		}
 
-		$data['sort_name'] = $this->url->link('user/user_permission.list', 'user_token=' . $this->session->data['user_token'] . '&sort=name' . $url);
+		if (isset($this->request->get['page'])) {
+			$url .= '&page=' . $this->request->get['page'];
+		}
+
+		$data['sort_name'] = $this->url->link('user/user_permission', 'token=' . $this->session->data['token'] . '&sort=name' . $url, true);
 
 		$url = '';
 
@@ -145,34 +236,51 @@ class UserPermission extends \Opencart\System\Engine\Controller {
 			$url .= '&order=' . $this->request->get['order'];
 		}
 
-		$user_group_total = $this->model_user_user_group->getTotalUserGroups();
+		$pagination = new Pagination();
+		$pagination->total = $user_group_total;
+		$pagination->page = $page;
+		$pagination->limit = $this->config->get('config_limit_admin');
+		$pagination->url = $this->url->link('user/user_permission', 'token=' . $this->session->data['token'] . $url . '&page={page}', true);
 
-		$data['pagination'] = $this->load->controller('common/pagination', [
-			'total' => $user_group_total,
-			'page'  => $page,
-			'limit' => $this->config->get('config_pagination_admin'),
-			'url'   => $this->url->link('user/user_permission.list', 'user_token=' . $this->session->data['user_token'] . $url . '&page={page}')
-		]);
+		$data['pagination'] = $pagination->render();
 
-		$data['results'] = sprintf($this->language->get('text_pagination'), ($user_group_total) ? (($page - 1) * $this->config->get('config_pagination_admin')) + 1 : 0, ((($page - 1) * $this->config->get('config_pagination_admin')) > ($user_group_total - $this->config->get('config_pagination_admin'))) ? $user_group_total : ((($page - 1) * $this->config->get('config_pagination_admin')) + $this->config->get('config_pagination_admin')), $user_group_total, ceil($user_group_total / $this->config->get('config_pagination_admin')));
+		$data['results'] = sprintf($this->language->get('text_pagination'), ($user_group_total) ? (($page - 1) * $this->config->get('config_limit_admin')) + 1 : 0, ((($page - 1) * $this->config->get('config_limit_admin')) > ($user_group_total - $this->config->get('config_limit_admin'))) ? $user_group_total : ((($page - 1) * $this->config->get('config_limit_admin')) + $this->config->get('config_limit_admin')), $user_group_total, ceil($user_group_total / $this->config->get('config_limit_admin')));
 
 		$data['sort'] = $sort;
 		$data['order'] = $order;
 
-		return $this->load->view('user/user_group_list', $data);
+		$data['header'] = $this->load->controller('common/header');
+		$data['column_left'] = $this->load->controller('common/column_left');
+		$data['footer'] = $this->load->controller('common/footer');
+
+		$this->response->setOutput($this->load->view('user/user_group_list', $data));
 	}
 
-	/**
-	 * Form
-	 *
-	 * @return void
-	 */
-	public function form(): void {
-		$this->load->language('user/user_group');
-
-		$this->document->setTitle($this->language->get('heading_title'));
-
+	protected function getForm() {
+		$data['heading_title'] = $this->language->get('heading_title');
+		
 		$data['text_form'] = !isset($this->request->get['user_group_id']) ? $this->language->get('text_add') : $this->language->get('text_edit');
+		$data['text_select_all'] = $this->language->get('text_select_all');
+		$data['text_unselect_all'] = $this->language->get('text_unselect_all');
+
+		$data['entry_name'] = $this->language->get('entry_name');
+		$data['entry_access'] = $this->language->get('entry_access');
+		$data['entry_modify'] = $this->language->get('entry_modify');
+
+		$data['button_save'] = $this->language->get('button_save');
+		$data['button_cancel'] = $this->language->get('button_cancel');
+
+		if (isset($this->error['warning'])) {
+			$data['error_warning'] = $this->error['warning'];
+		} else {
+			$data['error_warning'] = '';
+		}
+
+		if (isset($this->error['name'])) {
+			$data['error_name'] = $this->error['name'];
+		} else {
+			$data['error_name'] = '';
+		}
 
 		$url = '';
 
@@ -188,90 +296,70 @@ class UserPermission extends \Opencart\System\Engine\Controller {
 			$url .= '&page=' . $this->request->get['page'];
 		}
 
-		$data['breadcrumbs'] = [];
+		$data['breadcrumbs'] = array();
 
-		$data['breadcrumbs'][] = [
+		$data['breadcrumbs'][] = array(
 			'text' => $this->language->get('text_home'),
-			'href' => $this->url->link('common/dashboard', 'user_token=' . $this->session->data['user_token'])
-		];
+			'href' => $this->url->link('common/dashboard', 'token=' . $this->session->data['token'], true)
+		);
 
-		$data['breadcrumbs'][] = [
+		$data['breadcrumbs'][] = array(
 			'text' => $this->language->get('heading_title'),
-			'href' => $this->url->link('user/user_permission', 'user_token=' . $this->session->data['user_token'] . $url)
-		];
+			'href' => $this->url->link('user/user_permission', 'token=' . $this->session->data['token'] . $url, true)
+		);
 
-		$data['save'] = $this->url->link('user/user_permission.save', 'user_token=' . $this->session->data['user_token']);
-		$data['back'] = $this->url->link('user/user_permission', 'user_token=' . $this->session->data['user_token'] . $url);
-
-		if (isset($this->request->get['user_group_id'])) {
-			$this->load->model('user/user_group');
-
-			$user_group_info = $this->model_user_user_group->getUserGroup((int)$this->request->get['user_group_id']);
-		}
-
-		if (!empty($user_group_info)) {
-			$data['user_group_id'] = $user_group_info['user_group_id'];
+		if (!isset($this->request->get['user_group_id'])) {
+			$data['action'] = $this->url->link('user/user_permission/add', 'token=' . $this->session->data['token'] . $url, true);
 		} else {
-			$data['user_group_id'] = 0;
+			$data['action'] = $this->url->link('user/user_permission/edit', 'token=' . $this->session->data['token'] . '&user_group_id=' . $this->request->get['user_group_id'] . $url, true);
 		}
 
-		if (!empty($user_group_info)) {
+		$data['cancel'] = $this->url->link('user/user_permission', 'token=' . $this->session->data['token'] . $url, true);
+
+		if (isset($this->request->get['user_group_id']) && $this->request->server['REQUEST_METHOD'] != 'POST') {
+			$user_group_info = $this->model_user_user_group->getUserGroup($this->request->get['user_group_id']);
+		}
+
+		if (isset($this->request->post['name'])) {
+			$data['name'] = $this->request->post['name'];
+		} elseif (!empty($user_group_info)) {
 			$data['name'] = $user_group_info['name'];
 		} else {
 			$data['name'] = '';
 		}
 
-		// Routes to ignore
-		$ignore = [
+		$ignore = array(
 			'common/dashboard',
 			'common/startup',
 			'common/login',
 			'common/logout',
 			'common/forgotten',
-			'common/authorize',
+			'common/reset',			
 			'common/footer',
 			'common/header',
-			'common/column_left',
-			'common/language',
-			'common/pagination',
 			'error/not_found',
-			'error/permission',
-			'event/currency',
-			'event/debug',
-			'event/language',
-			'event/statistics',
-			'startup/application',
-			'startup/authorize',
-			'startup/error',
-			'startup/event',
-			'startup/extension',
-			'startup/language',
-			'startup/login',
-			'startup/notification',
-			'startup/permission',
-			'startup/sass',
-			'startup/session',
-			'startup/setting',
-			'startup/startup'
-		];
+			'error/permission'
+		);
 
-		$files = [];
+		$data['permissions'] = array();
+
+		$files = array();
 
 		// Make path into an array
-		$path = [DIR_APPLICATION . 'controller/*'];
+		$path = array(DIR_APPLICATION . 'controller/*');
 
 		// While the path array is still populated keep looping through
 		while (count($path) != 0) {
 			$next = array_shift($path);
 
-			foreach (glob($next . '/*') as $file) {
+			foreach (glob($next) as $file) {
 				// If directory add to path array
 				if (is_dir($file)) {
-					$path[] = $file;
+					$path[] = $file . '/*';
 				}
 
 				// Add the file to the files to be deleted array
-				if (is_file($file) && substr($file, strrpos($file, '.')) == '.php') {
+				if (is_file($file)) {
 					$files[] = $file;
 				}
 			}
@@ -279,9 +367,7 @@ class UserPermission extends \Opencart\System\Engine\Controller {
 
 		// Sort the file array
 		sort($files);
-
-		$data['permissions'] = [];
-
+					
 		foreach ($files as $file) {
 			$controller = substr($file, strlen(DIR_APPLICATION . 'controller/'));
 
@@ -292,30 +378,21 @@ class UserPermission extends \Opencart\System\Engine\Controller {
 			}
 		}
 
-		$data['extensions'] = [];
-
-		// Extension permissions
-		$results = glob(DIR_EXTENSION . '*/admin/controller/*/*.php');
-
-		foreach ($results as $result) {
-			$path = substr($result, strlen(DIR_EXTENSION));
-
-			$data['extensions'][] = 'extension/' . str_replace('admin/controller/', '', substr($path, 0, strrpos($path, '.')));
-		}
-
-		if (isset($user_group_info['permission']['access'])) {
+		if (isset($this->request->post['permission']['access'])) {
+			$data['access'] = $this->request->post['permission']['access'];
+		} elseif (isset($user_group_info['permission']['access'])) {
 			$data['access'] = $user_group_info['permission']['access'];
 		} else {
-			$data['access'] = [];
+			$data['access'] = array();
 		}
 
-		if (isset($user_group_info['permission']['modify'])) {
+		if (isset($this->request->post['permission']['modify'])) {
+			$data['modify'] = $this->request->post['permission']['modify'];
+		} elseif (isset($user_group_info['permission']['modify'])) {
 			$data['modify'] = $user_group_info['permission']['modify'];
 		} else {
-			$data['modify'] = [];
+			$data['modify'] = array();
 		}
-
-		$data['user_token'] = $this->session->data['user_token'];
 
 		$data['header'] = $this->load->controller('common/header');
 		$data['column_left'] = $this->load->controller('common/column_left');
@@ -324,90 +401,33 @@ class UserPermission extends \Opencart\System\Engine\Controller {
 		$this->response->setOutput($this->load->view('user/user_group_form', $data));
 	}
 
-	/**
-	 * Save
-	 *
-	 * @return void
-	 */
-	public function save(): void {
-		$this->load->language('user/user_group');
-
-		$json = [];
-
+	protected function validateForm() {
 		if (!$this->user->hasPermission('modify', 'user/user_permission')) {
-			$json['error']['warning'] = $this->language->get('error_permission');
+			$this->error['warning'] = $this->language->get('error_permission');
 		}
 
-		$required = [
-			'user_group_id' => 0,
-			'name'          => '',
-			'permission'    => [],
-			'sort_order'    => 0
-		];
-
-		$post_info = $this->request->post + $required;
-
-		if (!oc_validate_length($post_info['name'], 3, 64)) {
-			$json['error']['name'] = $this->language->get('error_name');
+		if ((utf8_strlen($this->request->post['name']) < 3) || (utf8_strlen($this->request->post['name']) > 64)) {
+			$this->error['name'] = $this->language->get('error_name');
 		}
 
-		if (!$json) {
-			$this->load->model('user/user_group');
-
-			if (!$post_info['user_group_id']) {
-				$json['user_group_id'] = $this->model_user_user_group->addUserGroup($post_info);
-			} else {
-				$this->model_user_user_group->editUserGroup((int)$post_info['user_group_id'], $post_info);
-			}
-
-			$json['success'] = $this->language->get('text_success');
-		}
-
-		$this->response->addHeader('Content-Type: application/json');
-		$this->response->setOutput(json_encode($json));
+		return !$this->error;
 	}
 
-	/**
-	 * Delete
-	 *
-	 * @return void
-	 */
-	public function delete(): void {
-		$this->load->language('user/user_group');
-
-		$json = [];
-
-		if (isset($this->request->post['selected'])) {
-			$selected = (array)$this->request->post['selected'];
-		} else {
-			$selected = [];
-		}
-
+	protected function validateDelete() {
 		if (!$this->user->hasPermission('modify', 'user/user_permission')) {
-			$json['error'] = $this->language->get('error_permission');
+			$this->error['warning'] = $this->language->get('error_permission');
 		}
 
 		$this->load->model('user/user');
 
-		foreach ($selected as $user_group_id) {
+		foreach ($this->request->post['selected'] as $user_group_id) {
 			$user_total = $this->model_user_user->getTotalUsersByGroupId($user_group_id);
 
 			if ($user_total) {
-				$json['error'] = sprintf($this->language->get('error_user'), $user_total);
+				$this->error['warning'] = sprintf($this->language->get('error_user'), $user_total);
 			}
 		}
 
-		if (!$json) {
-			$this->load->model('user/user_group');
-
-			foreach ($selected as $user_group_id) {
-				$this->model_user_user_group->deleteUserGroup($user_group_id);
-			}
-
-			$json['success'] = $this->language->get('text_success');
-		}
-
-		$this->response->addHeader('Content-Type: application/json');
-		$this->response->setOutput(json_encode($json));
+		return !$this->error;
 	}
 }

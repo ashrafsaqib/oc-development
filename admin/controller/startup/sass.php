@@ -1,47 +1,25 @@
 <?php
-namespace Opencart\Admin\Controller\Startup;
-/**
- * Class Sass
- *
- * @package Opencart\Admin\Controller\Startup
- */
-class Sass extends \Opencart\System\Engine\Controller {
-	/**
-	 * Index
-	 *
-	 * @throws \Exception\ScssPhp\ScssPhp\Exception\SassException
-	 *
-	 * @return void
-	 */
-	public function index(): void {
-		$files = glob(DIR_APPLICATION . 'view/stylesheet/*.scss');
+class ControllerStartupSass extends Controller {
+	public function index() {
+		$file = DIR_APPLICATION . 'view/stylesheet/bootstrap.css';
 
-		if ($files) {
-			foreach ($files as $file) {
-				// Get the filename
-				$filename = basename($file, '.scss');
+		if (!is_file($file)) {
+			$scss = new Scssc();
+			$scss->setImportPaths(DIR_APPLICATION . 'view/stylesheet/sass/');
 
-				$stylesheet = DIR_APPLICATION . 'view/stylesheet/' . $filename . '.css';
+			$output = $scss->compile('@import "_bootstrap.scss"');
 
-				if (!is_file($stylesheet) || !$this->config->get('developer_sass')) {
-					$scss = new \ScssPhp\ScssPhp\Compiler();
-					$scss->setImportPaths(DIR_APPLICATION . 'view/stylesheet/');
+			$handle = fopen($file, 'w');
 
-					$output = $scss->compileString('@import "' . $filename . '.scss"')->getCss();
+			flock($handle, LOCK_EX);
 
-					$handle = fopen($stylesheet, 'w');
+			fwrite($handle, $output);
 
-					flock($handle, LOCK_EX);
+			fflush($handle);
 
-					fwrite($handle, $output);
+			flock($handle, LOCK_UN);
 
-					fflush($handle);
-
-					flock($handle, LOCK_UN);
-
-					fclose($handle);
-				}
-			}
+			fclose($handle);
 		}
 	}
 }

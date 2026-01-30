@@ -10,6 +10,7 @@ $_['text_price']        = 'Price';
 $_['text_model']        = 'Model';
 $_['text_manufacturer'] = 'Brand';
 $_['text_availability'] = 'Availability';
+$_['text_instock']      = 'In Stock';
 $_['text_rating']       = 'Rating';
 $_['text_reviews']      = 'Based on %s reviews.';
 $_['text_summary']      = 'Summary';
@@ -18,7 +19,4 @@ $_['text_dimension']    = 'Dimensions (L x W x H)';
 $_['text_compare']      = 'Product Compare (%s)';
 $_['text_success']      = 'Success: You have added <a href="%s">%s</a> to your <a href="%s">product comparison</a>!';
 $_['text_remove']       = 'Success: You have modified your product comparison!';
-$_['text_no_results']   = 'You have not chosen any products to compare.';
-
-// Error
-$_['error_product']     = 'Warning: Product could not be found!';
+$_['text_empty']        = 'You have not chosen any products to compare.';
