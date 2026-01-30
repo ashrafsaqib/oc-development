@@ -1,0 +1,19 @@
+{% if currencies|length > 1 %}
+  <form id="form-currency" action="{{ action }}" method="post" class="form-inline">
+    <div class="dropdown">
+      <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+        <i class="fa fa-globe"></i>
+        <span class="currency-text">
+          {% if symbol_left %}<strong>{{ symbol_left }}</strong>{% elseif symbol_right %}<strong>{{ symbol_right }}</strong>{% endif %} {{ code }}
+        </span>
+      </a>
+      <ul class="dropdown-menu">
+        {% for currency in currencies %}
+          <li><a href="#" onclick="$('#form-currency input[name=code]').val('{{ currency.code }}'); $('#form-currency').submit(); return false;">{{ currency.code }} - {{ currency.title }}</a></li>
+        {% endfor %}
+      </ul>
+    </div>
+    <input type="hidden" name="code" value=""/>
+    <input type="hidden" name="redirect" value="{{ redirect }}"/>
+  </form>
+{% endif %}

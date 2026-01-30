@@ -56,6 +56,10 @@ class ControllerCommonHeader extends Controller {
 
 		$data['text_logged'] = sprintf($this->language->get('text_logged'), $this->url->link('account/account', '', true), $this->customer->getFirstName(), $this->url->link('account/logout', '', true));
 		
+		// Custom Language Variables
+		$data['text_search_header'] = $this->language->get('text_search_header');
+		$data['text_toggle_nav'] = $this->language->get('text_toggle_nav');
+
 		$data['home'] = $this->url->link('common/home');
 		$data['wishlist'] = $this->url->link('account/wishlist', '', true);
 		$data['logged'] = $this->customer->isLogged();
@@ -76,6 +80,35 @@ class ControllerCommonHeader extends Controller {
 		$data['search'] = $this->load->controller('common/search');
 		$data['cart'] = $this->load->controller('common/cart');
 		$data['menu'] = $this->load->controller('common/menu');
+
+		// Add theme header text setting to header data
+		if ($this->config->get('theme_oc_ultra_header_text')) {
+			$data['theme_header_text'] = html_entity_decode($this->config->get('theme_oc_ultra_header_text'), ENT_QUOTES, 'UTF-8');
+		} else {
+			$data['theme_header_text'] = 'Free shipping on orders over $100 | Use code WELCOME10 for 10% off';
+		}
+
+		// Add custom CSS
+		if ($this->config->get('theme_oc_ultra_custom_css')) {
+			$data['custom_css'] = $this->config->get('theme_oc_ultra_custom_css');
+		}
+		
+		// Add dynamic header color
+		$color_preset = $this->config->get('theme_oc_ultra_header_color_preset') ? $this->config->get('theme_oc_ultra_header_color_preset') : 'jade';
+		
+		$preset_colors = [
+			'jade' => '#86a88d',
+			'slate' => '#545A62',
+			'midnight' => '#2C3E50',
+			'sage' => '#606C5D',
+			'charcoal' => '#333333'
+		];
+		
+		if ($color_preset === 'custom') {
+			$data['header_bg_color'] = $this->config->get('theme_oc_ultra_header_color_custom') ? $this->config->get('theme_oc_ultra_header_color_custom') : '#86a88d';
+		} else {
+			$data['header_bg_color'] = isset($preset_colors[$color_preset]) ? $preset_colors[$color_preset] : '#86a88d';
+		}
 
 		return $this->load->view('common/header', $data);
 	}

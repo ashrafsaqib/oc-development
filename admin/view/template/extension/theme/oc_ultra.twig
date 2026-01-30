@@ -1,0 +1,1217 @@
+{{ header }}{{ column_left }}
+<div id="content">
+  <div class="page-header">
+    <div class="container-fluid">
+      <div class="pull-right">
+        <a href="{{ newsletter_entries }}" data-toggle="tooltip" title="View Newsletter Entries" class="btn btn-info"><i class="fa fa-envelope"></i> Newsletter Entries</a>
+        <button type="submit" form="form-theme" data-toggle="tooltip" title="{{ button_save }}" class="btn btn-primary"><i class="fa fa-save"></i></button>
+        <a href="{{ back }}" data-toggle="tooltip" title="{{ button_cancel }}" class="btn btn-default"><i class="fa fa-reply"></i></a>
+      </div>
+      <h1>{{ heading_title }}</h1>
+      <ul class="breadcrumb">
+        {% for breadcrumb in breadcrumbs %}
+        <li><a href="{{ breadcrumb.href }}">{{ breadcrumb.text }}</a></li>
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
+  <div class="container-fluid">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title"><i class="fa fa-pencil"></i> {{ text_edit }}</h3>
+      </div>
+      <div class="panel-body">
+        <ul class="nav nav-tabs">
+          {% for language in languages %}
+          <li{% if language.language_id == active_language_id %} class="active"{% endif %}><a href="{{ language.url }}"><img src="language/{{ language.code }}/{{ language.code }}.png" title="{{ language.name }}" /> {{ language.name }}</a></li>
+          {% endfor %}
+        </ul>
+        <form action="{{ action }}" method="post" enctype="multipart/form-data" id="form-theme" class="form-horizontal">
+          
+          <div class="form-group">
+            <label class="col-sm-2 control-label" for="input-status">{{ entry_status }}</label>
+            <div class="col-sm-10">
+              <select name="theme_oc_ultra_status" id="input-status" class="form-control">
+                <option value="1" {% if theme_oc_ultra_status %}selected="selected"{% endif %}>{{ text_enabled }}</option>
+                <option value="0" {% if not theme_oc_ultra_status %}selected="selected"{% endif %}>{{ text_disabled }}</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="panel-group" id="accordion">
+            
+            <!-- Header Configuration -->
+            <div class="panel panel-default">
+              <div class="panel-heading" style="cursor: pointer;" data-toggle="collapse" data-parent="#accordion" data-target="#collapse-header-config">
+                <h4 class="panel-title">
+                  <i class="fa fa-cog"></i> Header Configuration
+                  <i class="fa fa-chevron-down pull-right"></i>
+                </h4>
+              </div>
+              <div id="collapse-header-config" class="panel-collapse collapse">
+                <div class="panel-body">
+                  <div class="form-group">
+                    <label class="col-sm-2 control-label" for="input-header-text">{{ entry_header_text }}</label>
+                    <div class="col-sm-10">
+                      <input type="text" name="theme_oc_ultra_header_text" value="{{ theme_oc_ultra_header_text }}" placeholder="{{ entry_header_text }}" id="input-header-text" class="form-control" />
+                      {% if error_header_text %}
+                      <div class="text-danger">{{ error_header_text }}</div>
+                      {% endif %}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Featured Categories -->
+            <div class="panel panel-default">
+              <div class="panel-heading" style="cursor: pointer;" data-toggle="collapse" data-parent="#accordion" data-target="#collapse-featured-categories">
+                <h4 class="panel-title">
+                  <i class="fa fa-th-large"></i> {{ entry_featured_categories }}
+                  <i class="fa fa-chevron-down pull-right"></i>
+                </h4>
+              </div>
+              <div id="collapse-featured-categories" class="panel-collapse collapse">
+                <div class="panel-body">
+                  <div class="form-group">
+                    <label class="col-sm-2 control-label" for="input-featured-categories-status">Enable Section</label>
+                    <div class="col-sm-10">
+                      <select name="theme_oc_ultra_featured_categories_status" id="input-featured-categories-status" class="form-control">
+                        <option value="1" {% if theme_oc_ultra_featured_categories_status %}selected="selected"{% endif %}>{{ text_enabled }}</option>
+                        <option value="0" {% if not theme_oc_ultra_featured_categories_status %}selected="selected"{% endif %}>{{ text_disabled }}</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <hr />
+
+                  <div class="form-group">
+                    <label class="col-sm-2 control-label" for="input-featured-category">{{ entry_category }}</label>
+                    <div class="col-sm-10">
+                      <input type="text" name="category" value="" placeholder="{{ entry_category }}" id="input-featured-category" class="form-control" />
+                    </div>
+                  </div>
+
+                  <div class="table-responsive">
+                    <table id="featured-category-table" class="table table-bordered table-hover">
+                      <thead>
+                        <tr>
+                          <th>{{ entry_category_name }}</th>
+                          <th>{{ entry_image }}</th>
+                          <th>{{ entry_width }}</th>
+                          <th class="text-right">{{ button_remove }}</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {% set category_row = 0 %}
+                        {% for featured_category in theme_oc_ultra_featured_categories %}
+                        <tr id="featured-category-row-{{ category_row }}">
+                          <td>
+                            {{ featured_category.name }}
+                            <input type="hidden" name="theme_oc_ultra_featured_category[{{ category_row }}][category_id]" value="{{ featured_category.category_id }}" />
+                            <input type="hidden" name="theme_oc_ultra_featured_category[{{ category_row }}][name]" value="{{ featured_category.name }}" />
+                          </td>
+                          <td>
+                            <a href="" id="thumb-featured-category-image-{{ category_row }}" data-toggle="image" class="img-thumbnail"><img src="{{ featured_category.thumb }}" alt="" title="" data-placeholder="{{ placeholder }}" /></a>
+                            <input type="hidden" name="theme_oc_ultra_featured_category[{{ category_row }}][image]" value="{{ featured_category.image }}" id="input-featured-category-image-{{ category_row }}" />
+                          </td>
+                          <td>
+                            <input type="number" name="theme_oc_ultra_featured_category[{{ category_row }}][width]" value="{{ featured_category.width }}" placeholder="{{ entry_width }}" min="1" max="12" class="form-control" />
+                          </td>
+                          <td class="text-right">
+                            <button type="button" class="btn btn-danger btn-remove-category"><i class="fa fa-minus-circle"></i></button>
+                          </td>
+                        </tr>
+                        {% set category_row = category_row + 1 %}
+                        {% endfor %}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- FAQ Section -->
+            <div class="panel panel-default">
+              <div class="panel-heading" style="cursor: pointer;" data-toggle="collapse" data-parent="#accordion" data-target="#collapse-faq">
+                <h4 class="panel-title">
+                  <i class="fa fa-question-circle"></i> {{ entry_faq_section }}
+                  <i class="fa fa-chevron-down pull-right"></i>
+                </h4>
+              </div>
+              <div id="collapse-faq" class="panel-collapse collapse">
+                <div class="panel-body">
+                  <div class="form-group">
+                    <label class="col-sm-2 control-label" for="input-faq-status">Enable Section</label>
+                    <div class="col-sm-10">
+                      <select name="theme_oc_ultra_faq_status" id="input-faq-status" class="form-control">
+                        <option value="1" {% if theme_oc_ultra_faq_status %}selected="selected"{% endif %}>{{ text_enabled }}</option>
+                        <option value="0" {% if not theme_oc_ultra_faq_status %}selected="selected"{% endif %}>{{ text_disabled }}</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <hr />
+
+                  <div class="form-group">
+                    <label class="col-sm-2 control-label" for="input-faq-heading">{{ entry_faq_heading }}</label>
+                    <div class="col-sm-10">
+                      <input type="text" name="theme_oc_ultra_faq_heading" value="{{ theme_oc_ultra_faq_heading }}" placeholder="{{ entry_faq_heading }}" id="input-faq-heading" class="form-control" />
+                    </div>
+                  </div>
+
+                  <div class="form-group">
+                    <label class="col-sm-2 control-label" for="input-faq-description">{{ entry_faq_description }}</label>
+                    <div class="col-sm-10">
+                      <textarea name="theme_oc_ultra_faq_description" placeholder="{{ entry_faq_description }}" id="input-faq-description" rows="3" class="form-control">{{ theme_oc_ultra_faq_description }}</textarea>
+                    </div>
+                  </div>
+
+                  <div class="form-group">
+                    <label class="col-sm-2 control-label" for="input-faq-support-text">{{ entry_faq_support_text }}</label>
+                    <div class="col-sm-10">
+                      <input type="text" name="theme_oc_ultra_faq_support_text" value="{{ theme_oc_ultra_faq_support_text }}" placeholder="{{ entry_faq_support_text }}" id="input-faq-support-text" class="form-control" />
+                    </div>
+                  </div>
+
+                  <div class="form-group">
+                    <label class="col-sm-2 control-label" for="input-faq-support-hours">{{ entry_faq_support_hours }}</label>
+                    <div class="col-sm-10">
+                      <input type="text" name="theme_oc_ultra_faq_support_hours" value="{{ theme_oc_ultra_faq_support_hours }}" placeholder="{{ entry_faq_support_hours }}" id="input-faq-support-hours" class="form-control" />
+                    </div>
+                  </div>
+
+                  <hr />
+
+                  <div class="table-responsive">
+                    <table id="faq-table" class="table table-bordered table-hover">
+                      <thead>
+                        <tr>
+                          <th>{{ entry_question }}</th>
+                          <th>{{ entry_answer }}</th>
+                          <th class="text-right">{{ button_remove }}</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {% set faq_row = 0 %}
+                        {% for faq in theme_oc_ultra_faqs %}
+                        <tr id="faq-row-{{ faq_row }}">
+                          <td>
+                            <input type="text" name="theme_oc_ultra_faq[{{ faq_row }}][question]" value="{{ faq.question }}" placeholder="{{ entry_question }}" class="form-control" />
+                          </td>
+                          <td>
+                            <textarea name="theme_oc_ultra_faq[{{ faq_row }}][answer]" placeholder="{{ entry_answer }}" rows="2" class="form-control">{{ faq.answer }}</textarea>
+                          </td>
+                          <td class="text-right">
+                            <button type="button" class="btn btn-danger btn-remove-faq"><i class="fa fa-minus-circle"></i></button>
+                          </td>
+                        </tr>
+                        {% set faq_row = faq_row + 1 %}
+                        {% endfor %}
+                      </tbody>
+                      <tfoot>
+                        <tr>
+                          <td colspan="2"></td>
+                          <td class="text-right">
+                            <button type="button" id="button-add-faq" class="btn btn-primary"><i class="fa fa-plus-circle"></i> {{ button_add_faq }}</button>
+                          </td>
+                        </tr>
+                      </tfoot>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Testimonials Section -->
+            <div class="panel panel-default">
+              <div class="panel-heading" style="cursor: pointer;" data-toggle="collapse" data-parent="#accordion" data-target="#collapse-testimonials">
+                <h4 class="panel-title">
+                  <i class="fa fa-star"></i> {{ entry_testimonials_section }}
+                  <i class="fa fa-chevron-down pull-right"></i>
+                </h4>
+              </div>
+              <div id="collapse-testimonials" class="panel-collapse collapse">
+                <div class="panel-body">
+                  <div class="form-group">
+                    <label class="col-sm-2 control-label" for="input-testimonials-status">Enable Section</label>
+                    <div class="col-sm-10">
+                      <select name="theme_oc_ultra_testimonials_status" id="input-testimonials-status" class="form-control">
+                        <option value="1" {% if theme_oc_ultra_testimonials_status %}selected="selected"{% endif %}>{{ text_enabled }}</option>
+                        <option value="0" {% if not theme_oc_ultra_testimonials_status %}selected="selected"{% endif %}>{{ text_disabled }}</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <hr />
+
+                  <div class="form-group">
+                    <label class="col-sm-2 control-label" for="input-testimonials-heading">{{ entry_testimonials_heading }}</label>
+                    <div class="col-sm-10">
+                      <input type="text" name="theme_oc_ultra_testimonials_heading" value="{{ theme_oc_ultra_testimonials_heading }}" placeholder="{{ entry_testimonials_heading }}" id="input-testimonials-heading" class="form-control" />
+                    </div>
+                  </div>
+
+                  <hr />
+
+                  <div class="table-responsive">
+                    <table id="testimonials-table" class="table table-bordered table-hover">
+                      <thead>
+                        <tr>
+                          <th>{{ entry_customer_name }}</th>
+                          <th>{{ entry_customer_location }}</th>
+                          <th>{{ entry_customer_image }}</th>
+                          <th>{{ entry_rating }}</th>
+                          <th>{{ entry_testimonial_text }}</th>
+                          <th class="text-right">{{ button_remove }}</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {% set testimonial_row = 0 %}
+                        {% for testimonial in theme_oc_ultra_testimonials %}
+                        <tr id="testimonial-row-{{ testimonial_row }}">
+                          <td>
+                            <input type="text" name="theme_oc_ultra_testimonial[{{ testimonial_row }}][name]" value="{{ testimonial.name }}" placeholder="{{ entry_customer_name }}" class="form-control" />
+                          </td>
+                          <td>
+                            <input type="text" name="theme_oc_ultra_testimonial[{{ testimonial_row }}][location]" value="{{ testimonial.location }}" placeholder="{{ entry_customer_location }}" class="form-control" />
+                          </td>
+                          <td>
+                            <a href="" id="thumb-testimonial-image-{{ testimonial_row }}" data-toggle="image" class="img-thumbnail"><img src="{{ testimonial.thumb }}" alt="" title="" data-placeholder="{{ placeholder }}" /></a>
+                            <input type="hidden" name="theme_oc_ultra_testimonial[{{ testimonial_row }}][image]" value="{{ testimonial.image }}" id="input-testimonial-image-{{ testimonial_row }}" />
+                          </td>
+                          <td>
+                            <select name="theme_oc_ultra_testimonial[{{ testimonial_row }}][rating]" class="form-control">
+                              <option value="5" {% if testimonial.rating == 5 %} selected{% endif %}>5 {{ text_stars }}</option>
+                              <option value="4" {% if testimonial.rating == 4 %} selected{% endif %}>4 {{ text_stars }}</option>
+                              <option value="3" {% if testimonial.rating == 3 %} selected{% endif %}>3 {{ text_stars }}</option>
+                              <option value="2" {% if testimonial.rating == 2 %} selected{% endif %}>2 {{ text_stars }}</option>
+                              <option value="1" {% if testimonial.rating == 1 %} selected{% endif %}>1 {{ text_star }}</option>
+                            </select>
+                          </td>
+                          <td>
+                            <textarea name="theme_oc_ultra_testimonial[{{ testimonial_row }}][text]" placeholder="{{ entry_testimonial_text }}" rows="2" class="form-control">{{ testimonial.text }}</textarea>
+                          </td>
+                          <td class="text-right">
+                            <button type="button" class="btn btn-danger btn-remove-testimonial"><i class="fa fa-minus-circle"></i></button>
+                          </td>
+                        </tr>
+                        {% set testimonial_row = testimonial_row + 1 %}
+                        {% endfor %}
+                      </tbody>
+                      <tfoot>
+                        <tr>
+                          <td colspan="5"></td>
+                          <td class="text-right">
+                            <button type="button" id="button-add-testimonial" class="btn btn-primary"><i class="fa fa-plus-circle"></i> {{ button_add_testimonial }}</button>
+                          </td>
+                        </tr>
+                      </tfoot>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Features Section -->
+            <div class="panel panel-default">
+              <div class="panel-heading" style="cursor: pointer;" data-toggle="collapse" data-parent="#accordion" data-target="#collapse-features">
+                <h4 class="panel-title">
+                  <i class="fa fa-list-ul"></i> {{ entry_features_section }}
+                  <i class="fa fa-chevron-down pull-right"></i>
+                </h4>
+              </div>
+              <div id="collapse-features" class="panel-collapse collapse">
+                <div class="panel-body">
+                  <div class="form-group">
+                    <label class="col-sm-2 control-label" for="input-features-status">Enable Section</label>
+                    <div class="col-sm-10">
+                      <select name="theme_oc_ultra_features_status" id="input-features-status" class="form-control">
+                        <option value="1" {% if theme_oc_ultra_features_status %}selected="selected"{% endif %}>{{ text_enabled }}</option>
+                        <option value="0" {% if not theme_oc_ultra_features_status %}selected="selected"{% endif %}>{{ text_disabled }}</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <hr />
+
+                  <div class="table-responsive">
+                    <table id="features-table" class="table table-bordered table-hover">
+                      <thead>
+                        <tr>
+                          <th>{{ entry_icon }}</th>
+                          <th>{{ entry_title }}</th>
+                          <th>{{ entry_description }}</th>
+                          <th class="text-right">{{ button_remove }}</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {% set feature_row = 0 %}
+                        {% for feature in theme_oc_ultra_features %}
+                        <tr id="feature-row-{{ feature_row }}">
+                          <td style="width: 200px;">
+                            <input type="text" name="theme_oc_ultra_feature[{{ feature_row }}][icon]" value="{{ feature.icon }}" placeholder="{{ entry_icon }}" class="form-control" />
+                            <small class="help-block">{{ help_icon }}</small>
+                          </td>
+                          <td>
+                            <input type="text" name="theme_oc_ultra_feature[{{ feature_row }}][title]" value="{{ feature.title }}" placeholder="{{ entry_title }}" class="form-control" />
+                          </td>
+                          <td>
+                            <textarea name="theme_oc_ultra_feature[{{ feature_row }}][description]" placeholder="{{ entry_description }}" rows="2" class="form-control">{{ feature.description }}</textarea>
+                          </td>
+                          <td class="text-right">
+                            <button type="button" class="btn btn-danger btn-remove-feature"><i class="fa fa-minus-circle"></i></button>
+                          </td>
+                        </tr>
+                        {% set feature_row = feature_row + 1 %}
+                        {% endfor %}
+                      </tbody>
+                      <tfoot>
+                        <tr>
+                          <td colspan="3"></td>
+                          <td class="text-right">
+                            <button type="button" id="button-add-feature" class="btn btn-primary"><i class="fa fa-plus-circle"></i> {{ button_add_feature }}</button>
+                          </td>
+                        </tr>
+                      </tfoot>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Footer Section -->
+            <div class="panel panel-default">
+              <div class="panel-heading" style="cursor: pointer;" data-toggle="collapse" data-parent="#accordion" data-target="#collapse-footer">
+                <h4 class="panel-title">
+                  <i class="fa fa-paw"></i> {{ entry_footer_section }}
+                  <i class="fa fa-chevron-down pull-right"></i>
+                </h4>
+              </div>
+              <div id="collapse-footer" class="panel-collapse collapse">
+                <div class="panel-body">
+                  <div class="form-group">
+                    <label class="col-sm-2 control-label" for="input-footer-text">{{ entry_footer_text }}</label>
+                    <div class="col-sm-10">
+                      <input type="text" name="theme_oc_ultra_footer_text" value="{{ theme_oc_ultra_footer_text }}" placeholder="{{ entry_footer_text }}" id="input-footer-text" class="form-control" />
+                    </div>
+                  </div>
+
+                  <hr />
+                  <h4>{{ entry_social_links }}</h4>
+
+                  <div class="table-responsive">
+                    <table id="social-links-table" class="table table-bordered table-hover">
+                      <thead>
+                        <tr>
+                          <th>{{ entry_social_platform }}</th>
+                          <th>{{ entry_social_icon }}</th>
+                          <th>{{ entry_social_url }}</th>
+                          <th class="text-right">{{ button_remove }}</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {% set social_row = 0 %}
+                        {% for social in theme_oc_ultra_social_links %}
+                        <tr id="social-row-{{ social_row }}">
+                          <td style="width: 150px;">
+                            <input type="text" name="theme_oc_ultra_social_link[{{ social_row }}][name]" value="{{ social.name }}" placeholder="{{ entry_social_platform }}" class="form-control" />
+                          </td>
+                          <td style="width: 200px;">
+                            <input type="text" name="theme_oc_ultra_social_link[{{ social_row }}][icon]" value="{{ social.icon }}" placeholder="{{ entry_social_icon }}" class="form-control" />
+                          </td>
+                          <td>
+                            <input type="text" name="theme_oc_ultra_social_link[{{ social_row }}][url]" value="{{ social.url }}" placeholder="{{ entry_social_url }}" class="form-control" />
+                          </td>
+                          <td class="text-right">
+                            <button type="button" class="btn btn-danger btn-remove-social"><i class="fa fa-minus-circle"></i></button>
+                          </td>
+                        </tr>
+                        {% set social_row = social_row + 1 %}
+                        {% endfor %}
+                      </tbody>
+                      <tfoot>
+                        <tr>
+                          <td colspan="3"></td>
+                          <td class="text-right">
+                            <button type="button" id="button-add-social" class="btn btn-primary"><i class="fa fa-plus-circle"></i> {{ button_add_social }}</button>
+                          </td>
+                        </tr>
+                      </tfoot>
+                    </table>
+                  </div>
+
+                  <hr />
+                  <h4>{{ entry_payment_methods }}</h4>
+
+                  <div class="table-responsive">
+                    <table id="payment-methods-table" class="table table-bordered table-hover">
+                      <thead>
+                        <tr>
+                          <th>{{ entry_payment_name }}</th>
+                          <th>{{ entry_payment_icon }}</th>
+                          <th class="text-right">{{ button_remove }}</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {% set payment_row = 0 %}
+                        {% for payment in theme_oc_ultra_payment_methods %}
+                        <tr id="payment-row-{{ payment_row }}">
+                          <td>
+                            <input type="text" name="theme_oc_ultra_payment_method[{{ payment_row }}][name]" value="{{ payment.name }}" placeholder="{{ entry_payment_name }}" class="form-control" />
+                          </td>
+                          <td style="width: 250px;">
+                            <input type="text" name="theme_oc_ultra_payment_method[{{ payment_row }}][icon]" value="{{ payment.icon }}" placeholder="{{ entry_payment_icon }}" class="form-control" />
+                          </td>
+                          <td class="text-right">
+                            <button type="button" class="btn btn-danger btn-remove-payment"><i class="fa fa-minus-circle"></i></button>
+                          </td>
+                        </tr>
+                        {% set payment_row = payment_row + 1 %}
+                        {% endfor %}
+                      </tbody>
+                      <tfoot>
+                        <tr>
+                          <td colspan="2"></td>
+                          <td class="text-right">
+                            <button type="button" id="button-add-payment" class="btn btn-primary"><i class="fa fa-plus-circle"></i> {{ button_add_payment }}</button>
+                          </td>
+                        </tr>
+                      </tfoot>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Newsletter Popup -->
+            <div class="panel panel-default">
+              <div class="panel-heading" style="cursor: pointer;" data-toggle="collapse" data-parent="#accordion" data-target="#collapse-newsletter-popup">
+                <h4 class="panel-title">
+                  <i class="fa fa-envelope"></i> {{ entry_newsletter_popup }}
+                  <a href="{{ newsletter_entries }}" class="btn btn-info btn-xs pull-right" style="margin-right: 10px; color: #fff;" onclick="event.stopPropagation();" data-toggle="tooltip" title="View Newsletter Entries"><i class="fa fa-list"></i> View Entries</a>
+                  <i class="fa fa-chevron-down pull-right"></i>
+                </h4>
+              </div>
+              <div id="collapse-newsletter-popup" class="panel-collapse collapse">
+                <div class="panel-body">
+                  <div class="form-group">
+                    <label class="col-sm-2 control-label" for="input-newsletter-popup-status">Enable Newsletter Popup</label>
+                    <div class="col-sm-10">
+                      <select name="theme_oc_ultra_newsletter_popup_status" id="input-newsletter-popup-status" class="form-control">
+                        <option value="1" {% if theme_oc_ultra_newsletter_popup_status %}selected="selected"{% endif %}>{{ text_enabled }}</option>
+                        <option value="0" {% if not theme_oc_ultra_newsletter_popup_status %}selected="selected"{% endif %}>{{ text_disabled }}</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <hr />
+
+                  <div class="form-group">
+                    <label class="col-sm-2 control-label" for="input-newsletter-popup-title">{{ entry_newsletter_popup_title }}</label>
+                    <div class="col-sm-10">
+                      <input type="text" name="theme_oc_ultra_newsletter_popup_title" value="{{ theme_oc_ultra_newsletter_popup_title }}" placeholder="{{ entry_newsletter_popup_title }}" id="input-newsletter-popup-title" class="form-control" />
+                    </div>
+                  </div>
+
+                  <div class="form-group">
+                    <label class="col-sm-2 control-label" for="input-newsletter-popup-subtitle">{{ entry_newsletter_popup_subtitle }}</label>
+                    <div class="col-sm-10">
+                      <textarea name="theme_oc_ultra_newsletter_popup_subtitle" placeholder="{{ entry_newsletter_popup_subtitle }}" id="input-newsletter-popup-subtitle" rows="2" class="form-control">{{ theme_oc_ultra_newsletter_popup_subtitle }}</textarea>
+                    </div>
+                  </div>
+
+                  <div class="form-group">
+                    <label class="col-sm-2 control-label" for="input-newsletter-popup-delay">{{ entry_newsletter_popup_delay }}</label>
+                    <div class="col-sm-10">
+                      <input type="number" name="theme_oc_ultra_newsletter_popup_delay" value="{{ theme_oc_ultra_newsletter_popup_delay }}" placeholder="{{ entry_newsletter_popup_delay }}" id="input-newsletter-popup-delay" class="form-control" min="0" step="500" />
+                    </div>
+                  </div>
+
+                  <div class="form-group">
+                    <label class="col-sm-2 control-label">{{ entry_newsletter_popup_image }}</label>
+                    <div class="col-sm-10">
+                      <a href="" id="thumb-newsletter-popup-image" data-toggle="image" class="img-thumbnail"><img src="{{ newsletter_thumb }}" alt="" title="" data-placeholder="{{ placeholder }}" /></a>
+                      <input type="hidden" name="theme_oc_ultra_newsletter_popup_image" value="{{ theme_oc_ultra_newsletter_popup_image }}" id="input-newsletter-popup-image" />
+                    </div>
+                  </div>
+
+                  <hr />
+                  <h4>{{ entry_newsletter_welcome_email }}</h4>
+
+                  <div class="form-group">
+                    <label class="col-sm-2 control-label" for="input-newsletter-coupon">{{ entry_newsletter_coupon }}</label>
+                    <div class="col-sm-10">
+                      <select name="theme_oc_ultra_newsletter_coupon_id" id="input-newsletter-coupon" class="form-control">
+                        <option value="0">{{ text_none }}</option>
+                        {% for coupon in coupons %}
+                        <option value="{{ coupon.coupon_id }}" {% if coupon.coupon_id == theme_oc_ultra_newsletter_coupon_id %} selected{% endif %}>{{ coupon.name }} ({{ coupon.code }})</option>
+                        {% endfor %}
+                      </select>
+                    </div>
+                  </div>
+
+                  <div class="form-group">
+                    <label class="col-sm-2 control-label" for="input-newsletter-email-subject">{{ entry_newsletter_email_subject }}</label>
+                    <div class="col-sm-10">
+                      <input type="text" name="theme_oc_ultra_newsletter_email_subject" value="{{ theme_oc_ultra_newsletter_email_subject }}" placeholder="{{ entry_newsletter_email_subject }}" id="input-newsletter-email-subject" class="form-control" />
+                    </div>
+                  </div>
+
+                  <div class="form-group">
+                    <label class="col-sm-2 control-label" for="input-newsletter-email-message">{{ entry_newsletter_email_message }}</label>
+                    <div class="col-sm-10">
+                      <textarea name="theme_oc_ultra_newsletter_email_message" placeholder="{{ entry_newsletter_email_message }}" id="input-newsletter-email-message" rows="5" class="form-control">{{ theme_oc_ultra_newsletter_email_message }}</textarea>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Colors -->
+            <div class="panel panel-default">
+              <div class="panel-heading" style="cursor: pointer;" data-toggle="collapse" data-parent="#accordion" data-target="#collapse-colors">
+                <h4 class="panel-title">
+                  <i class="fa fa-paint-brush"></i> Colors
+                  <i class="fa fa-chevron-down pull-right"></i>
+                </h4>
+              </div>
+              <div id="collapse-colors" class="panel-collapse collapse">
+                <div class="panel-body">
+                  <div class="form-group">
+                    <label class="col-sm-2 control-label">Header Background Color</label>
+                    <div class="col-sm-10">
+                      <div class="help-block mb-3">Choose a preset color or create your own custom color</div>
+                      
+                      <div class="row">
+                        <div class="col-md-3 col-sm-6">
+                          <label class="color-choice-card">
+                            <input type="radio" name="theme_oc_ultra_header_color_preset" value="jade" class="color-choice-radio"{% if theme_oc_ultra_header_color_preset == 'jade' or not theme_oc_ultra_header_color_preset %} checked{% endif %} />
+                            <div class="color-choice-content">
+                              <div class="color-preview" style="background-color: #86a88d;"></div>
+                              <div class="color-info">
+                                <strong>Jade</strong>
+                                <small class="text-muted">#86a88d</small>
+                                <span class="label label-success">Calm</span>
+                                <small class="help-block" style="margin:2px 0 0;">Health/Wellness</small>
+                              </div>
+                            </div>
+                          </label>
+                        </div>
+                        
+                        <div class="col-md-3 col-sm-6">
+                          <label class="color-choice-card">
+                            <input type="radio" name="theme_oc_ultra_header_color_preset" value="slate" class="color-choice-radio"{% if theme_oc_ultra_header_color_preset == 'slate' %} checked{% endif %} />
+                            <div class="color-choice-content">
+                              <div class="color-preview" style="background-color: #545A62;"></div>
+                              <div class="color-info">
+                                <strong>Slate</strong>
+                                <small class="text-muted">#545A62</small>
+                                <span class="label label-default">Balanced</span>
+                                <small class="help-block" style="margin:2px 0 0;">General Electronics</small>
+                              </div>
+                            </div>
+                          </label>
+                        </div>
+                        
+                        <div class="col-md-3 col-sm-6">
+                          <label class="color-choice-card">
+                            <input type="radio" name="theme_oc_ultra_header_color_preset" value="midnight" class="color-choice-radio"{% if theme_oc_ultra_header_color_preset == 'midnight' %} checked{% endif %} />
+                            <div class="color-choice-content">
+                              <div class="color-preview" style="background-color: #2C3E50;"></div>
+                              <div class="color-info">
+                                <strong>Midnight</strong>
+                                <small class="text-muted">#2C3E50</small>
+                                <span class="label label-primary">Trustworthy</span>
+                                <small class="help-block" style="margin:2px 0 0;">Enterprise/Corporate</small>
+                              </div>
+                            </div>
+                          </label>
+                        </div>
+                        
+                        <div class="col-md-3 col-sm-6">
+                          <label class="color-choice-card">
+                            <input type="radio" name="theme_oc_ultra_header_color_preset" value="sage" class="color-choice-radio"{% if theme_oc_ultra_header_color_preset == 'sage' %} checked{% endif %} />
+                            <div class="color-choice-content">
+                              <div class="color-preview" style="background-color: #606C5D;"></div>
+                              <div class="color-info">
+                                <strong>Sage</strong>
+                                <small class="text-muted">#606C5D</small>
+                                <span class="label label-success">Natural</span>
+                                <small class="help-block" style="margin:2px 0 0;">Organic/Home</small>
+                              </div>
+                            </div>
+                          </label>
+                        </div>
+
+                        <div class="col-md-3 col-sm-6" style="margin-top: 15px;">
+                          <label class="color-choice-card">
+                            <input type="radio" name="theme_oc_ultra_header_color_preset" value="charcoal" class="color-choice-radio"{% if theme_oc_ultra_header_color_preset == 'charcoal' %} checked{% endif %} />
+                            <div class="color-choice-content">
+                              <div class="color-preview" style="background-color: #333333;"></div>
+                              <div class="color-info">
+                                <strong>Charcoal</strong>
+                                <small class="text-muted">#333333</small>
+                                <span class="label label-warning">Modern</span>
+                                <small class="help-block" style="margin:2px 0 0;">Fashion/Photography</small>
+                              </div>
+                            </div>
+                          </label>
+                        </div>
+                        
+                        <div class="col-md-9 col-sm-12" style="margin-top: 15px;">
+                          <label class="color-choice-card color-choice-custom">
+                            <input type="radio" name="theme_oc_ultra_header_color_preset" value="custom" class="color-choice-radio"{% if theme_oc_ultra_header_color_preset == 'custom' %} checked{% endif %} />
+                            <div class="color-choice-content">
+                              <div class="color-preview" style="background-color: {{ theme_oc_ultra_header_color_custom|default('#86a88d') }};"></div>
+                              <div class="color-info">
+                                <strong>Custom Color</strong>
+                                <div style="margin-top:10px;">
+                                  <input type="color" name="theme_oc_ultra_header_color_custom" value="{{ theme_oc_ultra_header_color_custom|default('#86a88d') }}" class="form-control" style="width:100px; height:35px; display:inline-block;" />
+                                  <small class="text-muted">Pick any color you like</small>
+                                </div>
+                              </div>
+                            </div>
+                          </label>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Image Settings -->
+            <div class="panel panel-default">
+              <div class="panel-heading" style="cursor: pointer;" data-toggle="collapse" data-parent="#accordion" data-target="#collapse-image">
+                <h4 class="panel-title">
+                  <i class="fa fa-image"></i> Image Settings
+                  <i class="fa fa-chevron-down pull-right"></i>
+                </h4>
+              </div>
+              <div id="collapse-image" class="panel-collapse collapse">
+                <div class="panel-body">
+                  <div class="form-group required">
+                    <label class="col-sm-2 control-label" for="input-product-limit"><span data-toggle="tooltip" title="{{ help_product_limit }}">{{ entry_product_limit }}</span></label>
+                    <div class="col-sm-10">
+                      <input type="text" name="theme_oc_ultra_product_limit" value="{{ theme_oc_ultra_product_limit }}" placeholder="{{ entry_product_limit }}" id="input-product-limit" class="form-control" />
+                      {% if error_product_limit %}
+                      <div class="text-danger">{{ error_product_limit }}</div>
+                      {% endif %}
+                    </div>
+                  </div>
+                  <div class="form-group required">
+                    <label class="col-sm-2 control-label" for="input-product-description-length"><span data-toggle="tooltip" title="{{ help_product_description_length }}">{{ entry_product_description_length }}</span></label>
+                    <div class="col-sm-10">
+                      <input type="text" name="theme_oc_ultra_product_description_length" value="{{ theme_oc_ultra_product_description_length }}" placeholder="{{ entry_product_description_length }}" id="input-product-description-length" class="form-control" />
+                      {% if error_product_description_length %}
+                      <div class="text-danger">{{ error_product_description_length }}</div>
+                      {% endif %}
+                    </div>
+                  </div>
+                  <div class="form-group required">
+                    <label class="col-sm-2 control-label" for="input-image-category-width">{{ entry_image_category }}</label>
+                    <div class="col-sm-10">
+                      <div class="row">
+                        <div class="col-sm-6">
+                          <input type="text" name="theme_oc_ultra_image_category_width" value="{{ theme_oc_ultra_image_category_width }}" placeholder="{{ entry_width }}" id="input-image-category-width" class="form-control" />
+                        </div>
+                        <div class="col-sm-6">
+                          <input type="text" name="theme_oc_ultra_image_category_height" value="{{ theme_oc_ultra_image_category_height }}" placeholder="{{ entry_height }}" class="form-control" />
+                        </div>
+                      </div>
+                      {% if error_image_category %}
+                      <div class="text-danger">{{ error_image_category }}</div>
+                      {% endif %}
+                    </div>
+                  </div>
+                  <div class="form-group required">
+                    <label class="col-sm-2 control-label" for="input-image-thumb-width">{{ entry_image_thumb }}</label>
+                    <div class="col-sm-10">
+                      <div class="row">
+                        <div class="col-sm-6">
+                          <input type="text" name="theme_oc_ultra_image_thumb_width" value="{{ theme_oc_ultra_image_thumb_width }}" placeholder="{{ entry_width }}" id="input-image-thumb-width" class="form-control" />
+                        </div>
+                        <div class="col-sm-6">
+                          <input type="text" name="theme_oc_ultra_image_thumb_height" value="{{ theme_oc_ultra_image_thumb_height }}" placeholder="{{ entry_height }}" class="form-control" />
+                        </div>
+                      </div>
+                      {% if error_image_thumb %}
+                      <div class="text-danger">{{ error_image_thumb }}</div>
+                      {% endif %}
+                    </div>
+                  </div>
+                  <div class="form-group required">
+                    <label class="col-sm-2 control-label" for="input-image-popup-width">{{ entry_image_popup }}</label>
+                    <div class="col-sm-10">
+                      <div class="row">
+                        <div class="col-sm-6">
+                          <input type="text" name="theme_oc_ultra_image_popup_width" value="{{ theme_oc_ultra_image_popup_width }}" placeholder="{{ entry_width }}" id="input-image-popup-width" class="form-control" />
+                        </div>
+                        <div class="col-sm-6">
+                          <input type="text" name="theme_oc_ultra_image_popup_height" value="{{ theme_oc_ultra_image_popup_height }}" placeholder="{{ entry_height }}" class="form-control" />
+                        </div>
+                      </div>
+                      {% if error_image_popup %}
+                      <div class="text-danger">{{ error_image_popup }}</div>
+                      {% endif %}
+                    </div>
+                  </div>
+                  <div class="form-group required">
+                    <label class="col-sm-2 control-label" for="input-image-product-width">{{ entry_image_product }}</label>
+                    <div class="col-sm-10">
+                      <div class="row">
+                        <div class="col-sm-6">
+                          <input type="text" name="theme_oc_ultra_image_product_width" value="{{ theme_oc_ultra_image_product_width }}" placeholder="{{ entry_width }}" id="input-image-product-width" class="form-control" />
+                        </div>
+                        <div class="col-sm-6">
+                          <input type="text" name="theme_oc_ultra_image_product_height" value="{{ theme_oc_ultra_image_product_height }}" placeholder="{{ entry_height }}" class="form-control" />
+                        </div>
+                      </div>
+                      {% if error_image_product %}
+                      <div class="text-danger">{{ error_image_product }}</div>
+                      {% endif %}
+                    </div>
+                  </div>
+                  <div class="form-group required">
+                    <label class="col-sm-2 control-label" for="input-image-additional-width">{{ entry_image_additional }}</label>
+                    <div class="col-sm-10">
+                      <div class="row">
+                        <div class="col-sm-6">
+                          <input type="text" name="theme_oc_ultra_image_additional_width" value="{{ theme_oc_ultra_image_additional_width }}" placeholder="{{ entry_width }}" id="input-image-additional-width" class="form-control" />
+                        </div>
+                        <div class="col-sm-6">
+                          <input type="text" name="theme_oc_ultra_image_additional_height" value="{{ theme_oc_ultra_image_additional_height }}" placeholder="{{ entry_height }}" class="form-control" />
+                        </div>
+                      </div>
+                      {% if error_image_additional %}
+                      <div class="text-danger">{{ error_image_additional }}</div>
+                      {% endif %}
+                    </div>
+                  </div>
+                  <div class="form-group required">
+                    <label class="col-sm-2 control-label" for="input-image-related-width">{{ entry_image_related }}</label>
+                    <div class="col-sm-10">
+                      <div class="row">
+                        <div class="col-sm-6">
+                          <input type="text" name="theme_oc_ultra_image_related_width" value="{{ theme_oc_ultra_image_related_width }}" placeholder="{{ entry_width }}" id="input-image-related-width" class="form-control" />
+                        </div>
+                        <div class="col-sm-6">
+                          <input type="text" name="theme_oc_ultra_image_related_height" value="{{ theme_oc_ultra_image_related_height }}" placeholder="{{ entry_height }}" class="form-control" />
+                        </div>
+                      </div>
+                      {% if error_image_related %}
+                      <div class="text-danger">{{ error_image_related }}</div>
+                      {% endif %}
+                    </div>
+                  </div>
+                  <div class="form-group required">
+                    <label class="col-sm-2 control-label" for="input-image-compare-width">{{ entry_image_compare }}</label>
+                    <div class="col-sm-10">
+                      <div class="row">
+                        <div class="col-sm-6">
+                          <input type="text" name="theme_oc_ultra_image_compare_width" value="{{ theme_oc_ultra_image_compare_width }}" placeholder="{{ entry_width }}" id="input-image-compare-width" class="form-control" />
+                        </div>
+                        <div class="col-sm-6">
+                          <input type="text" name="theme_oc_ultra_image_compare_height" value="{{ theme_oc_ultra_image_compare_height }}" placeholder="{{ entry_height }}" class="form-control" />
+                        </div>
+                      </div>
+                      {% if error_image_compare %}
+                      <div class="text-danger">{{ error_image_compare }}</div>
+                      {% endif %}
+                    </div>
+                  </div>
+                  <div class="form-group required">
+                    <label class="col-sm-2 control-label" for="input-image-wishlist-width">{{ entry_image_wishlist }}</label>
+                    <div class="col-sm-10">
+                      <div class="row">
+                        <div class="col-sm-6">
+                          <input type="text" name="theme_oc_ultra_image_wishlist_width" value="{{ theme_oc_ultra_image_wishlist_width }}" placeholder="{{ entry_width }}" id="input-image-wishlist-width" class="form-control" />
+                        </div>
+                        <div class="col-sm-6">
+                          <input type="text" name="theme_oc_ultra_image_wishlist_height" value="{{ theme_oc_ultra_image_wishlist_height }}" placeholder="{{ entry_height }}" class="form-control" />
+                        </div>
+                      </div>
+                      {% if error_image_wishlist %}
+                      <div class="text-danger">{{ error_image_wishlist }}</div>
+                      {% endif %}
+                    </div>
+                  </div>
+                  <div class="form-group required">
+                    <label class="col-sm-2 control-label" for="input-image-cart-width">{{ entry_image_cart }}</label>
+                    <div class="col-sm-10">
+                      <div class="row">
+                        <div class="col-sm-6">
+                          <input type="text" name="theme_oc_ultra_image_cart_width" value="{{ theme_oc_ultra_image_cart_width }}" placeholder="{{ entry_width }}" id="input-image-cart-width" class="form-control" />
+                        </div>
+                        <div class="col-sm-6">
+                          <input type="text" name="theme_oc_ultra_image_cart_height" value="{{ theme_oc_ultra_image_cart_height }}" placeholder="{{ entry_height }}" class="form-control" />
+                        </div>
+                      </div>
+                      {% if error_image_cart %}
+                      <div class="text-danger">{{ error_image_cart }}</div>
+                      {% endif %}
+                    </div>
+                  </div>
+                  <div class="form-group required">
+                    <label class="col-sm-2 control-label" for="input-image-location-width">{{ entry_image_location }}</label>
+                    <div class="col-sm-10">
+                      <div class="row">
+                        <div class="col-sm-6">
+                          <input type="text" name="theme_oc_ultra_image_location_width" value="{{ theme_oc_ultra_image_location_width }}" placeholder="{{ entry_width }}" id="input-image-location-width" class="form-control" />
+                        </div>
+                        <div class="col-sm-6">
+                          <input type="text" name="theme_oc_ultra_image_location_height" value="{{ theme_oc_ultra_image_location_height }}" placeholder="{{ entry_height }}" class="form-control" />
+                        </div>
+                      </div>
+                      {% if error_image_location %}
+                      <div class="text-danger">{{ error_image_location }}</div>
+                      {% endif %}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Customize -->
+            <div class="panel panel-default">
+              <div class="panel-heading" style="cursor: pointer;" data-toggle="collapse" data-parent="#accordion" data-target="#collapse-customize">
+                <h4 class="panel-title">
+                  <i class="fa fa-code"></i> Customize
+                  <i class="fa fa-chevron-down pull-right"></i>
+                </h4>
+              </div>
+              <div id="collapse-customize" class="panel-collapse collapse">
+                <div class="panel-body">
+                  <div class="form-group">
+                    <label class="col-sm-2 control-label" for="input-custom-css">Custom CSS</label>
+                    <div class="col-sm-10">
+                      <textarea name="theme_oc_ultra_custom_css" placeholder="/* Add your custom CSS here */" id="input-custom-css" rows="10" class="form-control" style="font-family: monospace;">{{ theme_oc_ultra_custom_css }}</textarea>
+                      <div class="help-block">Add custom CSS that will be injected into the theme header.</div>
+                    </div>
+                  </div>
+                  
+                  <div class="form-group">
+                    <label class="col-sm-2 control-label" for="input-custom-js">Custom JavaScript</label>
+                    <div class="col-sm-10">
+                      <textarea name="theme_oc_ultra_custom_js" placeholder="// Add your custom JavaScript here" id="input-custom-js" rows="10" class="form-control" style="font-family: monospace;">{{ theme_oc_ultra_custom_js }}</textarea>
+                      <div class="help-block">Add custom JavaScript that will be injected into the theme footer.</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+          <div class="alert alert-info" style="margin-top: 20px;">
+            <i class="fa fa-info-circle"></i>
+            <strong>OC Ultra Theme</strong><br/>
+            A modern, responsive theme for OpenCart.
+            <ul style="margin-top: 10px; padding-left: 20px;">
+              <li>Modern responsive design</li>
+              <li>Slide-in navigation menu, search, and cart</li>
+              <li>Enhanced product pages</li>
+              <li>Visual category browsing</li>
+            </ul>
+            <p><strong>Report Issues or Request Features at:</strong> Whatsapp <code>+9232 0143 0963</code> or email support@iextendlabs.com</p>
+          </div>
+ 
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+<style>
+/* Accordion arrow rotation */
+.panel-heading[aria-expanded="true"] .fa-chevron-down {
+    transform: rotate(180deg);
+}
+
+.fa-chevron-down {
+    transition: transform 0.3s ease;
+}
+
+/* Color choice cards */
+.color-choice-card {
+    cursor: pointer;
+    display: block;
+    position: relative;
+    margin: 0;
+    font-weight: normal;
+}
+
+.color-choice-radio {
+    position: absolute;
+    opacity: 0;
+    cursor: pointer;
+}
+
+.color-choice-content {
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 15px;
+    transition: all 0.3s ease;
+    background: #fff;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.color-choice-content > div {
+    float: left;
+}
+.color-choice-content .color-info {
+    margin-left: 15px;
+}
+
+.color-choice-card:hover .color-choice-content {
+    border-color: #1e91cf;
+    box-shadow: 0 2px 8px rgba(30, 145, 207, 0.15);
+}
+
+.color-choice-radio:checked + .color-choice-content {
+    border-color: #1e91cf;
+    background-color: #f8f9fa;
+    box-shadow: 0 2px 12px rgba(30, 145, 207, 0.25);
+}
+
+.color-preview {
+    width: 60px;
+    height: 60px;
+    border-radius: 4px;
+    border: 2px solid #fff;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);
+    flex-shrink: 0;
+}
+
+.color-choice-custom .color-preview {
+    width: 60px;
+    height: 60px;
+}
+
+.color-info strong {
+    font-size: 14px;
+    display: block;
+    margin-bottom: 4px;
+}
+
+.color-choice-custom .color-choice-content {
+    align-items: flex-start;
+}
+</style>
+<script type="text/javascript"><!--
+// Update chevron rotation on collapse events
+$('.collapse').on('show.bs.collapse', function () {
+    $(this).parent().find('.fa-chevron-down').css('transform', 'rotate(180deg)');
+});
+$('.collapse').on('hide.bs.collapse', function () {
+    $(this).parent().find('.fa-chevron-down').css('transform', 'rotate(0deg)');
+});
+
+var category_row = {{ theme_oc_ultra_featured_categories|length }};
+
+$('#input-featured-category').autocomplete({
+    'source': function(request, response) {
+        $.ajax({
+            url: 'index.php?route=catalog/category/autocomplete&user_token={{ user_token }}&filter_name=' +  encodeURIComponent(request),
+            dataType: 'json',
+            success: function(json) {
+                response($.map(json, function(item) {
+                    return {
+                        label: item['name'],
+                        value: item['category_id']
+                    }
+                }));
+            }
+        });
+    },
+    'select': function(item) {
+        $('#input-featured-category').val('');
+
+        $('#featured-category-row-' + item['value']).remove();
+
+        var html = '';
+        html += '<tr id="featured-category-row-' + category_row + '">';
+        html += '  <td>';
+        html += '    ' + item['label'];
+        html += '    <input type="hidden" name="theme_oc_ultra_featured_category[' + category_row + '][category_id]" value="' + item['value'] + '"/>';
+        html += '    <input type="hidden" name="theme_oc_ultra_featured_category[' + category_row + '][name]" value="' + item['label'] + '"/>';
+        html += '  </td>';
+        html += '  <td>';
+        html += '    <a href="" id="thumb-featured-category-image-' + category_row + '" data-toggle="image" class="img-thumbnail"><img src="{{ placeholder }}" alt="" title="" data-placeholder="{{ placeholder }}" /></a>';
+        html += '    <input type="hidden" name="theme_oc_ultra_featured_category[' + category_row + '][image]" value="" id="input-featured-category-image-' + category_row + '"/>';
+        html += '  </td>';
+        html += '  <td>';
+        html += '    <input type="number" name="theme_oc_ultra_featured_category[' + category_row + '][width]" value="4" placeholder="{{ entry_width }}" min="1" max="12" class="form-control"/>';
+        html += '  </td>';
+        html += '  <td class="text-right">';
+        html += '    <button type="button" class="btn btn-danger btn-remove-category"><i class="fa fa-minus-circle"></i></button>';
+        html += '  </td>';
+        html += '</tr>';
+
+        $('#featured-category-table tbody').append(html);
+
+        category_row++;
+    }
+});
+
+$('#featured-category-table').on('click', '.btn-remove-category', function() {
+    $(this).closest('tr').remove();
+});
+
+// FAQ Management
+var faq_row = {{ theme_oc_ultra_faqs|length }};
+
+$('#button-add-faq').on('click', function() {
+    var html = '';
+    html += '<tr id="faq-row-' + faq_row + '">';
+    html += '  <td>';
+    html += '    <input type="text" name="theme_oc_ultra_faq[' + faq_row + '][question]" value="" placeholder="{{ entry_question }}" class="form-control"/>';
+    html += '  </td>';
+    html += '  <td>';
+    html += '    <textarea name="theme_oc_ultra_faq[' + faq_row + '][answer]" placeholder="{{ entry_answer }}" rows="2" class="form-control"></textarea>';
+    html += '  </td>';
+    html += '  <td class="text-right">';
+    html += '    <button type="button" class="btn btn-danger btn-remove-faq"><i class="fa fa-minus-circle"></i></button>';
+    html += '  </td>';
+    html += '</tr>';
+    
+    $('#faq-table tbody').append(html);
+    
+    faq_row++;
+});
+
+$('#faq-table').on('click', '.btn-remove-faq', function() {
+    $(this).closest('tr').remove();
+});
+
+// Testimonials Management
+var testimonial_row = {{ theme_oc_ultra_testimonials|length }};
+
+$('#button-add-testimonial').on('click', function() {
+    var html = '';
+    html += '<tr id="testimonial-row-' + testimonial_row + '">';
+    html += '  <td>';
+    html += '    <input type="text" name="theme_oc_ultra_testimonial[' + testimonial_row + '][name]" value="" placeholder="{{ entry_customer_name }}" class="form-control"/>';
+    html += '  </td>';
+    html += '  <td>';
+    html += '    <input type="text" name="theme_oc_ultra_testimonial[' + testimonial_row + '][location]" value="" placeholder="{{ entry_customer_location }}" class="form-control"/>';
+    html += '  </td>';
+    html += '  <td>';
+    html += '    <a href="" id="thumb-testimonial-image-' + testimonial_row + '" data-toggle="image" class="img-thumbnail"><img src="{{ placeholder }}" alt="" title="" data-placeholder="{{ placeholder }}" /></a>';
+    html += '    <input type="hidden" name="theme_oc_ultra_testimonial[' + testimonial_row + '][image]" value="" id="input-testimonial-image-' + testimonial_row + '"/>';
+    html += '  </td>';
+    html += '  <td>';
+    html += '    <select name="theme_oc_ultra_testimonial[' + testimonial_row + '][rating]" class="form-control">';
+    html += '      <option value="5" selected>5 {{ text_stars }}</option>';
+    html += '      <option value="4">4 {{ text_stars }}</option>';
+    html += '      <option value="3">3 {{ text_stars }}</option>';
+    html += '      <option value="2">2 {{ text_stars }}</option>';
+    html += '      <option value="1">1 {{ text_star }}</option>';
+    html += '    </select>';
+    html += '  </td>';
+    html += '  <td>';
+    html += '    <textarea name="theme_oc_ultra_testimonial[' + testimonial_row + '][text]" placeholder="{{ entry_testimonial_text }}" rows="2" class="form-control"></textarea>';
+    html += '  </td>';
+    html += '  <td class="text-right">';
+    html += '    <button type="button" class="btn btn-danger btn-remove-testimonial"><i class="fa fa-minus-circle"></i></button>';
+    html += '  </td>';
+    html += '</tr>';
+    
+    $('#testimonials-table tbody').append(html);
+    
+    testimonial_row++;
+});
+
+$('#testimonials-table').on('click', '.btn-remove-testimonial', function() {
+    $(this).closest('tr').remove();
+});
+
+// Features Management
+var feature_row = {{ theme_oc_ultra_features|length }};
+
+$('#button-add-feature').on('click', function() {
+    var html = '';
+    html += '<tr id="feature-row-' + feature_row + '">';
+    html += '  <td style="width: 200px;">';
+    html += '    <input type="text" name="theme_oc_ultra_feature[' + feature_row + '][icon]" value="" placeholder="{{ entry_icon }}" class="form-control"/>';
+    html += '    <small class="help-block">{{ help_icon }}</small>';
+    html += '  </td>';
+    html += '  <td>';
+    html += '    <input type="text" name="theme_oc_ultra_feature[' + feature_row + '][title]" value="" placeholder="{{ entry_title }}" class="form-control"/>';
+    html += '  </td>';
+    html += '  <td>';
+    html += '    <textarea name="theme_oc_ultra_feature[' + feature_row + '][description]" placeholder="{{ entry_description }}" rows="2" class="form-control"></textarea>';
+    html += '  </td>';
+    html += '  <td class="text-right">';
+    html += '    <button type="button" class="btn btn-danger btn-remove-feature"><i class="fa fa-minus-circle"></i></button>';
+    html += '  </td>';
+    html += '</tr>';
+    
+    $('#features-table tbody').append(html);
+    
+    feature_row++;
+});
+
+$('#features-table').on('click', '.btn-remove-feature', function() {
+    $(this).closest('tr').remove();
+});
+
+// Social Links Management
+var social_row = {{ theme_oc_ultra_social_links|length }};
+
+$('#button-add-social').on('click', function() {
+    var html = '';
+    html += '<tr id="social-row-' + social_row + '">';
+    html += '  <td style="width: 150px;">';
+    html += '    <input type="text" name="theme_oc_ultra_social_link[' + social_row + '][name]" value="" placeholder="{{ entry_social_platform }}" class="form-control"/>';
+    html += '  </td>';
+    html += '  <td style="width: 200px;">';
+    html += '    <input type="text" name="theme_oc_ultra_social_link[' + social_row + '][icon]" value="" placeholder="{{ entry_social_icon }}" class="form-control"/>';
+    html += '  </td>';
+    html += '  <td>';
+    html += '    <input type="text" name="theme_oc_ultra_social_link[' + social_row + '][url]" value="" placeholder="{{ entry_social_url }}" class="form-control"/>';
+    html += '  </td>';
+    html += '  <td class="text-right">';
+    html += '    <button type="button" class="btn btn-danger btn-remove-social"><i class="fa fa-minus-circle"></i></button>';
+    html += '  </td>';
+    html += '</tr>';
+    
+    $('#social-links-table tbody').append(html);
+    
+    social_row++;
+});
+
+$('#social-links-table').on('click', '.btn-remove-social', function() {
+    $(this).closest('tr').remove();
+});
+
+// Payment Methods Management
+var payment_row = {{ theme_oc_ultra_payment_methods|length }};
+
+$('#button-add-payment').on('click', function() {
+    var html = '';
+    html += '<tr id="payment-row-' + payment_row + '">';
+    html += '  <td>';
+    html += '    <input type="text" name="theme_oc_ultra_payment_method[' + payment_row + '][name]" value="" placeholder="{{ entry_payment_name }}" class="form-control"/>';
+    html += '  </td>';
+    html += '  <td style="width: 250px;">';
+    html += '    <input type="text" name="theme_oc_ultra_payment_method[' + payment_row + '][icon]" value="{{ payment.icon }}" placeholder="{{ entry_payment_icon }}" class="form-control"/>';
+    html += '  </td>';
+    html += '  <td class="text-right">';
+    html += '    <button type="button" class="btn btn-danger btn-remove-payment"><i class="fa fa-minus-circle"></i></button>';
+    html += '  </td>';
+    html += '</tr>';
+    
+    $('#payment-methods-table tbody').append(html);
+    
+    payment_row++;
+});
+
+$('#payment-methods-table').on('click', '.btn-remove-payment', function() {
+    $(this).closest('tr').remove();
+});
+//--></script>
+{{ footer }}

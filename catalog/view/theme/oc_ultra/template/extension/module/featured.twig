@@ -1,0 +1,30 @@
+<section class="featured-products-section" style="padding: 40px 0; background: #fff;">
+  <div class="container">
+    <h2 class="text-center" style="font-weight: 700; margin-bottom: 30px;">{{ heading_title }}</h2>
+    <div class="row">
+      {% for product in products %}
+      <div class="product-layout col-lg-3 col-md-3 col-sm-6 col-xs-12">
+        <div class="product-thumb transition text-center" style="padding: 10px; border: none; margin-bottom: 20px;">
+          <div class="image" style="position: relative; overflow: hidden; margin-bottom: 15px;">
+            <a href="{{ product.href }}">
+              <img src="{{ product.thumb }}" alt="{{ product.name }}" title="{{ product.name }}" class="img-responsive" style="margin: 0 auto;" />
+            </a>
+          </div>
+          <div class="caption">
+            <h4 style="margin: 10px 0;"><a href="{{ product.href }}" style="color: #333; text-decoration: none; font-weight: 600;">{{ product.name }}</a></h4>
+            {% if product.price %}
+            <p class="price" style="font-size: 16px; font-weight: 700;">
+              {% if not product.special %}
+              {{ product.price }}
+              {% else %}
+              <span class="price-new" style="color: #d9534f;">{{ product.special }}</span> <span class="price-old" style="color: #999; text-decoration: line-through; font-size: 14px;">{{ product.price }}</span>
+              {% endif %}
+            </p>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>

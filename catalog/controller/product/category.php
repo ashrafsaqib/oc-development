@@ -147,6 +147,19 @@ class ControllerProductCategory extends Controller {
 				);
 			}
 
+			// Add subcategories with images for oc_ultra theme
+			$data['sub_categories'] = [];
+
+			$results = $this->model_catalog_category->getCategories($category_id);
+
+			foreach ($results as $result) {
+				$data['sub_categories'][] = [
+					'name' => $result['name'],
+					'image' => $result['image'] ? $this->model_tool_image->resize($result['image'], 300, 300) : $this->model_tool_image->resize('placeholder.png', 300, 300),
+					'href' => $this->url->link('product/category', 'path=' . $this->request->get['path'] . '_' . $result['category_id'])
+				];
+			}
+
 			$data['products'] = array();
 
 			$filter_data = array(

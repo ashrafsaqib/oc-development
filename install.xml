@@ -1,0 +1,278 @@
+<?xml version="1.0" encoding="utf-8"?>
+<modification>
+  <name>OC Ultra Theme Core Modifications</name>
+  <code>oc_ultra_core</code>
+  <version>1.0</version>
+  <author>OC Ultra</author>
+  <link>http://www.opencart.com</link>
+
+  <file path="catalog/controller/common/footer.php">
+    <operation>
+      <search><![CDATA[$data['newsletter'] = $this->url->link('account/newsletter', '', true);]]></search>
+      <add position="after"><![CDATA[
+		$this->load->language('extension/theme/oc_ultra');
+		// Custom Language Variables
+		$data['text_newsletter_pro'] = $this->language->get('text_newsletter_pro');
+		$data['text_email_placeholder'] = $this->language->get('text_email_placeholder');
+      ]]></add>
+    </operation>
+    <operation>
+      <search><![CDATA[$data['styles'] = $this->document->getStyles('footer');]]></search>
+      <add position="after"><![CDATA[
+		// Add newsletter subscription URL
+		$data['newsletter'] = $this->url->link('extension/oc_ultra/marketing/newsletter.subscribe');
+
+		// Add footer newsletter text
+		$data['footer_newsletter_text'] = $this->config->get('theme_oc_ultra_footer_text') ? $this->config->get('theme_oc_ultra_footer_text') : $this->language->get('text_newsletter_pro');
+		
+		// Add newsletter popup settings
+		$data['newsletter_popup_enabled'] = $this->config->get('theme_oc_ultra_newsletter_popup_status');
+		$data['newsletter_popup_title'] = $this->config->get('theme_oc_ultra_newsletter_popup_title') ? $this->config->get('theme_oc_ultra_newsletter_popup_title') : 'Get 10% Off Your First Order';
+		$data['newsletter_popup_subtitle'] = $this->config->get('theme_oc_ultra_newsletter_popup_subtitle') ? $this->config->get('theme_oc_ultra_newsletter_popup_subtitle') : 'Sign up for exclusive deals, new arrivals & more!';
+		$data['newsletter_popup_delay'] = $this->config->get('theme_oc_ultra_newsletter_popup_delay') ? $this->config->get('theme_oc_ultra_newsletter_popup_delay') : 2000;
+
+		$this->load->model('tool/image');
+		if ($this->config->get('theme_oc_ultra_newsletter_popup_image') && is_file(DIR_IMAGE . html_entity_decode($this->config->get('theme_oc_ultra_newsletter_popup_image'), ENT_QUOTES, 'UTF-8'))) {
+			$data['newsletter_popup_image'] = $this->model_tool_image->resize(html_entity_decode($this->config->get('theme_oc_ultra_newsletter_popup_image'), ENT_QUOTES, 'UTF-8'), 300, 300);
+		} else {
+			$data['newsletter_popup_image'] = '';
+		}
+
+		// Add social links
+		$data['social_links'] = [];
+		if ($this->config->get('theme_oc_ultra_social_link')) {
+			$social_links = $this->config->get('theme_oc_ultra_social_link');
+
+			foreach ($social_links as $social) {
+				$data['social_links'][] = [
+					'name' => isset($social['name']) ? $social['name'] : '',
+					'icon' => isset($social['icon']) ? $social['icon'] : '',
+					'url'  => isset($social['url']) ? $social['url'] : '#'
+				];
+			}
+		}
+
+		// Add payment methods
+		$data['payment_methods'] = [];
+		if ($this->config->get('theme_oc_ultra_payment_method')) {
+			$payment_methods = $this->config->get('theme_oc_ultra_payment_method');
+
+			foreach ($payment_methods as $payment) {
+				$data['payment_methods'][] = [
+					'name' => isset($payment['name']) ? $payment['name'] : '',
+					'icon' => isset($payment['icon']) ? $payment['icon'] : ''
+				];
+			}
+		}
+
+		// Add custom JavaScript
+		if ($this->config->get('theme_oc_ultra_custom_js')) {
+			$data['custom_js'] = $this->config->get('theme_oc_ultra_custom_js');
+		}
+      ]]></add>
+    </operation>
+  </file>
+
+  <file path="catalog/controller/common/header.php">
+    <operation>
+      <search><![CDATA[$data['text_logged'] = sprintf($this->language->get('text_logged'), $this->url->link('account/account', '', true), $this->customer->getFirstName(), $this->url->link('account/logout', '', true));]]></search>
+      <add position="after"><![CDATA[
+		$this->load->language('extension/theme/oc_ultra');
+		// Custom Language Variables
+		$data['text_search_header'] = $this->language->get('text_search_header');
+		$data['text_toggle_nav'] = $this->language->get('text_toggle_nav');
+      ]]></add>
+    </operation>
+    <operation>
+      <search><![CDATA[$data['menu'] = $this->load->controller('common/menu');]]></search>
+      <add position="after"><![CDATA[
+		// Add theme header text setting to header data
+		if ($this->config->get('theme_oc_ultra_header_text')) {
+			$data['theme_header_text'] = html_entity_decode($this->config->get('theme_oc_ultra_header_text'), ENT_QUOTES, 'UTF-8');
+		} else {
+			$data['theme_header_text'] = 'Free shipping on orders over $100 | Use code WELCOME10 for 10% off';
+		}
+
+		// Add custom CSS
+		if ($this->config->get('theme_oc_ultra_custom_css')) {
+			$data['custom_css'] = $this->config->get('theme_oc_ultra_custom_css');
+		}
+
+		// Add dynamic header color
+		$color_preset = $this->config->get('theme_oc_ultra_header_color_preset') ? $this->config->get('theme_oc_ultra_header_color_preset') : 'jade';
+
+		$preset_colors = [
+			'jade' => '#86a88d',
+			'slate' => '#545A62',
+			'midnight' => '#2C3E50',
+			'sage' => '#606C5D',
+			'charcoal' => '#333333'
+		];
+
+		if ($color_preset === 'custom') {
+			$data['header_bg_color'] = $this->config->get('theme_oc_ultra_header_color_custom') ? $this->config->get('theme_oc_ultra_header_color_custom') : '#86a88d';
+		} else {
+			$data['header_bg_color'] = isset($preset_colors[$color_preset]) ? $preset_colors[$color_preset] : '#86a88d';
+		}
+      ]]></add>
+    </operation>
+  </file>
+
+  <file path="catalog/controller/common/home.php">
+    <operation>
+      <search><![CDATA[public function index() {]]></search>
+      <add position="after"><![CDATA[
+		$this->load->language('extension/theme/oc_ultra');
+
+		// Load custom theme settings for current language
+		$this->load->model('setting/setting');
+		$current_language_id = (int)$this->config->get('config_language_id');
+		$current_store_id = (int)$this->config->get('config_store_id');
+		$theme_settings = $this->model_setting_setting->getSetting('theme_oc_ultra_' . $current_language_id, $current_store_id);
+		
+		foreach ($theme_settings as $key => $value) {
+			$this->config->set($key, $value);
+		}
+		
+		$data['text_shop_by_category'] = $this->language->get('text_shop_by_category');
+		$data['text_shop_now'] = $this->language->get('text_shop_now');
+      ]]></add>
+    </operation>
+    <operation>
+      <search><![CDATA[$this->document->addLink($this->config->get('config_url'), 'canonical');
+		}]]></search>
+      <add position="after"><![CDATA[
+		// Add featured categories to home page
+		$this->load->model('catalog/category');
+		$this->load->model('tool/image');
+
+		$data['featured_categories'] = [];
+
+		// Check if featured categories section is enabled
+		if ($this->config->get('theme_oc_ultra_featured_categories_status') && $this->config->get('theme_oc_ultra_featured_category')) {
+			$featured_categories = $this->config->get('theme_oc_ultra_featured_category');
+
+			foreach ($featured_categories as $featured_category) {
+				$category_info = $this->model_catalog_category->getCategory($featured_category['category_id']);
+
+				if ($category_info && $featured_category['image'] && is_file(DIR_IMAGE . html_entity_decode($featured_category['image'], ENT_QUOTES, 'UTF-8'))) {
+					$image = 'image/'.html_entity_decode($featured_category['image'], ENT_QUOTES, 'UTF-8');
+
+					$data['featured_categories'][] = [
+						'category_id' => $category_info['category_id'],
+						'name'        => $category_info['name'],
+						'image'       => $image,
+						'width'       => isset($featured_category['width']) ? $featured_category['width'] : 4,
+						'href'        => $this->url->link('product/category', 'path=' . $category_info['category_id'])
+					];
+				}
+			}
+		}
+
+		// Add FAQ section data - only if enabled
+		if ($this->config->get('theme_oc_ultra_faq_status')) {
+			$data['faq_heading'] = $this->config->get('theme_oc_ultra_faq_heading') ? $this->config->get('theme_oc_ultra_faq_heading') : 'Have a question? We are here to help.';
+			$data['faq_description'] = $this->config->get('theme_oc_ultra_faq_description') ? $this->config->get('theme_oc_ultra_faq_description') : 'Check out the most common questions our customers asked. Still have questions? Contact our customer support.';
+			$data['faq_support_text'] = $this->config->get('theme_oc_ultra_faq_support_text') ? $this->config->get('theme_oc_ultra_faq_support_text') : 'Our customer support is available monday to friday: 8am-8:30pm.';
+			$data['faq_support_hours'] = $this->config->get('theme_oc_ultra_faq_support_hours') ? $this->config->get('theme_oc_ultra_faq_support_hours') : 'Average answer time: 24h';
+
+			$data['faqs'] = [];
+			if ($this->config->get('theme_oc_ultra_faq')) {
+				$data['faqs'] = $this->config->get('theme_oc_ultra_faq');
+			}
+		} else {
+			$data['faqs'] = [];
+		}
+
+		// Add testimonials section data - only if enabled
+		$data['testimonials'] = [];
+		if ($this->config->get('theme_oc_ultra_testimonials_status')) {
+			$data['testimonials_heading'] = $this->config->get('theme_oc_ultra_testimonials_heading') ? $this->config->get('theme_oc_ultra_testimonials_heading') : 'What our customers are saying';
+
+			if ($this->config->get('theme_oc_ultra_testimonial')) {
+				$testimonials = $this->config->get('theme_oc_ultra_testimonial');
+
+				foreach ($testimonials as $testimonial) {
+					if (isset($testimonial['image']) && $testimonial['image'] && is_file(DIR_IMAGE . html_entity_decode($testimonial['image'], ENT_QUOTES, 'UTF-8'))) {
+						$image = $this->model_tool_image->resize(html_entity_decode($testimonial['image'], ENT_QUOTES, 'UTF-8'), 100, 100);
+					} else {
+						$image = $this->model_tool_image->resize('placeholder.png', 100, 100);
+					}
+
+					$data['testimonials'][] = [
+						'name'     => isset($testimonial['name']) ? $testimonial['name'] : '',
+						'location' => isset($testimonial['location']) ? $testimonial['location'] : '',
+						'image'    => $image,
+						'rating'   => isset($testimonial['rating']) ? (int)$testimonial['rating'] : 5,
+						'text'     => isset($testimonial['text']) ? $testimonial['text'] : ''
+					];
+				}
+			}
+		}
+
+		// Add features section data - only if enabled
+		$data['features'] = [];
+		if ($this->config->get('theme_oc_ultra_features_status')) {
+			if ($this->config->get('theme_oc_ultra_feature')) {
+				$features = $this->config->get('theme_oc_ultra_feature');
+
+				foreach ($features as $feature) {
+					$data['features'][] = [
+						'icon'        => isset($feature['icon']) ? $feature['icon'] : 'bi bi-star',
+						'title'       => isset($feature['title']) ? $feature['title'] : '',
+						'description' => isset($feature['description']) ? $feature['description'] : ''
+					];
+				}
+			}
+		}
+      ]]></add>
+    </operation>
+  </file>
+
+  <file path="catalog/controller/product/category.php">
+     <operation>
+      <search><![CDATA[$data['products'] = array();]]></search>
+      <add position="before"><![CDATA[
+		// Add subcategories with images for oc_ultra theme
+		$data['sub_categories'] = [];
+
+		$results = $this->model_catalog_category->getCategories($category_id);
+
+		foreach ($results as $result) {
+			$data['sub_categories'][] = [
+				'name' => $result['name'],
+				'image' => $result['image'] ? $this->model_tool_image->resize($result['image'], 300, 300) : $this->model_tool_image->resize('placeholder.png', 300, 300),
+				'href' => $this->url->link('product/category', 'path=' . $this->request->get['path'] . '_' . $result['category_id'])
+			];
+		}
+      ]]></add>
+    </operation>
+  </file>
+
+  <file path="catalog/controller/product/product.php">
+    <operation>
+      <search><![CDATA[$data['heading_title'] = $product_info['name'];]]></search>
+      <add position="after"><![CDATA[
+		$this->load->language('extension/theme/oc_ultra');
+		// Start Custom Language Variables
+		$data['text_desc_header'] = $this->language->get('text_desc_header');
+		$data['text_spec_header'] = $this->language->get('text_spec_header');
+		$data['text_reviews_header'] = $this->language->get('text_reviews_header');
+		$data['text_related'] = $this->language->get('text_related');
+		$data['text_share'] = $this->language->get('text_share');
+		// End Custom Language Variables
+      ]]></add>
+    </operation>
+  </file>
+
+  <file path="catalog/controller/common/cart.php">
+    <operation>
+      <search><![CDATA[$this->load->language('common/cart');]]></search>
+      <add position="after"><![CDATA[
+		$this->load->language('extension/theme/oc_ultra');
+		$data['text_shopping_cart'] = $this->language->get('text_shopping_cart');
+      ]]></add>
+    </operation>
+  </file>
+
+</modification>

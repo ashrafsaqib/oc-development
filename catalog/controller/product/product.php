@@ -243,6 +243,14 @@ class ControllerProductProduct extends Controller {
 
 			$data['heading_title'] = $product_info['name'];
 
+			// Start Custom Language Variables
+			$data['text_desc_header'] = $this->language->get('text_desc_header');
+			$data['text_spec_header'] = $this->language->get('text_spec_header');
+			$data['text_reviews_header'] = $this->language->get('text_reviews_header');
+			$data['text_related'] = $this->language->get('text_related');
+			$data['text_share'] = $this->language->get('text_share');
+			// End Custom Language Variables
+
 			$data['text_minimum'] = sprintf($this->language->get('text_minimum'), $product_info['minimum']);
 			$data['text_login'] = sprintf($this->language->get('text_login'), $this->url->link('account/login', '', true), $this->url->link('account/register', '', true));
 

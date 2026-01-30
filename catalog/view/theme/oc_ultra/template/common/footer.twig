@@ -1,0 +1,96 @@
+<!-- Footer (Bootstrap 3) -->
+<footer class="footer-section text-white" style="padding-top:50px; padding-bottom:20px; background:#222; color:#fff;">
+  <div class="container">
+    <div class="row">
+      <div class="col-md-4">
+        <h3>{{ name }}</h3>
+        <h5>{{ footer_newsletter_text }}</h5>
+        <form id="footer-newsletter-form" class="newsletter-form">
+          <div class="input-group">
+            <input type="email" name="email" class="form-control" placeholder="{{ text_email_placeholder }}" aria-label="{{ text_email_placeholder }}" required>
+            <span class="input-group-btn">
+              <button class="btn btn-default" type="submit"><i class="fa fa-arrow-right"></i></button>
+            </span>
+          </div>
+          <div id="newsletter-message" style="margin-top:10px;"></div>
+        </form>
+        <script type="text/javascript">
+        $('#footer-newsletter-form').on('submit', function(e) {
+            e.preventDefault();
+            $.ajax({
+                url: 'index.php?route=extension/theme/oc_ultra/subscribe',
+                type: 'post',
+                dataType: 'json',
+                data: $(this).serialize(),
+                beforeSend: function() {
+                    $('#footer-newsletter-form button').button('loading');
+                },
+                complete: function() {
+                    $('#footer-newsletter-form button').button('reset');
+                },
+                success: function(json) {
+                    $('.alert-dismissible').remove();
+                    
+                    if (json['error']) {
+                        $('#newsletter-message').html('<div class="text-danger"><i class="fa fa-exclamation-circle"></i> ' + json['error'] + '</div>');
+                    }
+                    
+                    if (json['success']) {
+                        $('#newsletter-message').html('<div class="text-success"><i class="fa fa-check-circle"></i> ' + json['success'] + '</div>');
+                        $('#footer-newsletter-form input[name=\'email\']').val('');
+                    }
+                }
+            });
+        });
+        </script>
+        <div class="social-icons" style="margin-top:20px;">
+          {% if social_links %}
+            {% for social in social_links %}
+              <a href="{{ social.url }}" title="{{ social.name }}" target="_blank" rel="noopener"><i class="{{ social.icon }}"></i></a>
+            {% endfor %}
+          {% else %}
+            <a href="#"><i class="fa fa-facebook"></i></a>
+            <a href="#"><i class="fa fa-twitter"></i></a>
+            <a href="#"><i class="fa fa-instagram"></i></a>
+            <a href="#"><i class="fa fa-youtube"></i></a>
+          {% endif %}
+        </div>
+      </div>
+      <div class="col-md-2 col-md-offset-2">
+        <h5>{{ text_information }}</h5>
+        <ul class="list-unstyled">
+          {% if blog %}
+            <li><a href="{{ blog }}">{{ text_blog }}</a></li>
+          {% endif %}
+          {% for information in informations %}
+            <li><a href="{{ information.href }}">{{ information.title }}</a></li>
+          {% endfor %}
+          <li><a href="{{ contact }}">{{ text_contact }}</a></li>
+        </ul>
+      </div>
+      <div class="col-md-2">
+        <h5>{{ text_service }}</h5>
+        <ul class="list-unstyled">
+          <li><a href="{{ return }}">{{ text_return }}</a></li>
+          {% if gdpr %}
+            <li><a href="{{ gdpr }}">{{ text_gdpr }}</a></li>
+          {% endif %}
+          <li><a href="{{ sitemap }}">{{ text_sitemap }}</a></li>
+          <li><a href="{{ manufacturer }}">{{ text_manufacturer }}</a></li>
+        </ul>
+      </div>
+      <div class="col-md-2">
+        <h5>{{ text_account }}</h5>
+        <ul class="list-unstyled">
+          <li><a href="{{ account }}">{{ text_account }}</a></li>
+          <li><a href="{{ order }}">{{ text_order }}</a></li>
+          <li><a href="{{ wishlist }}">{{ text_wishlist }}</a></li>
+          <li><a href="{{ special }}">{{ text_special }}</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</footer>
+</div>
+</body>
+</html>
