@@ -165,7 +165,18 @@
                 <?php } else { ?>
                 &nbsp;<small> - <?php echo $option['name']; ?>: <a href="<?php echo $option['href']; ?>"><?php echo $option['value']; ?></a></small>
                 <?php } ?>
-                <?php } ?></td>
+                <?php } ?>
+                <?php if ($designer_enabled && !empty($product['custom_data'])) { ?>
+                <div class="text-center mt-2">
+                  <button type="button" class="btn btn-primary shadow-sm open-editor" data-toggle="modal" data-target="#productDesigner" data-order-product-id="<?php echo $product['order_product_id']; ?>" data-product-id="<?php echo $product['product_id']; ?>">
+                    <i class="fa fa-eye"></i>
+                  </button>
+                  <a href="index.php?route=extension/module/customdesigncart/downloadOrderAssets&token=<?php echo $token; ?>&order_id=<?php echo $order_id; ?>&order_product_id=<?php echo $product['order_product_id']; ?>" target="_blank" class="btn btn-info" style="margin-left:10px;">
+                    <i class="fa fa-download"></i>
+                  </a>
+                </div>
+                <?php } ?>
+              </td>
               <td class="text-left"><?php echo $product['model']; ?></td>
               <td class="text-right"><?php echo $product['quantity']; ?></td>
               <td class="text-right"><?php echo $product['price']; ?></td>
@@ -653,4 +664,25 @@ $('select[name="order_status_id"]').change(function(){
 });
 //--></script> 
 </div>
+<?php if ($designer_enabled) { ?>
+<div class="modal fade" id="productDesigner" tabindex="-1" role="dialog" aria-labelledby="productDesignerLabel" aria-hidden="true" data-iframe-url="<?php echo $iframe_url; ?>">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-body">
+        
+        <!-- Overlay Buttons -->
+        <div class="overlay-buttons">
+          <button type="button pull-right" data-dismiss="modal" title="Close">
+            <i class="fa fa-times"></i>
+          </button>
+        </div>
+
+        <!-- Iframe content -->
+         <div class="iframe-container"></div>
+      </div>
+    </div>
+  </div>
+</div>
+<script src="../catalog/view/javascript/customdesigncart/vibeprint.js"></script>
+<?php } ?>
 <?php echo $footer; ?> 

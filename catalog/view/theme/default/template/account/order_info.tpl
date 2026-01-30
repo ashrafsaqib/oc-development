@@ -91,7 +91,13 @@
               <td class="text-right"><?php echo $product['quantity']; ?></td>
               <td class="text-right"><?php echo $product['price']; ?></td>
               <td class="text-right"><?php echo $product['total']; ?></td>
-              <td class="text-right" style="white-space: nowrap;"><?php if ($product['reorder']) { ?>
+              <td class="text-right" style="white-space: nowrap;">
+                <?php if ($custom_design_cart && !empty($product['custom_data'])) { ?>
+                <button type="button" class="btn btn-info" data-toggle="modal" data-target="#previewModal<?php echo $product['order_product_id']; ?>">
+                  <i class="fa fa-eye"></i> Preview
+                </button>
+                <?php } ?>
+                <?php if ($product['reorder']) { ?>
                 <a href="<?php echo $product['reorder']; ?>" data-toggle="tooltip" title="<?php echo $button_reorder; ?>" class="btn btn-primary"><i class="fa fa-shopping-cart"></i></a>
                 <?php } ?>
                 <a href="<?php echo $product['return']; ?>" data-toggle="tooltip" title="<?php echo $button_return; ?>" class="btn btn-danger"><i class="fa fa-reply"></i></a></td>
@@ -171,4 +177,29 @@
       <?php echo $content_bottom; ?></div>
     <?php echo $column_right; ?></div>
 </div>
+
+<?php foreach ($products as $product) { ?>
+  <?php if ($custom_design_cart && !empty($product['custom_data'])) { ?>
+    <div class="modal fade" id="previewModal<?php echo $product['order_product_id']; ?>" tabindex="-1" role="dialog">
+      <div class="modal-dialog" style="width: 95%; max-width: 95%; height: 95vh; margin: 2.5vh auto;">
+        <div class="modal-content" style="height: 100%;">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal">&times;</button>
+            <h4 class="modal-title">Preview Design - <?php echo $product['name']; ?></h4>
+          </div>
+          <div class="modal-body" style="height: calc(100% - 120px); padding: 0;">
+            <iframe 
+              src="<?php echo $iframe_url; ?>?op_id=<?php echo $product['order_product_id']; ?>&base=<?php echo urlencode($base); ?>&preview=true&strict=true" 
+              style="width: 100%; height: 100%; border: none;">
+            </iframe>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  <?php } ?>
+<?php } ?>
+
 <?php echo $footer; ?>

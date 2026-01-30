@@ -63,6 +63,12 @@
                   <small><?php echo $option['name']; ?>: <?php echo $option['value']; ?></small>
                   <?php } ?>
                   <?php } ?>
+                  <?php if ($custom_design_cart && $product['custom_data']) { ?>
+                  <br />
+                  <button type="button" class="btn btn-info btn-xs" data-toggle="modal" data-target="#productDesignerModal<?php echo $product['cart_id']; ?>" title="<?php echo $text_close_preview; ?>">
+                    <i class="fa fa-eye"></i>
+                  </button>
+                  <?php } ?>
                   <?php if ($product['reward']) { ?>
                   <br />
                   <small><?php echo $product['reward']; ?></small>
@@ -129,4 +135,25 @@
       <?php echo $content_bottom; ?></div>
     <?php echo $column_right; ?></div>
 </div>
+<?php if ($custom_design_cart) { ?>
+  <?php foreach ($products as $product) { ?>
+    <?php if ($product['custom_data']) { ?>
+    <div class="modal fade" id="productDesignerModal<?php echo $product['cart_id']; ?>" tabindex="-1" role="dialog" aria-labelledby="productDesignerLabel" aria-hidden="true">
+      <div class="modal-dialog" role="document" style="width: 95%; max-width: 95%; height: 95%; margin: 2.5% auto;">
+        <div class="modal-content" style="height: 100%;">
+          <div class="modal-header" style="padding: 10px 15px;">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+            <h4 class="modal-title"><?php echo $product['name']; ?> - Design Preview</h4>
+          </div>
+          <div class="modal-body" style="padding:0; height: calc(100% - 51px); overflow: hidden;">
+            <iframe src="<?php echo $iframe_url; ?>?cart_id=<?php echo $product['cart_id']; ?>&p_id=<?php echo $product['product_id']; ?>&base=<?php echo $base; ?>&preview=true&strict=true" allowfullscreen style="width:100%;height:100%;border:none;"></iframe>
+          </div>
+        </div>
+      </div>
+    </div>
+    <?php } ?>
+  <?php } ?>
+<?php } ?>
 <?php echo $footer; ?>

@@ -100,6 +100,14 @@ class ControllerAccountOrder extends Controller {
 	}
 
 	public function info() {
+		$data['iframe_url'] = $this->config->get('module_customdesigncart_iframe_url');
+		$data['custom_design_cart'] = $this->config->get('module_customdesigncart_status');
+		if ($this->request->server['HTTPS']) {
+			$data['base'] = HTTPS_SERVER;
+		} else {
+			$data['base'] = HTTP_SERVER;
+		}
+
 		$this->load->language('account/order');
 
 		if (isset($this->request->get['order_id'])) {
@@ -314,7 +322,12 @@ class ControllerAccountOrder extends Controller {
 					$reorder = '';
 				}
 
+				$custom_data = $this->model_account_order->getOrderCustoms($this->request->get['order_id'], $product['order_product_id']);
+
 				$data['products'][] = array(
+					'order_product_id' => $product['order_product_id'],
+					'product_id' => $product['product_id'],
+					'custom_data' => $custom_data,
 					'name'     => $product['name'],
 					'model'    => $product['model'],
 					'option'   => $option_data,

@@ -333,6 +333,32 @@ class ControllerProductProduct extends Controller {
 				);
 			}
 
+			$this->load->language('extension/module/customdesigncart');
+
+			if ($this->request->server['HTTPS']) {
+				$base = HTTPS_SERVER;
+			} else {
+				$base = HTTP_SERVER;
+			}
+
+			if (file_exists(DIR_APPLICATION . 'view/javascript/customdesigncart/translation.' . $this->session->data['language'] . '.json')) {
+				$language_file = 'translation.' . $this->session->data['language'] . '.json';
+			} else {
+				$language_file = 'translation.json';
+			}
+
+			$data['iframe_url'] = $this->config->get('module_customdesigncart_iframe_url') . '?p_id=' . (int)$this->request->get['product_id'] . '&lang=' . $language_file . '&catalog=true&base=' . urlencode($base);
+			$data['designer_enabled'] = $this->config->get('module_customdesigncart_status') && !!$this->model_catalog_product->getProductCustomConfig((int)$this->request->get['product_id']);
+
+			// add styles
+			$this->document->addStyle('catalog/view/javascript/customdesigncart/vibeprint.css');
+
+			// Assign language variables
+			$data['text_customize'] = $this->language->get('text_customize');
+			$data['text_product_editor'] = $this->language->get('text_product_editor');
+			$data['text_save_btn'] = $this->language->get('text_save_btn');
+			$data['text_close_btn'] = $this->language->get('text_close_btn');
+
 			$data['options'] = array();
 
 			foreach ($this->model_catalog_product->getProductOptions($this->request->get['product_id']) as $option) {

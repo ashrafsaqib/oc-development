@@ -35,3 +35,5 @@ $_['column_comment']        = 'Comment';
 
 // Error
 $_['error_reorder']         = '%s is not currently available to be reordered.';
+$_['text_customized_product']       = 'Создать дизайн';
+$_['text_close_preview']            = 'Закрыть редактор';

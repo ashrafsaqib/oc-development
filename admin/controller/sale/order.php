@@ -758,6 +758,24 @@ class ControllerSaleOrder extends Controller {
 	}
 
 	public function info() {
+		$this->load->language('extension/module/customdesigncart');
+
+		if ($this->request->server['HTTPS']) {
+			$base = HTTPS_CATALOG;
+		} else {
+			$base = HTTP_CATALOG;
+		}
+
+		if (file_exists(DIR_APPLICATION . 'view/javascript/customdesigncart/translation.' . $this->session->data['language'] . '.json')) {
+			$language_file = 'translation.' . $this->session->data['language'] . '.json';
+		} else {
+			$language_file = 'translation.json';
+		}
+		$data['iframe_url'] = $this->config->get('module_customdesigncart_iframe_url').'?preview=true&admin=true&strict=true&lang=' . $language_file .'&base=' . urlencode($base);
+		$data['designer_enabled'] = $this->config->get('module_customdesigncart_status');
+		// add styles
+		$this->document->addStyle('catalog/view/javascript/customdesigncart/vibeprint.css');
+
 		$this->load->model('sale/order');
 
 		if (isset($this->request->get['order_id'])) {
@@ -1038,7 +1056,10 @@ class ControllerSaleOrder extends Controller {
 					}
 				}
 
+				$custom_data = $this->model_sale_order->getOrderCustoms($this->request->get['order_id'], $product['order_product_id']);
+
 				$data['products'][] = array(
+					'custom_data'      => $custom_data,
 					'order_product_id' => $product['order_product_id'],
 					'product_id'       => $product['product_id'],
 					'name'    	 	   => $product['name'],

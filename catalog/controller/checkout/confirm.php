@@ -226,6 +226,7 @@ class ControllerCheckoutConfirm extends Controller {
 				}
 
 				$order_data['products'][] = array(
+					'custom_data'  => $product['custom_data'],
 					'product_id' => $product['product_id'],
 					'name'       => $product['name'],
 					'model'      => $product['model'],
@@ -385,6 +386,7 @@ class ControllerCheckoutConfirm extends Controller {
 				}
 
 				$data['products'][] = array(
+					'custom_data'  => $product['custom_data'],
 					'cart_id'    => $product['cart_id'],
 					'product_id' => $product['product_id'],
 					'name'       => $product['name'],

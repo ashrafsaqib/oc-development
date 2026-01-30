@@ -1,0 +1,512 @@
+{
+    "fonts": [
+        {
+            "name": "Inter",
+            "url": "https:\/\/fonts.googleapis.com\/css2?family=Inter:wght@400;700&amp;display=swap"
+        },
+        {
+            "name": "Roboto",
+            "url": "https:\/\/fonts.googleapis.com\/css2?family=Roboto:wght@400;700&amp;display=swap"
+        },
+        {
+            "name": "Arial",
+            "url": "https:\/\/fonts.googleapis.com\/css2?family=Arial:wght@400;700&amp;display=swap"
+        },
+        {
+            "name": "Helvetica",
+            "url": "https:\/\/fonts.googleapis.com\/css2?family=Helvetica:wght@400;700&amp;display=swap"
+        },
+        {
+            "name": "Times New Roman",
+            "url": "https:\/\/fonts.googleapis.com\/css2?family=Times+New+Roman:wght@400;700&amp;display=swap"
+        },
+        {
+            "name": "Georgia",
+            "url": "https:\/\/fonts.googleapis.com\/css2?family=Georgia:wght@400;700&amp;display=swap"
+        },
+        {
+            "name": "Verdana",
+            "url": "https:\/\/fonts.googleapis.com\/css2?family=Verdana:wght@400;700&amp;display=swap"
+        },
+        {
+            "name": "Trebuchet MS",
+            "url": "https:\/\/fonts.googleapis.com\/css2?family=Trebuchet+MS:wght@400;700&amp;display=swap"
+        },
+        {
+            "name": "Impact",
+            "url": "https:\/\/fonts.googleapis.com\/css2?family=Impact:wght@400;700&amp;display=swap"
+        },
+        {
+            "name": "Comic Sans MS",
+            "url": "https:\/\/fonts.googleapis.com\/css2?family=Comic+Sans+MS:wght@400;700&amp;display=swap"
+        },
+        {
+            "name": "Open Sans",
+            "url": "https:\/\/fonts.googleapis.com\/css2?family=Open+Sans:wght@400;700&amp;display=swap"
+        },
+        {
+            "name": "Montserrat",
+            "url": "https:\/\/fonts.googleapis.com\/css2?family=Montserrat:wght@400;700&amp;display=swap"
+        },
+        {
+            "name": "Lato",
+            "url": "https:\/\/fonts.googleapis.com\/css2?family=Lato:wght@400;700&amp;display=swap"
+        },
+        {
+            "name": "Poppins",
+            "url": "https:\/\/fonts.googleapis.com\/css2?family=Poppins:wght@400;700&amp;display=swap"
+        },
+        {
+            "name": "Raleway",
+            "url": "https:\/\/fonts.googleapis.com\/css2?family=Raleway:wght@400;700&amp;display=swap"
+        },
+        {
+            "name": "Source Sans 3",
+            "url": "https:\/\/fonts.googleapis.com\/css2?family=Source+Sans+3:wght@400;700&amp;display=swap"
+        },
+        {
+            "name": "Nunito",
+            "url": "https:\/\/fonts.googleapis.com\/css2?family=Nunito:wght@400;700&amp;display=swap"
+        },
+        {
+            "name": "Work Sans",
+            "url": "https:\/\/fonts.googleapis.com\/css2?family=Work+Sans:wght@400;700&amp;display=swap"
+        },
+        {
+            "name": "Ubuntu",
+            "url": "https:\/\/fonts.googleapis.com\/css2?family=Ubuntu:wght@400;700&amp;display=swap"
+        },
+        {
+            "name": "Fira Sans",
+            "url": "https:\/\/fonts.googleapis.com\/css2?family=Fira+Sans:wght@400;700&amp;display=swap"
+        },
+        {
+            "name": "DM Sans",
+            "url": "https:\/\/fonts.googleapis.com\/css2?family=DM+Sans:wght@400;700&amp;display=swap"
+        },
+        {
+            "name": "IBM Plex Sans",
+            "url": "https:\/\/fonts.googleapis.com\/css2?family=IBM+Plex+Sans:wght@400;700&amp;display=swap"
+        },
+        {
+            "name": "Titillium Web",
+            "url": "https:\/\/fonts.googleapis.com\/css2?family=Titillium+Web:wght@400;700&amp;display=swap"
+        },
+        {
+            "name": "Quicksand",
+            "url": "https:\/\/fonts.googleapis.com\/css2?family=Quicksand:wght@400;700&amp;display=swap"
+        },
+        {
+            "name": "Oxygen",
+            "url": "https:\/\/fonts.googleapis.com\/css2?family=Oxygen:wght@400;700&amp;display=swap"
+        },
+        {
+            "name": "Muli",
+            "url": "https:\/\/fonts.googleapis.com\/css2?family=Muli:wght@400;700&amp;display=swap"
+        },
+        {
+            "name": "Archivo",
+            "url": "https:\/\/fonts.googleapis.com\/css2?family=Archivo:wght@400;700&amp;display=swap"
+        },
+        {
+            "name": "Karla",
+            "url": "https:\/\/fonts.googleapis.com\/css2?family=Karla:wght@400;700&amp;display=swap"
+        },
+        {
+            "name": "Outfit",
+            "url": "https:\/\/fonts.googleapis.com\/css2?family=Outfit:wght@400;700&amp;display=swap"
+        },
+        {
+            "name": "Josefin Sans",
+            "url": "https:\/\/fonts.googleapis.com\/css2?family=Josefin+Sans:wght@400;700&amp;display=swap"
+        },
+        {
+            "name": "Space Grotesk",
+            "url": "https:\/\/fonts.googleapis.com\/css2?family=Space+Grotesk:wght@400;700&amp;display=swap"
+        },
+        {
+            "name": "Merriweather",
+            "url": "https:\/\/fonts.googleapis.com\/css2?family=Merriweather:wght@400;700&amp;display=swap"
+        },
+        {
+            "name": "Lora",
+            "url": "https:\/\/fonts.googleapis.com\/css2?family=Lora:wght@400;700&amp;display=swap"
+        },
+        {
+            "name": "Playfair Display",
+            "url": "https:\/\/fonts.googleapis.com\/css2?family=Playfair+Display:wght@400;700&amp;display=swap"
+        },
+        {
+            "name": "Noto Serif",
+            "url": "https:\/\/fonts.googleapis.com\/css2?family=Noto+Serif:wght@400;700&amp;display=swap"
+        },
+        {
+            "name": "PT Serif",
+            "url": "https:\/\/fonts.googleapis.com\/css2?family=PT+Serif:wght@400;700&amp;display=swap"
+        },
+        {
+            "name": "Crimson Text",
+            "url": "https:\/\/fonts.googleapis.com\/css2?family=Crimson+Text:wght@400;700&amp;display=swap"
+        },
+        {
+            "name": "Libre Baskerville",
+            "url": "https:\/\/fonts.googleapis.com\/css2?family=Libre+Baskerville:wght@400;700&amp;display=swap"
+        },
+        {
+            "name": "Cardo",
+            "url": "https:\/\/fonts.googleapis.com\/css2?family=Cardo:wght@400;700&amp;display=swap"
+        },
+        {
+            "name": "Taviraj",
+            "url": "https:\/\/fonts.googleapis.com\/css2?family=Taviraj:wght@400;700&amp;display=swap"
+        },
+        {
+            "name": "Alegreya",
+            "url": "https:\/\/fonts.googleapis.com\/css2?family=Alegreya:wght@400;700&amp;display=swap"
+        },
+        {
+            "name": "EB Garamond",
+            "url": "https:\/\/fonts.googleapis.com\/css2?family=EB+Garamond:wght@400;700&amp;display=swap"
+        },
+        {
+            "name": "Bitter",
+            "url": "https:\/\/fonts.googleapis.com\/css2?family=Bitter:wght@400;700&amp;display=swap"
+        },
+        {
+            "name": "Spectral",
+            "url": "https:\/\/fonts.googleapis.com\/css2?family=Spectral:wght@400;700&amp;display=swap"
+        },
+        {
+            "name": "Cormorant Garamond",
+            "url": "https:\/\/fonts.googleapis.com\/css2?family=Cormorant+Garamond:wght@400;700&amp;display=swap"
+        },
+        {
+            "name": "Source Serif 4",
+            "url": "https:\/\/fonts.googleapis.com\/css2?family=Source+Serif+4:wght@400;700&amp;display=swap"
+        },
+        {
+            "name": "Roboto Slab",
+            "url": "https:\/\/fonts.googleapis.com\/css2?family=Roboto+Slab:wght@400;700&amp;display=swap"
+        },
+        {
+            "name": "Oswald",
+            "url": "https:\/\/fonts.googleapis.com\/css2?family=Oswald:wght@400;700&amp;display=swap"
+        },
+        {
+            "name": "Anton",
+            "url": "https:\/\/fonts.googleapis.com\/css2?family=Anton:wght@400;700&amp;display=swap"
+        },
+        {
+            "name": "Bungee",
+            "url": "https:\/\/fonts.googleapis.com\/css2?family=Bungee:wght@400;700&amp;display=swap"
+        },
+        {
+            "name": "Alfa Slab One",
+            "url": "https:\/\/fonts.googleapis.com\/css2?family=Alfa+Slab+One:wght@400;700&amp;display=swap"
+        },
+        {
+            "name": "Abril Fatface",
+            "url": "https:\/\/fonts.googleapis.com\/css2?family=Abril+Fatface:wght@400;700&amp;display=swap"
+        },
+        {
+            "name": "Righteous",
+            "url": "https:\/\/fonts.googleapis.com\/css2?family=Righteous:wght@400;700&amp;display=swap"
+        },
+        {
+            "name": "Rubik Mono One",
+            "url": "https:\/\/fonts.googleapis.com\/css2?family=Rubik+Mono+One:wght@400;700&amp;display=swap"
+        },
+        {
+            "name": "Lobster",
+            "url": "https:\/\/fonts.googleapis.com\/css2?family=Lobster:wght@400;700&amp;display=swap"
+        },
+        {
+            "name": "Concert One",
+            "url": "https:\/\/fonts.googleapis.com\/css2?family=Concert+One:wght@400;700&amp;display=swap"
+        },
+        {
+            "name": "Pacifico",
+            "url": "https:\/\/fonts.googleapis.com\/css2?family=Pacifico:wght@400;700&amp;display=swap"
+        },
+        {
+            "name": "Luckiest Guy",
+            "url": "https:\/\/fonts.googleapis.com\/css2?family=Luckiest+Guy:wght@400;700&amp;display=swap"
+        },
+        {
+            "name": "Fredoka",
+            "url": "https:\/\/fonts.googleapis.com\/css2?family=Fredoka:wght@400;700&amp;display=swap"
+        },
+        {
+            "name": "Bangers",
+            "url": "https:\/\/fonts.googleapis.com\/css2?family=Bangers:wght@400;700&amp;display=swap"
+        },
+        {
+            "name": "Permanent Marker",
+            "url": "https:\/\/fonts.googleapis.com\/css2?family=Permanent+Marker:wght@400;700&amp;display=swap"
+        },
+        {
+            "name": "Caveat",
+            "url": "https:\/\/fonts.googleapis.com\/css2?family=Caveat:wght@400;700&amp;display=swap"
+        },
+        {
+            "name": "Shrikhand",
+            "url": "https:\/\/fonts.googleapis.com\/css2?family=Shrikhand:wght@400;700&amp;display=swap"
+        },
+        {
+            "name": "Cinzel",
+            "url": "https:\/\/fonts.googleapis.com\/css2?family=Cinzel:wght@400;700&amp;display=swap"
+        },
+        {
+            "name": "Ruda",
+            "url": "https:\/\/fonts.googleapis.com\/css2?family=Ruda:wght@400;700&amp;display=swap"
+        },
+        {
+            "name": "Roboto Mono",
+            "url": "https:\/\/fonts.googleapis.com\/css2?family=Roboto+Mono:wght@400;700&amp;display=swap"
+        },
+        {
+            "name": "Space Mono",
+            "url": "https:\/\/fonts.googleapis.com\/css2?family=Space+Mono:wght@400;700&amp;display=swap"
+        },
+        {
+            "name": "Inconsolata",
+            "url": "https:\/\/fonts.googleapis.com\/css2?family=Inconsolata:wght@400;700&amp;display=swap"
+        },
+        {
+            "name": "Source Code Pro",
+            "url": "https:\/\/fonts.googleapis.com\/css2?family=Source+Code+Pro:wght@400;700&amp;display=swap"
+        },
+        {
+            "name": "IBM Plex Mono",
+            "url": "https:\/\/fonts.googleapis.com\/css2?family=IBM+Plex+Mono:wght@400;700&amp;display=swap"
+        },
+        {
+            "name": "Fira Code",
+            "url": "https:\/\/fonts.googleapis.com\/css2?family=Fira+Code:wght@400;700&amp;display=swap"
+        },
+        {
+            "name": "Spline Sans Mono",
+            "url": "https:\/\/fonts.googleapis.com\/css2?family=Spline+Sans+Mono:wght@400;700&amp;display=swap"
+        },
+        {
+            "name": "Assistant",
+            "url": "https:\/\/fonts.googleapis.com\/css2?family=Assistant:wght@400;700&amp;display=swap"
+        },
+        {
+            "name": "Prompt",
+            "url": "https:\/\/fonts.googleapis.com\/css2?family=Prompt:wght@400;700&amp;display=swap"
+        },
+        {
+            "name": "Chivo",
+            "url": "https:\/\/fonts.googleapis.com\/css2?family=Chivo:wght@400;700&amp;display=swap"
+        },
+        {
+            "name": "Kanit",
+            "url": "https:\/\/fonts.googleapis.com\/css2?family=Kanit:wght@400;700&amp;display=swap"
+        },
+        {
+            "name": "Public Sans",
+            "url": "https:\/\/fonts.googleapis.com\/css2?family=Public+Sans:wght@400;700&amp;display=swap"
+        },
+        {
+            "name": "Saira",
+            "url": "https:\/\/fonts.googleapis.com\/css2?family=Saira:wght@400;700&amp;display=swap"
+        },
+        {
+            "name": "Heebo",
+            "url": "https:\/\/fonts.googleapis.com\/css2?family=Heebo:wght@400;700&amp;display=swap"
+        },
+        {
+            "name": "Alata",
+            "url": "https:\/\/fonts.googleapis.com\/css2?family=Alata:wght@400;700&amp;display=swap"
+        },
+        {
+            "name": "Catamaran",
+            "url": "https:\/\/fonts.googleapis.com\/css2?family=Catamaran:wght@400;700&amp;display=swap"
+        },
+        {
+            "name": "Questrial",
+            "url": "https:\/\/fonts.googleapis.com\/css2?family=Questrial:wght@400;700&amp;display=swap"
+        },
+        {
+            "name": "Rubik",
+            "url": "https:\/\/fonts.googleapis.com\/css2?family=Rubik:wght@400;700&amp;display=swap"
+        },
+        {
+            "name": "Manrope",
+            "url": "https:\/\/fonts.googleapis.com\/css2?family=Manrope:wght@400;700&amp;display=swap"
+        },
+        {
+            "name": "Gothic A1",
+            "url": "https:\/\/fonts.googleapis.com\/css2?family=Gothic+A1:wght@400;700&amp;display=swap"
+        },
+        {
+            "name": "Varela Round",
+            "url": "https:\/\/fonts.googleapis.com\/css2?family=Varela+Round:wght@400;700&amp;display=swap"
+        },
+        {
+            "name": "Comfortaa",
+            "url": "https:\/\/fonts.googleapis.com\/css2?family=Comfortaa:wght@400;700&amp;display=swap"
+        },
+        {
+            "name": "Acme",
+            "url": "https:\/\/fonts.googleapis.com\/css2?family=Acme:wght@400;700&amp;display=swap"
+        },
+        {
+            "name": "Sansita",
+            "url": "https:\/\/fonts.googleapis.com\/css2?family=Sansita:wght@400;700&amp;display=swap"
+        },
+        {
+            "name": "Old Standard TT",
+            "url": "https:\/\/fonts.googleapis.com\/css2?family=Old+Standard+TT:wght@400;700&amp;display=swap"
+        },
+        {
+            "name": "Baskervville",
+            "url": "https:\/\/fonts.googleapis.com\/css2?family=Baskervville:wght@400;700&amp;display=swap"
+        },
+        {
+            "name": "Sutura",
+            "url": "https:\/\/fonts.googleapis.com\/css2?family=Sutura:wght@400;700&amp;display=swap"
+        },
+        {
+            "name": "Tenor Sans",
+            "url": "https:\/\/fonts.googleapis.com\/css2?family=Tenor+Sans:wght@400;700&amp;display=swap"
+        },
+        {
+            "name": "Noticia Text",
+            "url": "https:\/\/fonts.googleapis.com\/css2?family=Noticia+Text:wght@400;700&amp;display=swap"
+        },
+        {
+            "name": "Faunus One",
+            "url": "https:\/\/fonts.googleapis.com\/css2?family=Faunus+One:wght@400;700&amp;display=swap"
+        },
+        {
+            "name": "Belgrano",
+            "url": "https:\/\/fonts.googleapis.com\/css2?family=Belgrano:wght@400;700&amp;display=swap"
+        },
+        {
+            "name": "Quando",
+            "url": "https:\/\/fonts.googleapis.com\/css2?family=Quando:wght@400;700&amp;display=swap"
+        },
+        {
+            "name": "Indieflower",
+            "url": "https:\/\/fonts.googleapis.com\/css2?family=Indieflower:wght@400;700&amp;display=swap"
+        },
+        {
+            "name": "Dancing Script",
+            "url": "https:\/\/fonts.googleapis.com\/css2?family=Dancing+Script:wght@400;700&amp;display=swap"
+        },
+        {
+            "name": "Great Vibes",
+            "url": "https:\/\/fonts.googleapis.com\/css2?family=Great+Vibes:wght@400;700&amp;display=swap"
+        },
+        {
+            "name": "Allura",
+            "url": "https:\/\/fonts.googleapis.com\/css2?family=Allura:wght@400;700&amp;display=swap"
+        },
+        {
+            "name": "Shadows Into Light",
+            "url": "https:\/\/fonts.googleapis.com\/css2?family=Shadow+Into+Light:wght@400;700&amp;display=swap"
+        },
+        {
+            "name": "Covered By Your Grace",
+            "url": "https:\/\/fonts.googleapis.com\/css2?family=Covered+By+Your+Grace:wght@400;700&amp;display=swap"
+        },
+        {
+            "name": "Neucha",
+            "url": "https:\/\/fonts.googleapis.com\/css2?family=Neucha:wght@400;700&amp;display=swap"
+        },
+        {
+            "name": "Rochester",
+            "url": "https:\/\/fonts.googleapis.com\/css2?family=Rochester:wght@400;700&amp;display=swap"
+        },
+        {
+            "name": "Handlee",
+            "url": "https:\/\/fonts.googleapis.com\/css2?family=Handlee:wght@400;700&amp;display=swap"
+        },
+        {
+            "name": "Exo 2",
+            "url": "https:\/\/fonts.googleapis.com\/css2?family=Exo+2:wght@400;700&amp;display=swap"
+        },
+        {
+            "name": "Teko",
+            "url": "https:\/\/fonts.googleapis.com\/css2?family=Teko:wght@400;700&amp;display=swap"
+        },
+        {
+            "name": "Montserrat Alternates",
+            "url": "https:\/\/fonts.googleapis.com\/css2?family=Montserrat+Alternates:wght@400;700&amp;display=swap"
+        },
+        {
+            "name": "Sarala",
+            "url": "https:\/\/fonts.googleapis.com\/css2?family=Sarala:wght@400;700&amp;display=swap"
+        },
+        {
+            "name": "Jua",
+            "url": "https:\/\/fonts.googleapis.com\/css2?family=Jua:wght@400;700&amp;display=swap"
+        },
+        {
+            "name": "Monda",
+            "url": "https:\/\/fonts.googleapis.com\/css2?family=Monda:wght@400;700&amp;display=swap"
+        },
+        {
+            "name": "Pathway Gothic One",
+            "url": "https:\/\/fonts.googleapis.com\/css2?family=Pathway+Gothic+One:wght@400;700&amp;display=swap"
+        },
+        {
+            "name": "BenchNine",
+            "url": "https:\/\/fonts.googleapis.com\/css2?family=BenchNine:wght@400;700&amp;display=swap"
+        },
+        {
+            "name": "Hepta Slab",
+            "url": "https:\/\/fonts.googleapis.com\/css2?family=Hepta+Slab:wght@400;700&amp;display=swap"
+        },
+        {
+            "name": "Gilda Display",
+            "url": "https:\/\/fonts.googleapis.com\/css2?family=Gilda+Display:wght@400;700&amp;display=swap"
+        },
+        {
+            "name": "Asap",
+            "url": "https:\/\/fonts.googleapis.com\/css2?family=Asap:wght@400;700&amp;display=swap"
+        },
+        {
+            "name": "Noto Sans",
+            "url": "https:\/\/fonts.googleapis.com\/css2?family=Noto+Sans:wght@400;700&amp;display=swap"
+        },
+        {
+            "name": "Noto Serif JP",
+            "url": "https:\/\/fonts.googleapis.com\/css2?family=Noto+Serif+JP:wght@400;700&amp;display=swap"
+        },
+        {
+            "name": "Nanum Gothic",
+            "url": "https:\/\/fonts.googleapis.com\/css2?family=Nanum+Gothic:wght@400;700&amp;display=swap"
+        },
+        {
+            "name": "KoHo",
+            "url": "https:\/\/fonts.googleapis.com\/css2?family=KoHo:wght@400;700&amp;display=swap"
+        },
+        {
+            "name": "Baloo Da 2",
+            "url": "https:\/\/fonts.googleapis.com\/css2?family=Baloo+Da+2:wght@400;700&amp;display=swap"
+        },
+        {
+            "name": "Courier Prime",
+            "url": "https:\/\/fonts.googleapis.com\/css2?family=Courier+Prime:wght@400;700&amp;display=swap"
+        },
+        {
+            "name": "Amatic SC",
+            "url": "https:\/\/fonts.googleapis.com\/css2?family=Amatic+SC:wght@400;700&amp;display=swap"
+        },
+        {
+            "name": "Encode Sans Expanded",
+            "url": "https:\/\/fonts.googleapis.com\/css2?family=Encode+Sans+Expanded:wght@400;700&amp;display=swap"
+        },
+        {
+            "name": "Istok Web",
+            "url": "https:\/\/fonts.googleapis.com\/css2?family=Istok+Web:wght@400;700&amp;display=swap"
+        },
+        {
+            "name": "Cinzel Decorative",
+            "url": "https:\/\/fonts.googleapis.com\/css2?family=Cinzel+Decorative:wght@400;700&amp;display=swap"
+        }
+    ]
+}

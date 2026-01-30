@@ -295,6 +295,14 @@
               <br />
               <button type="button" id="button-cart" data-loading-text="<?php echo $text_loading; ?>" class="btn btn-primary btn-lg btn-block"><?php echo $button_cart; ?></button>
             </div>
+            <?php if ($designer_enabled) { ?>
+            <div class="form-group">
+              <button type="button" data-product-id="<?php echo $product_id; ?>" class="btn btn-success btn-lg btn-block" data-toggle="modal" data-target="#productDesigner">
+                <?php echo $text_customize; ?>
+              </button>
+              <textarea style="display:none;" name="custom_data" id="customization" class="form-control"></textarea>
+            </div>
+            <?php } ?>
             <?php if ($minimum > 1) { ?>
             <div class="alert alert-info"><i class="fa fa-info-circle"></i> <?php echo $text_minimum; ?></div>
             <?php } ?>
@@ -418,7 +426,7 @@ $('#button-cart').on('click', function() {
 	$.ajax({
 		url: 'index.php?route=checkout/cart/add',
 		type: 'post',
-		data: $('#product input[type=\'text\'], #product input[type=\'hidden\'], #product input[type=\'radio\']:checked, #product input[type=\'checkbox\']:checked, #product select, #product textarea'),
+		data: $('#product input[type=\'text\'], #product input[type=\'hidden\'], #product input[type=\'radio\']:checked, #product input[type=\'checkbox\']:checked, #product select, #product textarea, #customization'),
 		dataType: 'json',
 		beforeSend: function() {
 			$('#button-cart').button('loading');
@@ -586,4 +594,70 @@ $(document).ready(function() {
 	});
 });
 //--></script>
+<?php if ($designer_enabled) { ?>
+<!-- Modal -->
+<div class="modal fade" id="productDesigner" tabindex="-1" role="dialog" aria-labelledby="productDesignerLabel" aria-hidden="true" data-iframe-url="<?php echo $iframe_url; ?>">
+  <div class="modal-dialog" role="document" style="width: 95%; max-width: 95%; height: 95%; margin: 2.5% auto;">
+    <div class="modal-content" style="height: 100%;">
+      <div class="modal-header" style="padding: 10px 15px;">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close" style="margin-left: 10px;">
+          <span aria-hidden="true">&times;</span>
+        </button>
+        <button type="button" class="btn btn-success btn-sm pull-right" id="saveInModalHeader" title="<?php echo $text_save_btn; ?>">
+          <i class="fa fa-save"></i>
+        </button>
+        <h4 class="modal-title" id="productDesignerLabel"><?php echo $text_product_editor; ?></h4>
+      </div>
+      <div class="modal-body" style="padding:0; height: calc(100% - 51px); overflow: hidden;">
+        <div class="iframe-container" style="height: 100%;"></div>
+      </div>
+    </div>
+  </div>
+</div>
+<script type="text/javascript">
+$(document).ready(function() {
+  const productDesigner = $('#productDesigner');
+  const saveInModalHeaderBtn = $('#saveInModalHeader');
+  const customization = $('#customization');
+
+  // Listen for design state from iframe
+  window.addEventListener('message', function(event) {
+    if (event.data && event.data.type === 'DESIGN_STATE') {
+      customization.text(JSON.stringify(event.data.data, null, 2));
+    }
+  });
+
+  // On modal show, load iframe
+  productDesigner.on('show.bs.modal', function(event) {
+    const button = event.relatedTarget || event.target;
+    let url = productDesigner.attr('data-iframe-url');
+    
+    const iframe = document.createElement('iframe');
+    iframe.src = url;
+    iframe.allowFullscreen = true;
+    iframe.style.width = '100%';
+    iframe.style.height = '100%';
+    iframe.style.border = 'none';
+
+    const container = productDesigner.find('.iframe-container')[0];
+    container.innerHTML = '';
+    container.appendChild(iframe);
+  });
+
+  // On modal hide, clean up iframe
+  productDesigner.on('hidden.bs.modal', function() {
+    productDesigner.find('.iframe-container').html('');
+  });
+
+  // Save button - close modal and trigger add to cart
+  saveInModalHeaderBtn.on('click', function() {
+    productDesigner.modal('hide');
+    // Trigger the add to cart button after modal closes
+    setTimeout(function() {
+      $('#button-cart').trigger('click');
+    }, 300);
+  });
+});
+</script>
+<?php } ?>
 <?php echo $footer; ?>

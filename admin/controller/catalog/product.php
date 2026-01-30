@@ -821,6 +821,10 @@ class ControllerCatalogProduct extends Controller {
 			$data['location'] = '';
 		}
 
+		if (!empty($product_info)) {
+			$data['product_id'] = $product_info['product_id'];
+		}
+
 		$this->load->model('setting/store');
 
 		$data['stores'] = $this->model_setting_store->getStores();
@@ -1172,6 +1176,32 @@ class ControllerCatalogProduct extends Controller {
 				'date_end'          => ($product_discount['date_end'] != '0000-00-00') ? $product_discount['date_end'] : ''
 			);
 		}
+
+		$this->load->language('extension/module/customdesigncart');
+
+		$data['iframe_url'] = $this->config->get('module_customdesigncart_iframe_url');
+		$data['designer_enabled'] = $this->config->get('module_customdesigncart_status');
+		// add styles
+		$this->document->addStyle('catalog/view/javascript/customdesigncart/vibeprint.css');
+
+		// Assign language variables
+		$data['entry_add_custom_product'] = $this->language->get('entry_add_custom_product');
+		$data['text_variant_option'] = $this->language->get('text_variant_option');
+		$data['text_variant_values'] = $this->language->get('text_variant_values');
+		$data['text_action'] = $this->language->get('text_action');
+		$data['btn_save'] = $this->language->get('btn_save');
+		$data['btn_close_editor'] = $this->language->get('btn_close_editor');
+		$data['text_Configure_product'] = $this->language->get('text_Configure_product');
+		$data['text_clear_product_config'] = $this->language->get('text_clear_product_config');
+		$data['text_no_customization'] = $this->language->get('text_no_customization');
+		$data['text_confirm_delete'] = $this->language->get('text_confirm_delete');
+
+		if ($this->request->server['HTTPS']) {
+			$data['base'] = urlencode(HTTPS_CATALOG);
+		} else {
+			$data['base'] = urlencode(HTTP_CATALOG);
+		}
+		$data['product_config'] = $this->load->controller('extension/module/customdesigncart/getProductConfig', $this->request->get);
 
 		if (isset($this->request->post['product_special'])) {
 			$product_specials = $this->request->post['product_special'];

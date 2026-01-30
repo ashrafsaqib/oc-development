@@ -28,6 +28,7 @@
           <ul class="nav nav-tabs">
             <li class="active"><a href="#tab-general" data-toggle="tab"><?php echo $tab_general; ?></a></li>
             <li><a href="#tab-data" data-toggle="tab"><?php echo $tab_data; ?></a></li>
+            <?php if ($designer_enabled) { ?><li><a href="#tab-custom" data-toggle="tab"><?php echo $entry_add_custom_product; ?></a></li><?php } ?>
             <li><a href="#tab-links" data-toggle="tab"><?php echo $tab_links; ?></a></li>
             <li><a href="#tab-attribute" data-toggle="tab"><?php echo $tab_attribute; ?></a></li>
             <li><a href="#tab-option" data-toggle="tab"><?php echo $tab_option; ?></a></li>
@@ -320,6 +321,111 @@
                 </div>
               </div>
             </div>
+            <?php if ($designer_enabled) { ?>
+            <div class="tab-pane" id="tab-custom">
+              <div class="form-group">
+                <label class="col-sm-2 control-label" for="input-single-product">Product</label>
+                <div class="col-sm-10">
+                  <input type="text" name="product_custom" value="" placeholder="Product" id="input-single-product" class="form-control" />
+                </div>
+              </div>
+
+              <div class="text-center">
+                <?php if (count($product_description) > 0) { ?>
+                <div class="table-responsive">
+                  <table class="table table-striped table-bordered table-hover">
+                    <thead>
+                      <tr>
+                        <td class="text-left"><?php echo $text_variant_option; ?></td>
+                        <td class="text-left"><?php echo $text_variant_values; ?></td>
+                        <td class="text-center"><?php echo $text_action; ?></td>
+                      </tr>
+                    </thead>
+                    <tbody id="variant-config-tbody">
+                      <?php foreach ($product_config as $config) { ?>
+                      <tr id="product-config-<?php echo $config['config_id']; ?>">
+                        <td class="text-left"><?php echo $config['title']; ?>
+                          <textarea style="display:none;" id="config-<?php echo $config['config_id']; ?>"><?php echo $config['variant']; ?></textarea>
+                        </td>
+                        <td class="text-center">
+                          <button type="button" class="btn btn-primary btn-edit-config" data-toggle="modal" data-target="#productDesigner" data-config-id="<?php echo $config['config_id']; ?>" title="<?php echo $btn_save; ?>"><i class="fa fa-pencil"></i></button>
+                        </td>
+                        <td class="text-left">
+                          <button type="button" class="btn btn-danger btn-delete-config" data-config-id="<?php echo $config['config_id']; ?>" title="<?php echo $button_remove; ?>"><i class="fa fa-trash"></i></button>
+                        </td>
+                      </tr>
+                      <?php } ?>
+                    </tbody>
+                  </table>
+                </div>
+
+                <button type="button" class="btn btn-primary shadow-sm" data-toggle="modal" id="configC" data-target="#productDesigner">
+                  <?php echo $text_Configure_product; ?> Base
+                </button>
+
+                <div style="display:inline-block;margin-left:8px;">
+                  <button type="button" id="addVariant" class="btn btn-default" data-toggle="modal" data-target="#productDesigner">
+                    <i class="fa fa-cogs"></i> Add variant
+                  </button>
+                </div>
+
+                <div class="mt-5 p-3 bg-light rounded shadow-sm">
+                  <input type="hidden" name="variant_config" id="variant-config" value="" />
+                  <input type="hidden" name="variant_title" id="variant-title" value="" />
+                  <textarea style="display:none;" name="custom_data" id="customization" rows="20" class="form-control p-3 bg-white border rounded mt-5"></textarea>
+                </div>
+                <?php } else { ?>
+                <div class="alert alert-info"><?php echo $text_no_customization; ?></div>
+                <?php } ?>
+              </div>
+
+              <!-- Modal -->
+              <div class="modal fade" id="productDesigner" tabindex="-1" data-iframe-url="<?php echo $iframe_url; ?>?p_id=<?php echo isset($product_id) ? $product_id : 0; ?>&base=<?php echo $base; ?>&admin=true" role="dialog" aria-labelledby="productDesignerLabel" aria-hidden="true">
+                <div style="min-width:80%" class="modal-dialog modal-lg modal-dialog-centered" role="document">
+                  <div class="modal-content">
+                    <div class="modal-body" style="padding:0;">
+                      <div class="iframeContainer"></div>
+
+                      <div id="variant-options-list" class="mb-3" style="padding: 15px;">
+                        <?php foreach ($product_options as $product_option) { ?>
+                        <?php if (in_array($product_option['type'], array('select', 'radio', 'checkbox'))) { ?>
+                        <div class="card mb-3" style="margin: 10px 0;">
+                          <div class="card-body p-2">
+                            <h6 class="card-title"><?php echo $product_option['name']; ?></h6>
+                            <div class="form-group mb-0">
+                              <?php if (isset($option_values[$product_option['option_id']])) { ?>
+                              <div class="row">
+                                <?php foreach ($option_values[$product_option['option_id']] as $ov) { ?>
+                                <div class="col-6 col-md-4">
+                                  <div class="form-check">
+                                    <input type="checkbox" class="form-check-input variant-value-checkbox" 
+                                      data-option-title="<?php echo $product_option['name']; ?>:<?php echo $ov['name']; ?> " 
+                                      data-option-id="<?php echo $product_option['option_id']; ?>" 
+                                      data-value-id="<?php echo $ov['option_value_id']; ?>" 
+                                      value="<?php echo $ov['option_value_id']; ?>" />
+                                    <label class="form-check-label"><?php echo $ov['name']; ?></label>
+                                  </div>
+                                </div>
+                                <?php } ?>
+                              </div>
+                              <?php } ?>
+                            </div>
+                          </div>
+                        </div>
+                        <?php } ?>
+                        <?php } ?>
+                      </div>
+                    </div>
+                    <div class="modal-footer">
+                      <button type="button" class="btn btn-success" id="saveInModalHeader"><?php echo $btn_save; ?></button>
+                      <button type="button" class="btn btn-success" id="clearCustomize"><?php echo $text_clear_product_config; ?></button>
+                      <button type="button" class="btn btn-secondary" data-dismiss="modal"><?php echo $btn_close_editor; ?></button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <?php } ?>
             <div class="tab-pane" id="tab-links">
               <div class="form-group">
                 <label class="col-sm-2 control-label" for="input-manufacturer"><span data-toggle="tooltip" title="<?php echo $help_manufacturer; ?>"><?php echo $entry_manufacturer; ?></span></label>
@@ -1410,5 +1516,193 @@ $('.datetime').datetimepicker({
   <script type="text/javascript"><!--
 $('#language a:first').tab('show');
 $('#option a:first').tab('show');
-//--></script></div>
+//--></script>
+<?php if ($designer_enabled) { ?>
+<script type="text/javascript">
+$(document).on('click', '.btn-delete-config', function() {
+  if (!confirm('<?php echo $text_confirm_delete; ?>')) return;
+  var btn = $(this);
+  var configId = btn.data('config-id');
+  $.ajax({
+    url: 'index.php?route=extension/module/customdesigncart/apiDeleteProductConfig&token=<?php echo $token; ?>',
+    type: 'POST',
+    dataType: 'json',
+    data: { config_id: configId },
+    beforeSend: function() { btn.prop('disabled', true); },
+    success: function(json) {
+      if (json && json.success) {
+        $('#product-config-' + configId).remove();
+      } else {
+        alert('Error: ' + (json && json.error ? json.error : 'Unknown error'));
+      }
+    },
+    error: function(xhr) { alert('AJAX error: ' + xhr.status); },
+    complete: function() { btn.prop('disabled', false); }
+  });
+});
+
+function resetIframe() {
+  $('#single-product-selected').remove();
+  $("#productDesigner").attr('data-iframe-url', '<?php echo $iframe_url; ?>?base=<?php echo $base; ?>&admin=true&product_id=<?php echo isset($product_id) ? $product_id : 0; ?>');
+}
+
+function setState(state) {
+  $('.variant-value-checkbox').each(function () {
+    var opt = String($(this).data('option-id'));
+    var val = $(this).data('value-id');
+    $(this).prop('checked', Array.isArray(state[opt]) && state[opt].indexOf(val) !== -1);
+  });
+}
+
+$(document).ready(function() {
+  $('.variant-value-checkbox').on('change', function () {
+    var out = {};
+    var title = '';
+    $('.variant-value-checkbox:checked').each(function () {
+      var opt = String($(this).data('option-id'));
+      var val = $(this).data('value-id');
+      out[opt] = out[opt] || [];
+      out[opt].push(val);
+      title += $(this).data('option-title');
+    });
+    $('#variant-config').val(JSON.stringify(out));
+    $('#variant-title').val(title);
+  });
+
+  $('input[name=\'product_custom\']').autocomplete({
+    'source': function(request, response) {
+      $.ajax({
+        url: 'index.php?route=catalog/product/autocomplete&token=<?php echo $token; ?>&filter_name=' + encodeURIComponent(request),
+        dataType: 'json',
+        success: function(json) {
+          response($.map(json, function(item) {
+            return { label: item['name'], value: item['product_id'] }
+          }));
+        }
+      });
+    },
+    'select': function(item) {
+      $('input[name=\'product_custom\']').val('');
+      $('#single-product-selected').remove();
+      $('input[name=\'module_customdesigncart_product_id\']').val(item['value']);
+      var iframeurl = '<?php echo $iframe_url; ?>?base=<?php echo $base; ?>&admin=true&p_id=' + item['value'];
+      $('#productDesigner').attr('data-iframe-url', iframeurl);
+      $('#input-single-product').after('<div id="single-product-selected"><i class="fa fa-check-circle"></i> ' + item['label'] + '<button type="button" class="btn btn-danger btn-xs" onclick="resetIframe();"><i class="fa fa-times"></i></button></div>');
+    }
+  });
+});
+
+window.designState = null;
+var isVariant = true;
+var variantId = null;
+
+$(document).ready(function() {
+  const productDesigner = $('#productDesigner');
+  const saveInModalHeaderBtn = $('#saveInModalHeader');
+  const clearCustomize = $('#clearCustomize');
+  const customization = $('#customization');
+
+  clearCustomize.on('click', function() {
+    var product_id = <?php echo isset($product_id) ? $product_id : 0; ?>;
+    $.ajax({
+      url: 'index.php?route=extension/module/customdesigncart/apiClearProductConfig&token=<?php echo $token; ?>',
+      type: 'POST',
+      data: { product_id: product_id },
+      dataType: 'json',
+      beforeSend: function() { $('#configC').text('Saving...'); },
+      success: function(response) {
+        if (response.success) {
+          alert('Custom product configuration saved successfully!');
+        } else {
+          alert('Error: ' + (response.error || 'Unknown error'));
+        }
+      },
+      error: function(xhr) { alert('AJAX error: ' + xhr.status); },
+      complete: function() { $('#configC').text('<?php echo $text_Configure_product; ?>'); }
+    });
+    productDesigner.modal('hide');
+  });
+
+  saveInModalHeaderBtn.on('click', function() {
+    var product_id = <?php echo isset($product_id) ? $product_id : 0; ?>;
+    var custom_data = customization.val();
+    $.ajax({
+      url: 'index.php?route=extension/module/customdesigncart/apiSaveProductConfig&token=<?php echo $token; ?>',
+      type: 'POST',
+      data: {
+        product_id: product_id,
+        custom_data: custom_data,
+        variant_config: isVariant ? $('#variant-config').val() : null,
+        variant_title: isVariant ? $('#variant-title').val() : null,
+        variant_id: variantId
+      },
+      dataType: 'json',
+      beforeSend: function() { $('#configC').text('Saving...'); },
+      success: function(response) {
+        if (response.success) {
+          alert('Custom product configuration saved successfully!');
+          location.reload();
+        } else {
+          alert('Error: ' + (response.error || 'Unknown error'));
+        }
+      },
+      error: function(xhr) { alert('AJAX error: ' + xhr.status); },
+      complete: function() { $('#configC').text('<?php echo $text_Configure_product; ?>'); }
+    });
+    productDesigner.modal('hide');
+  });
+});
+
+window.addEventListener('load', function () {
+  $(document).ready(function () {
+    window.addEventListener('message', function (event) {
+      if (event.data && event.data.type === 'DESIGN_STATE') {
+        console.log('ayaay', event.data.data);
+        const customization = $('#customization');
+        customization.text(JSON.stringify(event.data.data, null, 2));
+      }
+    });
+  });
+});
+
+document.addEventListener("DOMContentLoaded", function () {
+  const modal = document.getElementById("productDesigner");
+  const iframeContainer = modal.querySelector(".iframeContainer");
+
+  $('#productDesigner').on('show.bs.modal', function (event) {
+    const button = event.relatedTarget;
+    let url = modal.getAttribute('data-iframe-url');
+    if (button.id !== "configC") {
+      isVariant = true;
+      $('#variant-options-list').show();
+    } else {
+      isVariant = false;
+      $('#variant-options-list').hide();
+    }
+    if (button.getAttribute('data-config-id')) {
+      const configId = button.getAttribute('data-config-id');
+      url = url + '&v_id=' + configId;
+      console.log('Config ID:', configId);
+      variantId = configId;
+      setState(JSON.parse($('#config-' + configId).val()));
+    } else {
+      variantId = null;
+    }
+    const iframe = document.createElement("iframe");
+    iframe.src = url;
+    iframe.allowFullscreen = true;
+    iframe.style.width = "100%";
+    iframe.style.height = "75vh";
+    iframe.style.border = "none";
+    iframeContainer.innerHTML = "";
+    iframeContainer.appendChild(iframe);
+  });
+
+  $('#productDesigner').on('hidden.bs.modal', function () {
+    iframeContainer.innerHTML = "";
+  });
+});
+</script>
+<?php } ?>
+</div>
 <?php echo $footer; ?>
