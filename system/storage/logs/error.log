@@ -1,0 +1,2 @@
+2026-01-30 22:07:33 - PHP Notice:  Undefined variable: text_close_preview in /Users/saqibashraf/Desktop/oc/oc-development/system/storage/modification/catalog/view/theme/default/template/checkout/cart.tpl on line 58
+2026-01-30 22:08:26 - PHP Notice:  Undefined variable: text_close_preview in /Users/saqibashraf/Desktop/oc/oc-development/system/storage/modification/catalog/view/theme/default/template/checkout/cart.tpl on line 58

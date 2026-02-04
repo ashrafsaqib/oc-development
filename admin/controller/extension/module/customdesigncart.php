@@ -25,7 +25,7 @@ class ControllerExtensionModuleCustomDesignCart extends Controller {
 
         $custom_data = $this->db->query("SHOW COLUMNS FROM `" . DB_PREFIX . "cart` LIKE 'custom_data'");
         if (!$custom_data->num_rows) {
-            $this->db->query("ALTER TABLE `" . DB_PREFIX . "cart` ADD `custom_data` text AFTER `option`");
+            $this->db->query("ALTER TABLE `" . DB_PREFIX . "cart` ADD `custom_data` TEXT NULL AFTER `option`");
         }
     }
     
