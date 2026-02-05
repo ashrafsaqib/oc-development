@@ -82,19 +82,17 @@ class ControllerCommonHeader extends Controller {
 		$data['menu'] = $this->load->controller('common/menu');
 
 		// Add theme header text setting to header data
-		if ($this->config->getLanguage('theme_oc_ultra_header_text')) {
-			$data['theme_header_text'] = html_entity_decode($this->config->getLanguage('theme_oc_ultra_header_text'), ENT_QUOTES, 'UTF-8');
+		if ($this->config->get('theme_oc_ultra_header_text')) {
+			$data['theme_header_text'] = html_entity_decode($this->config->get('theme_oc_ultra_header_text'), ENT_QUOTES, 'UTF-8');
 		} else {
 			$data['theme_header_text'] = 'Free shipping on orders over $100 | Use code WELCOME10 for 10% off';
 		}
 
 		// Add custom CSS
-		if ($this->config->getLanguage('theme_oc_ultra_custom_css')) {
-			$data['custom_css'] = $this->config->getLanguage('theme_oc_ultra_custom_css');
-		}
+		$data['custom_css'] = $this->config->get('theme_oc_ultra_custom_css') ? $this->config->get('theme_oc_ultra_custom_css') : '';
 		
 		// Add dynamic header color
-		$color_preset = $this->config->getLanguage('theme_oc_ultra_header_color_preset') ? $this->config->getLanguage('theme_oc_ultra_header_color_preset') : 'jade';
+		$color_preset = $this->config->get('theme_oc_ultra_header_color_preset') ? $this->config->get('theme_oc_ultra_header_color_preset') : 'jade';
 		
 		$preset_colors = [
 			'jade' => '#86a88d',
@@ -105,7 +103,7 @@ class ControllerCommonHeader extends Controller {
 		];
 		
 		if ($color_preset === 'custom') {
-			$data['header_bg_color'] = $this->config->getLanguage('theme_oc_ultra_header_color_custom') ? $this->config->getLanguage('theme_oc_ultra_header_color_custom') : '#86a88d';
+			$data['header_bg_color'] = $this->config->get('theme_oc_ultra_header_color_custom') ? $this->config->get('theme_oc_ultra_header_color_custom') : '#86a88d';
 		} else {
 			$data['header_bg_color'] = isset($preset_colors[$color_preset]) ? $preset_colors[$color_preset] : '#86a88d';
 		}

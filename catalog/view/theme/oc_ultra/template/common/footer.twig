@@ -1,5 +1,5 @@
 <!-- Footer (Bootstrap 3) -->
-<footer class="footer-section text-white" style="padding-top:50px; padding-bottom:20px; background:#222; color:#fff;">
+<footer class="footer-section text-white">
   <div class="container">
     <div class="row">
       <div class="col-md-4">
@@ -12,9 +12,9 @@
               <button class="btn btn-default" type="submit"><i class="fa fa-arrow-right"></i></button>
             </span>
           </div>
-          <div id="newsletter-message" style="margin-top:10px;"></div>
+          <div id="newsletter-message"></div>
         </form>
-        <div class="social-icons" style="margin-top:20px;">
+        <div class="social-icons">
           {% if social_links %}
             {% for social in social_links %}
               <a href="{{ social.url }}" title="{{ social.name }}" target="_blank" rel="noopener"><i class="{{ social.icon }}"></i></a>
@@ -62,11 +62,11 @@
     </div>
   </div>
 </footer>
-</div>
 {% if custom_js %}
 <script type="text/javascript">
 {{ custom_js }}
 </script>
 {% endif %}
+</div>
 </body>
 </html>

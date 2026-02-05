@@ -67,25 +67,25 @@ class ControllerCommonFooter extends Controller {
 		$data['newsletter'] = $this->url->link('extension/oc_ultra/marketing/newsletter.subscribe');
 		
 		// Add footer newsletter text
-		$data['footer_newsletter_text'] = $this->config->getLanguage('theme_oc_ultra_footer_text') ? $this->config->getLanguage('theme_oc_ultra_footer_text') : $this->language->get('text_newsletter_pro');
+		$data['footer_newsletter_text'] = $this->config->get('theme_oc_ultra_footer_text') ? $this->config->get('theme_oc_ultra_footer_text') : $this->language->get('text_newsletter_pro');
 
 		// Add newsletter popup settings
-		$data['newsletter_popup_enabled'] = $this->config->getLanguage('theme_oc_ultra_newsletter_popup_status');
-		$data['newsletter_popup_title'] = $this->config->getLanguage('theme_oc_ultra_newsletter_popup_title') ? $this->config->getLanguage('theme_oc_ultra_newsletter_popup_title') : 'Get 10% Off Your First Order';
-		$data['newsletter_popup_subtitle'] = $this->config->getLanguage('theme_oc_ultra_newsletter_popup_subtitle') ? $this->config->getLanguage('theme_oc_ultra_newsletter_popup_subtitle') : 'Sign up for exclusive deals, new arrivals & more!';
-		$data['newsletter_popup_delay'] = $this->config->getLanguage('theme_oc_ultra_newsletter_popup_delay') ? $this->config->getLanguage('theme_oc_ultra_newsletter_popup_delay') : 2000;
+		$data['newsletter_popup_enabled'] = $this->config->get('theme_oc_ultra_newsletter_popup_status');
+		$data['newsletter_popup_title'] = $this->config->get('theme_oc_ultra_newsletter_popup_title') ? $this->config->get('theme_oc_ultra_newsletter_popup_title') : 'Get 10% Off Your First Order';
+		$data['newsletter_popup_subtitle'] = $this->config->get('theme_oc_ultra_newsletter_popup_subtitle') ? $this->config->get('theme_oc_ultra_newsletter_popup_subtitle') : 'Sign up for exclusive deals, new arrivals & more!';
+		$data['newsletter_popup_delay'] = $this->config->get('theme_oc_ultra_newsletter_popup_delay') ? $this->config->get('theme_oc_ultra_newsletter_popup_delay') : 2000;
 		
 		$this->load->model('tool/image');
-		if ($this->config->getLanguage('theme_oc_ultra_newsletter_popup_image') && is_file(DIR_IMAGE . html_entity_decode($this->config->getLanguage('theme_oc_ultra_newsletter_popup_image'), ENT_QUOTES, 'UTF-8'))) {
-			$data['newsletter_popup_image'] = $this->model_tool_image->resize(html_entity_decode($this->config->getLanguage('theme_oc_ultra_newsletter_popup_image'), ENT_QUOTES, 'UTF-8'), 300, 300);
+		if ($this->config->get('theme_oc_ultra_newsletter_popup_image') && is_file(DIR_IMAGE . html_entity_decode($this->config->get('theme_oc_ultra_newsletter_popup_image'), ENT_QUOTES, 'UTF-8'))) {
+			$data['newsletter_popup_image'] = $this->model_tool_image->resize(html_entity_decode($this->config->get('theme_oc_ultra_newsletter_popup_image'), ENT_QUOTES, 'UTF-8'), 300, 300);
 		} else {
 			$data['newsletter_popup_image'] = '';
 		}
 
 		// Add social links
 		$data['social_links'] = [];
-		if ($this->config->getLanguage('theme_oc_ultra_social_link')) {
-			$social_links = $this->config->getLanguage('theme_oc_ultra_social_link');
+		if ($this->config->get('theme_oc_ultra_social_link')) {
+			$social_links = $this->config->get('theme_oc_ultra_social_link');
 
 			foreach ($social_links as $social) {
 				$data['social_links'][] = [
@@ -98,8 +98,8 @@ class ControllerCommonFooter extends Controller {
 
 		// Add payment methods
 		$data['payment_methods'] = [];
-		if ($this->config->getLanguage('theme_oc_ultra_payment_method')) {
-			$payment_methods = $this->config->getLanguage('theme_oc_ultra_payment_method');
+		if ($this->config->get('theme_oc_ultra_payment_method')) {
+			$payment_methods = $this->config->get('theme_oc_ultra_payment_method');
 
 			foreach ($payment_methods as $payment) {
 				$data['payment_methods'][] = [
@@ -110,9 +110,7 @@ class ControllerCommonFooter extends Controller {
 		}
 
 		// Add custom JavaScript
-		if ($this->config->getLanguage('theme_oc_ultra_custom_js')) {
-			$data['custom_js'] = $this->config->getLanguage('theme_oc_ultra_custom_js');
-		}
+		$data['custom_js'] = $this->config->get('theme_oc_ultra_custom_js') ? $this->config->get('theme_oc_ultra_custom_js') : '';
 
 		return $this->load->view('common/footer', $data);
 	}

@@ -12,18 +12,18 @@
       {{ content_top }}
       
       {% if featured_categories %}
-      <section class="featured-categories" style="margin:40px 0;">
+      <section class="featured-categories">
         <div class="container">
-          <h2 class="text-center" style="margin-bottom:30px;"><strong>{{ text_shop_by_category }}</strong></h2>
+          <h2 class="text-center"><strong>{{ text_shop_by_category }}</strong></h2>
           <div class="row">
             {% for category in featured_categories %}
             {% if category.image %}
             <div class="col-xs-12 col-md-{{ category.width }}">
-              <a href="{{ category.href }}" class="featured-category-item" style="display:block; height:100%; text-decoration:none;">
-                <div class="featured-category-card" style="height:100%;">
+              <a href="{{ category.href }}" class="featured-category-item">
+                <div class="featured-category-card">
                   <img src="{{ category.image }}" alt="{{ category.name }}" class="featured-category-img img-responsive">
                   <div class="featured-category-overlay">
-                    <h3 class="featured-category-title" style="color:#fff;">{{ category.name }}</h3>
+                    <h3 class="featured-category-title">{{ category.name }}</h3>
                     <span class="featured-category-btn">{{ text_shop_now }}</span>
                   </div>
                 </div>
@@ -37,13 +37,13 @@
       {% endif %}
       
       {% if faqs %}
-      <section class="faq-section" style="padding:40px 0;">
+      <section class="faq-section">
         <div class="container">
           <div class="row">
-            <div class="col-sm-6" style="margin-bottom:30px;">
-              <h2 style="font-weight:bold; margin-bottom:20px;">{{ faq_heading|default('Have a question? We are here to help.') }}</h2>
-              <p class="text-muted" style="margin-bottom:20px;">{{ faq_description|default('Check out the most common questions our customers asked. Still have questions? Contact our customer support.') }}</p>
-              <div class="media" style="margin-top:20px; padding:20px; background:#f5f5f5; border-radius:4px;">
+            <div class="col-sm-6">
+              <h2>{{ faq_heading|default('Have a question? We are here to help.') }}</h2>
+              <p class="text-muted">{{ faq_description|default('Check out the most common questions our customers asked. Still have questions? Contact our customer support.') }}</p>
+              <div class="media">
                 <div class="media-left">
                   <div class="support-avatars">
                     <img src="https://randomuser.me/api/portraits/women/65.jpg" class="img-circle" alt="Support 1" width="40" height="40">
@@ -53,15 +53,15 @@
                   </div>
                 </div>
                 <div class="media-body">
-                  <p style="font-weight:bold; margin-bottom:5px;">{{ faq_support_text|default('Our customer support is available monday to friday: 8am-8:30pm.') }}</p>
-                  <p class="text-muted small" style="margin-bottom:0;">{{ faq_support_hours|default('Average answer time: 24h') }}</p>
+                  <p>{{ faq_support_text|default('Our customer support is available monday to friday: 8am-8:30pm.') }}</p>
+                  <p class="text-muted small">{{ faq_support_hours|default('Average answer time: 24h') }}</p>
                 </div>
               </div>
             </div>
             <div class="col-sm-6">
               <div class="panel-group" id="faqAccordion">
                 {% for faq in faqs %}
-                <div class="panel panel-default" style="margin-bottom:15px;">
+                <div class="panel panel-default">
                   <div class="panel-heading">
                     <h4 class="panel-title">
                       <a data-toggle="collapse" data-parent="#faqAccordion" href="#collapse{{ loop.index }}" class="collapsed">
@@ -82,14 +82,14 @@
       {% endif %}
       
       {% if testimonials %}
-      <section class="testimonials-section" style="padding:40px 0; background-color:#f9f9f9;">
+      <section class="testimonials-section">
         <div class="container">
-          <h2 class="text-center" style="margin-bottom:40px;">{{ testimonials_heading|default('What our customers are saying') }}</h2>
+          <h2 class="text-center">{{ testimonials_heading|default('What our customers are saying') }}</h2>
           <div class="row">
             {% for testimonial in testimonials %}
             <div class="col-md-4">
               <div class="testimonial-card">
-                <div class="text-warning" style="margin-bottom:15px; font-size:16px;">
+                <div class="text-warning">
                   {% for i in 1..5 %}
                     {% if i <= testimonial.rating %}
                     <i class="fa fa-star"></i>
@@ -98,18 +98,18 @@
                     {% endif %}
                   {% endfor %}
                 </div>
-                <p style="font-style:italic; margin-bottom:20px; color:#555;">"{{ testimonial.text }}"</p>
+                <p>"{{ testimonial.text }}"</p>
                 <div class="media">
                   <div class="media-left">
                     {% if testimonial.image %}
-                    <img class="media-object img-circle" src="{{ testimonial.image }}" alt="{{ testimonial.name }}" style="width: 50px; height: 50px;">
+                    <img class="media-object img-circle" src="{{ testimonial.image }}" alt="{{ testimonial.name }}">
                     {% else %}
-                    <img class="media-object img-circle" src="catalog/view/theme/default/image/placeholder.png" alt="{{ testimonial.name }}" style="width: 50px; height: 50px;">
+                    <img class="media-object img-circle" src="catalog/view/theme/default/image/placeholder.png" alt="{{ testimonial.name }}">
                     {% endif %}
                   </div>
-                  <div class="media-body" style="vertical-align:middle; padding-top: 5px;">
-                    <h5 class="media-heading" style="font-weight:bold; margin-bottom:2px;">{{ testimonial.name }}</h5>
-                    <p class="text-muted small" style="margin:0;">{{ testimonial.location }}</p>
+                  <div class="media-body">
+                    <h5 class="media-heading">{{ testimonial.name }}</h5>
+                    <p class="text-muted small">{{ testimonial.location }}</p>
                   </div>
                 </div>
               </div>
@@ -121,16 +121,16 @@
       {% endif %}
       
       {% if features %}
-      <div class="features-section" style="padding:50px 0; background:#fff; border-top:1px solid #eee;">
+      <div class="features-section">
         <div class="container">
           <div class="row text-center">
             {% for feature in features %}
             <div class="col-sm-3 col-xs-6">
-              <div class="feature-box" style="margin-bottom: 20px;">
-                <div class="feature-icon" style="font-size:32px; color:#86a88d; margin-bottom:15px;">
+              <div class="feature-box">
+                <div class="feature-icon">
                   <i class="{{ feature.icon }}"></i>
                 </div>
-                <h4 style="font-weight:600; font-size:16px; margin-bottom:10px;">{{ feature.title }}</h4>
+                <h4>{{ feature.title }}</h4>
                 <p class="text-muted">{{ feature.description }}</p>
               </div>
             </div>

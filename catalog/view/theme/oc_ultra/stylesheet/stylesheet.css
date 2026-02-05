@@ -683,27 +683,50 @@ a {
     color: #333;
 }
 
-/* Dynamic Header Background - uses inline var from PHP */
-.top-background-color {
-    /* Background color set dynamically via template variable */
+/* ============================================
+   INLINE STYLES MOVED TO STYLESHEET
+   ============================================ */
+
+/* Header Specific Styles */
+.top-bar {
+    background: #333;
+    color: #fff;
+    padding: 8px 0;
 }
 
-/* Fix for currency/language in navbar */
+.top-bar p {
+    margin-bottom: 0;
+}
+
+.navbar.navbar-inverse {
+    border-radius: 0;
+    border: none;
+    margin-bottom: 0;
+}
+
+.navbar-brand img {
+    max-height: 40px !important;
+}
+
+/* Currency/Language Fix in Navbar */
 .navbar-nav > li > form {
     padding: 10px 15px;
 }
+
 .navbar-nav > li > form > .btn-group {
     display: block;
 }
+
 .navbar-nav > li > form .btn-link {
     color: #ddd;
     text-decoration: none;
     padding: 0;
 }
+
 .navbar-nav > li > form .btn-link:hover {
     color: #fff;
 }
-/* Fix alignment for currency/language dropdowns */
+
 .navbar-nav > li > form .btn-group > .dropdown-toggle {
     padding: 0;
     background: none;
@@ -717,4 +740,247 @@ a {
         border-top-left-radius: 0;
         border-top-right-radius: 0;
     }
+}
+
+/* Home Page Sections */
+.featured-categories {
+    margin: 40px 0;
+}
+
+.featured-categories h2 {
+    margin-bottom: 30px;
+}
+
+.featured-category-item {
+    display: block;
+    height: 100%;
+    text-decoration: none;
+}
+
+.featured-category-card {
+    height: 100%;
+}
+
+.featured-category-title {
+    color: #fff;
+}
+
+/* FAQ Section */
+.faq-section {
+    padding: 40px 0;
+}
+
+.faq-section .col-sm-6 {
+    margin-bottom: 30px;
+}
+
+.faq-section h2 {
+    font-weight: bold;
+    margin-bottom: 20px;
+}
+
+.faq-section .text-muted {
+    margin-bottom: 20px;
+}
+
+.faq-section .media {
+    margin-top: 20px;
+    padding: 20px;
+    background: #f5f5f5;
+    border-radius: 4px;
+}
+
+.faq-section .media p:first-of-type {
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.faq-section .media p.small {
+    margin-bottom: 0;
+}
+
+.faq-section .panel-default {
+    margin-bottom: 15px;
+}
+
+/* Testimonials Section */
+.testimonials-section {
+    padding: 40px 0;
+    background-color: #f9f9f9;
+}
+
+.testimonials-section h2 {
+    margin-bottom: 40px;
+}
+
+.testimonials-section .text-warning {
+    margin-bottom: 15px;
+    font-size: 16px;
+}
+
+.testimonials-section p {
+    font-style: italic;
+    margin-bottom: 20px;
+    color: #555;
+}
+
+.testimonials-section .media-object {
+    width: 50px;
+    height: 50px;
+}
+
+.testimonials-section .media-body {
+    vertical-align: middle;
+    padding-top: 5px;
+}
+
+.testimonials-section .media-heading {
+    font-weight: bold;
+    margin-bottom: 2px;
+}
+
+.testimonials-section .text-muted.small {
+    margin: 0;
+}
+
+/* Features Section - Override inline styles */
+.features-section {
+    padding: 50px 0;
+    background: #fff;
+    border-top: 1px solid #eee;
+}
+
+.feature-box {
+    margin-bottom: 20px;
+}
+
+.feature-icon {
+    font-size: 32px;
+    color: #86a88d;
+    margin-bottom: 15px;
+}
+
+.feature-box h4 {
+    font-weight: 600;
+    font-size: 16px;
+    margin-bottom: 10px;
+}
+
+/* Footer Specific */
+.footer-section {
+    padding-top: 50px;
+    padding-bottom: 20px;
+    background: #222;
+    color: #fff;
+}
+
+#newsletter-message {
+    margin-top: 10px;
+}
+
+.social-icons {
+    margin-top: 20px;
+}
+
+/* Category Page */
+.sub-category-grid {
+    margin-bottom: 3rem;
+}
+
+.sub-category-grid .col-lg-3,
+.sub-category-grid .col-md-4,
+.sub-category-grid .col-sm-6 {
+    margin-bottom: 20px;
+}
+
+.sub-category-card {
+    display: block;
+    text-decoration: none;
+    text-align: center;
+}
+
+.sub-category-card img {
+    margin: 0 auto;
+}
+
+.sub-category-card h5 {
+    margin-top: 10px;
+    color: #333;
+    font-weight: 600;
+}
+
+#content h1 {
+    margin-top: 0;
+}
+
+.btn-group {
+    margin-right: 10px;
+}
+
+.form-group.input-group.input-group-sm {
+    margin-right: 10px;
+}
+
+/* Product Grid in Category */
+.product-thumb {
+    padding: 10px;
+    border: none;
+    margin-bottom: 20px;
+}
+
+.product-thumb .image {
+    position: relative;
+    overflow: hidden;
+    margin-bottom: 15px;
+}
+
+.product-thumb .image img {
+    margin: 0 auto;
+}
+
+.product-thumb h4 {
+    margin: 10px 0;
+}
+
+.product-thumb h4 a {
+    color: #333;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.product-thumb .price {
+    font-size: 16px;
+    font-weight: 700;
+}
+
+.product-thumb .price-new {
+    color: #d9534f;
+}
+
+.product-thumb .price-old {
+    color: #999;
+    text-decoration: line-through;
+    font-size: 14px;
+}
+
+.product-thumb .price-tax {
+    display: block;
+    font-size: 12px;
+    font-weight: 400;
+    color: #777;
+}
+
+/* Pagination Row */
+.row.pagination-row {
+    margin-top: 30px;
+}
+
+/* Category Description - Hidden */
+#content p[style*="display:none"] {
+    display: none;
+}
+
+/* Row with sorting/filtering */
+.row.sorting-row {
+    margin-bottom: 20px;
 }
