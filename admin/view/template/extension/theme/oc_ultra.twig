@@ -22,12 +22,14 @@
       </div>
       <div class="panel-body">
         <ul class="nav nav-tabs">
+          <li{% if section == 'global' %} class="active"{% endif %}><a href="{{ global_settings_url }}">Global Settings</a></li>
           {% for language in languages %}
-          <li{% if language.language_id == active_language_id %} class="active"{% endif %}><a href="{{ language.url }}"><img src="language/{{ language.code }}/{{ language.code }}.png" title="{{ language.name }}" /> {{ language.name }}</a></li>
+          <li{% if language.language_id == active_language_id and section != 'global' %} class="active"{% endif %}><a href="{{ language.url }}"><img src="language/{{ language.code }}/{{ language.code }}.png" title="{{ language.name }}" /> {{ language.name }}</a></li>
           {% endfor %}
         </ul>
         <form action="{{ action }}" method="post" enctype="multipart/form-data" id="form-theme" class="form-horizontal">
           
+          {% if section == 'global' %}
           <div class="form-group">
             <label class="col-sm-2 control-label" for="input-status">{{ entry_status }}</label>
             <div class="col-sm-10">
@@ -37,9 +39,163 @@
               </select>
             </div>
           </div>
+          {% endif %}
+
+          {% if section == 'global' %}
+          <div class="panel panel-default">
+            <div class="panel-heading">
+              <h3 class="panel-title"><i class="fa fa-image"></i> Image Settings</h3>
+            </div>
+            <div class="panel-body">
+                  <div class="form-group required">
+                    <label class="col-sm-2 control-label" for="input-product-limit"><span data-toggle="tooltip" title="{{ help_product_limit }}">{{ entry_product_limit }}</span></label>
+                    <div class="col-sm-10">
+                      <input type="text" name="theme_oc_ultra_product_limit" value="{{ theme_oc_ultra_product_limit }}" placeholder="{{ entry_product_limit }}" id="input-product-limit" class="form-control" />
+                    </div>
+                  </div>
+                  <div class="form-group required">
+                    <label class="col-sm-2 control-label" for="input-product-description-length"><span data-toggle="tooltip" title="{{ help_product_description_length }}">{{ entry_product_description_length }}</span></label>
+                    <div class="col-sm-10">
+                      <input type="text" name="theme_oc_ultra_product_description_length" value="{{ theme_oc_ultra_product_description_length }}" placeholder="{{ entry_product_description_length }}" id="input-product-description-length" class="form-control" />
+                    </div>
+                  </div>
+                  <div class="form-group required">
+                    <label class="col-sm-2 control-label" for="input-image-category-width">{{ entry_image_category }}</label>
+                    <div class="col-sm-10">
+                      <div class="row">
+                        <div class="col-sm-6">
+                          <input type="text" name="theme_oc_ultra_image_category_width" value="{{ theme_oc_ultra_image_category_width }}" placeholder="{{ entry_width }}" id="input-image-category-width" class="form-control" />
+                        </div>
+                        <div class="col-sm-6">
+                          <input type="text" name="theme_oc_ultra_image_category_height" value="{{ theme_oc_ultra_image_category_height }}" placeholder="{{ entry_height }}" class="form-control" />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="form-group required">
+                    <label class="col-sm-2 control-label" for="input-image-thumb-width">{{ entry_image_thumb }}</label>
+                    <div class="col-sm-10">
+                      <div class="row">
+                        <div class="col-sm-6">
+                          <input type="text" name="theme_oc_ultra_image_thumb_width" value="{{ theme_oc_ultra_image_thumb_width }}" placeholder="{{ entry_width }}" id="input-image-thumb-width" class="form-control" />
+                        </div>
+                        <div class="col-sm-6">
+                          <input type="text" name="theme_oc_ultra_image_thumb_height" value="{{ theme_oc_ultra_image_thumb_height }}" placeholder="{{ entry_height }}" class="form-control" />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="form-group required">
+                    <label class="col-sm-2 control-label" for="input-image-popup-width">{{ entry_image_popup }}</label>
+                    <div class="col-sm-10">
+                      <div class="row">
+                        <div class="col-sm-6">
+                          <input type="text" name="theme_oc_ultra_image_popup_width" value="{{ theme_oc_ultra_image_popup_width }}" placeholder="{{ entry_width }}" id="input-image-popup-width" class="form-control" />
+                        </div>
+                        <div class="col-sm-6">
+                          <input type="text" name="theme_oc_ultra_image_popup_height" value="{{ theme_oc_ultra_image_popup_height }}" placeholder="{{ entry_height }}" class="form-control" />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="form-group required">
+                    <label class="col-sm-2 control-label" for="input-image-product-width">{{ entry_image_product }}</label>
+                    <div class="col-sm-10">
+                      <div class="row">
+                        <div class="col-sm-6">
+                          <input type="text" name="theme_oc_ultra_image_product_width" value="{{ theme_oc_ultra_image_product_width }}" placeholder="{{ entry_width }}" id="input-image-product-width" class="form-control" />
+                        </div>
+                        <div class="col-sm-6">
+                          <input type="text" name="theme_oc_ultra_image_product_height" value="{{ theme_oc_ultra_image_product_height }}" placeholder="{{ entry_height }}" class="form-control" />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="form-group required">
+                    <label class="col-sm-2 control-label" for="input-image-additional-width">{{ entry_image_additional }}</label>
+                    <div class="col-sm-10">
+                      <div class="row">
+                        <div class="col-sm-6">
+                          <input type="text" name="theme_oc_ultra_image_additional_width" value="{{ theme_oc_ultra_image_additional_width }}" placeholder="{{ entry_width }}" id="input-image-additional-width" class="form-control" />
+                        </div>
+                        <div class="col-sm-6">
+                          <input type="text" name="theme_oc_ultra_image_additional_height" value="{{ theme_oc_ultra_image_additional_height }}" placeholder="{{ entry_height }}" class="form-control" />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="form-group required">
+                    <label class="col-sm-2 control-label" for="input-image-related-width">{{ entry_image_related }}</label>
+                    <div class="col-sm-10">
+                      <div class="row">
+                        <div class="col-sm-6">
+                          <input type="text" name="theme_oc_ultra_image_related_width" value="{{ theme_oc_ultra_image_related_width }}" placeholder="{{ entry_width }}" id="input-image-related-width" class="form-control" />
+                        </div>
+                        <div class="col-sm-6">
+                          <input type="text" name="theme_oc_ultra_image_related_height" value="{{ theme_oc_ultra_image_related_height }}" placeholder="{{ entry_height }}" class="form-control" />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="form-group required">
+                    <label class="col-sm-2 control-label" for="input-image-compare-width">{{ entry_image_compare }}</label>
+                    <div class="col-sm-10">
+                      <div class="row">
+                        <div class="col-sm-6">
+                          <input type="text" name="theme_oc_ultra_image_compare_width" value="{{ theme_oc_ultra_image_compare_width }}" placeholder="{{ entry_width }}" id="input-image-compare-width" class="form-control" />
+                        </div>
+                        <div class="col-sm-6">
+                          <input type="text" name="theme_oc_ultra_image_compare_height" value="{{ theme_oc_ultra_image_compare_height }}" placeholder="{{ entry_height }}" class="form-control" />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="form-group required">
+                    <label class="col-sm-2 control-label" for="input-image-wishlist-width">{{ entry_image_wishlist }}</label>
+                    <div class="col-sm-10">
+                      <div class="row">
+                        <div class="col-sm-6">
+                          <input type="text" name="theme_oc_ultra_image_wishlist_width" value="{{ theme_oc_ultra_image_wishlist_width }}" placeholder="{{ entry_width }}" id="input-image-wishlist-width" class="form-control" />
+                        </div>
+                        <div class="col-sm-6">
+                          <input type="text" name="theme_oc_ultra_image_wishlist_height" value="{{ theme_oc_ultra_image_wishlist_height }}" placeholder="{{ entry_height }}" class="form-control" />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="form-group required">
+                    <label class="col-sm-2 control-label" for="input-image-cart-width">{{ entry_image_cart }}</label>
+                    <div class="col-sm-10">
+                      <div class="row">
+                        <div class="col-sm-6">
+                          <input type="text" name="theme_oc_ultra_image_cart_width" value="{{ theme_oc_ultra_image_cart_width }}" placeholder="{{ entry_width }}" id="input-image-cart-width" class="form-control" />
+                        </div>
+                        <div class="col-sm-6">
+                          <input type="text" name="theme_oc_ultra_image_cart_height" value="{{ theme_oc_ultra_image_cart_height }}" placeholder="{{ entry_height }}" class="form-control" />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="form-group required">
+                    <label class="col-sm-2 control-label" for="input-image-location-width">{{ entry_image_location }}</label>
+                    <div class="col-sm-10">
+                      <div class="row">
+                        <div class="col-sm-6">
+                          <input type="text" name="theme_oc_ultra_image_location_width" value="{{ theme_oc_ultra_image_location_width }}" placeholder="{{ entry_width }}" id="input-image-location-width" class="form-control" />
+                        </div>
+                        <div class="col-sm-6">
+                          <input type="text" name="theme_oc_ultra_image_location_height" value="{{ theme_oc_ultra_image_location_height }}" placeholder="{{ entry_height }}" class="form-control" />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+            </div>
+          </div>
+          {% endif %}
 
           <div class="panel-group" id="accordion">
             
+            {% if section != 'global' %}
             <!-- Header Configuration -->
             <div class="panel panel-default">
               <div class="panel-heading" style="cursor: pointer;" data-toggle="collapse" data-parent="#accordion" data-target="#collapse-header-config">
@@ -54,9 +210,6 @@
                     <label class="col-sm-2 control-label" for="input-header-text">{{ entry_header_text }}</label>
                     <div class="col-sm-10">
                       <input type="text" name="theme_oc_ultra_header_text" value="{{ theme_oc_ultra_header_text }}" placeholder="{{ entry_header_text }}" id="input-header-text" class="form-control" />
-                      {% if error_header_text %}
-                      <div class="text-danger">{{ error_header_text }}</div>
-                      {% endif %}
                     </div>
                   </div>
                 </div>
@@ -680,199 +833,11 @@
                 </div>
               </div>
             </div>
+            {% endif %}
 
-            <!-- Image Settings -->
-            <div class="panel panel-default">
-              <div class="panel-heading" style="cursor: pointer;" data-toggle="collapse" data-parent="#accordion" data-target="#collapse-image">
-                <h4 class="panel-title">
-                  <i class="fa fa-image"></i> Image Settings
-                  <i class="fa fa-chevron-down pull-right"></i>
-                </h4>
-              </div>
-              <div id="collapse-image" class="panel-collapse collapse">
-                <div class="panel-body">
-                  <div class="form-group required">
-                    <label class="col-sm-2 control-label" for="input-product-limit"><span data-toggle="tooltip" title="{{ help_product_limit }}">{{ entry_product_limit }}</span></label>
-                    <div class="col-sm-10">
-                      <input type="text" name="theme_oc_ultra_product_limit" value="{{ theme_oc_ultra_product_limit }}" placeholder="{{ entry_product_limit }}" id="input-product-limit" class="form-control" />
-                      {% if error_product_limit %}
-                      <div class="text-danger">{{ error_product_limit }}</div>
-                      {% endif %}
-                    </div>
-                  </div>
-                  <div class="form-group required">
-                    <label class="col-sm-2 control-label" for="input-product-description-length"><span data-toggle="tooltip" title="{{ help_product_description_length }}">{{ entry_product_description_length }}</span></label>
-                    <div class="col-sm-10">
-                      <input type="text" name="theme_oc_ultra_product_description_length" value="{{ theme_oc_ultra_product_description_length }}" placeholder="{{ entry_product_description_length }}" id="input-product-description-length" class="form-control" />
-                      {% if error_product_description_length %}
-                      <div class="text-danger">{{ error_product_description_length }}</div>
-                      {% endif %}
-                    </div>
-                  </div>
-                  <div class="form-group required">
-                    <label class="col-sm-2 control-label" for="input-image-category-width">{{ entry_image_category }}</label>
-                    <div class="col-sm-10">
-                      <div class="row">
-                        <div class="col-sm-6">
-                          <input type="text" name="theme_oc_ultra_image_category_width" value="{{ theme_oc_ultra_image_category_width }}" placeholder="{{ entry_width }}" id="input-image-category-width" class="form-control" />
-                        </div>
-                        <div class="col-sm-6">
-                          <input type="text" name="theme_oc_ultra_image_category_height" value="{{ theme_oc_ultra_image_category_height }}" placeholder="{{ entry_height }}" class="form-control" />
-                        </div>
-                      </div>
-                      {% if error_image_category %}
-                      <div class="text-danger">{{ error_image_category }}</div>
-                      {% endif %}
-                    </div>
-                  </div>
-                  <div class="form-group required">
-                    <label class="col-sm-2 control-label" for="input-image-thumb-width">{{ entry_image_thumb }}</label>
-                    <div class="col-sm-10">
-                      <div class="row">
-                        <div class="col-sm-6">
-                          <input type="text" name="theme_oc_ultra_image_thumb_width" value="{{ theme_oc_ultra_image_thumb_width }}" placeholder="{{ entry_width }}" id="input-image-thumb-width" class="form-control" />
-                        </div>
-                        <div class="col-sm-6">
-                          <input type="text" name="theme_oc_ultra_image_thumb_height" value="{{ theme_oc_ultra_image_thumb_height }}" placeholder="{{ entry_height }}" class="form-control" />
-                        </div>
-                      </div>
-                      {% if error_image_thumb %}
-                      <div class="text-danger">{{ error_image_thumb }}</div>
-                      {% endif %}
-                    </div>
-                  </div>
-                  <div class="form-group required">
-                    <label class="col-sm-2 control-label" for="input-image-popup-width">{{ entry_image_popup }}</label>
-                    <div class="col-sm-10">
-                      <div class="row">
-                        <div class="col-sm-6">
-                          <input type="text" name="theme_oc_ultra_image_popup_width" value="{{ theme_oc_ultra_image_popup_width }}" placeholder="{{ entry_width }}" id="input-image-popup-width" class="form-control" />
-                        </div>
-                        <div class="col-sm-6">
-                          <input type="text" name="theme_oc_ultra_image_popup_height" value="{{ theme_oc_ultra_image_popup_height }}" placeholder="{{ entry_height }}" class="form-control" />
-                        </div>
-                      </div>
-                      {% if error_image_popup %}
-                      <div class="text-danger">{{ error_image_popup }}</div>
-                      {% endif %}
-                    </div>
-                  </div>
-                  <div class="form-group required">
-                    <label class="col-sm-2 control-label" for="input-image-product-width">{{ entry_image_product }}</label>
-                    <div class="col-sm-10">
-                      <div class="row">
-                        <div class="col-sm-6">
-                          <input type="text" name="theme_oc_ultra_image_product_width" value="{{ theme_oc_ultra_image_product_width }}" placeholder="{{ entry_width }}" id="input-image-product-width" class="form-control" />
-                        </div>
-                        <div class="col-sm-6">
-                          <input type="text" name="theme_oc_ultra_image_product_height" value="{{ theme_oc_ultra_image_product_height }}" placeholder="{{ entry_height }}" class="form-control" />
-                        </div>
-                      </div>
-                      {% if error_image_product %}
-                      <div class="text-danger">{{ error_image_product }}</div>
-                      {% endif %}
-                    </div>
-                  </div>
-                  <div class="form-group required">
-                    <label class="col-sm-2 control-label" for="input-image-additional-width">{{ entry_image_additional }}</label>
-                    <div class="col-sm-10">
-                      <div class="row">
-                        <div class="col-sm-6">
-                          <input type="text" name="theme_oc_ultra_image_additional_width" value="{{ theme_oc_ultra_image_additional_width }}" placeholder="{{ entry_width }}" id="input-image-additional-width" class="form-control" />
-                        </div>
-                        <div class="col-sm-6">
-                          <input type="text" name="theme_oc_ultra_image_additional_height" value="{{ theme_oc_ultra_image_additional_height }}" placeholder="{{ entry_height }}" class="form-control" />
-                        </div>
-                      </div>
-                      {% if error_image_additional %}
-                      <div class="text-danger">{{ error_image_additional }}</div>
-                      {% endif %}
-                    </div>
-                  </div>
-                  <div class="form-group required">
-                    <label class="col-sm-2 control-label" for="input-image-related-width">{{ entry_image_related }}</label>
-                    <div class="col-sm-10">
-                      <div class="row">
-                        <div class="col-sm-6">
-                          <input type="text" name="theme_oc_ultra_image_related_width" value="{{ theme_oc_ultra_image_related_width }}" placeholder="{{ entry_width }}" id="input-image-related-width" class="form-control" />
-                        </div>
-                        <div class="col-sm-6">
-                          <input type="text" name="theme_oc_ultra_image_related_height" value="{{ theme_oc_ultra_image_related_height }}" placeholder="{{ entry_height }}" class="form-control" />
-                        </div>
-                      </div>
-                      {% if error_image_related %}
-                      <div class="text-danger">{{ error_image_related }}</div>
-                      {% endif %}
-                    </div>
-                  </div>
-                  <div class="form-group required">
-                    <label class="col-sm-2 control-label" for="input-image-compare-width">{{ entry_image_compare }}</label>
-                    <div class="col-sm-10">
-                      <div class="row">
-                        <div class="col-sm-6">
-                          <input type="text" name="theme_oc_ultra_image_compare_width" value="{{ theme_oc_ultra_image_compare_width }}" placeholder="{{ entry_width }}" id="input-image-compare-width" class="form-control" />
-                        </div>
-                        <div class="col-sm-6">
-                          <input type="text" name="theme_oc_ultra_image_compare_height" value="{{ theme_oc_ultra_image_compare_height }}" placeholder="{{ entry_height }}" class="form-control" />
-                        </div>
-                      </div>
-                      {% if error_image_compare %}
-                      <div class="text-danger">{{ error_image_compare }}</div>
-                      {% endif %}
-                    </div>
-                  </div>
-                  <div class="form-group required">
-                    <label class="col-sm-2 control-label" for="input-image-wishlist-width">{{ entry_image_wishlist }}</label>
-                    <div class="col-sm-10">
-                      <div class="row">
-                        <div class="col-sm-6">
-                          <input type="text" name="theme_oc_ultra_image_wishlist_width" value="{{ theme_oc_ultra_image_wishlist_width }}" placeholder="{{ entry_width }}" id="input-image-wishlist-width" class="form-control" />
-                        </div>
-                        <div class="col-sm-6">
-                          <input type="text" name="theme_oc_ultra_image_wishlist_height" value="{{ theme_oc_ultra_image_wishlist_height }}" placeholder="{{ entry_height }}" class="form-control" />
-                        </div>
-                      </div>
-                      {% if error_image_wishlist %}
-                      <div class="text-danger">{{ error_image_wishlist }}</div>
-                      {% endif %}
-                    </div>
-                  </div>
-                  <div class="form-group required">
-                    <label class="col-sm-2 control-label" for="input-image-cart-width">{{ entry_image_cart }}</label>
-                    <div class="col-sm-10">
-                      <div class="row">
-                        <div class="col-sm-6">
-                          <input type="text" name="theme_oc_ultra_image_cart_width" value="{{ theme_oc_ultra_image_cart_width }}" placeholder="{{ entry_width }}" id="input-image-cart-width" class="form-control" />
-                        </div>
-                        <div class="col-sm-6">
-                          <input type="text" name="theme_oc_ultra_image_cart_height" value="{{ theme_oc_ultra_image_cart_height }}" placeholder="{{ entry_height }}" class="form-control" />
-                        </div>
-                      </div>
-                      {% if error_image_cart %}
-                      <div class="text-danger">{{ error_image_cart }}</div>
-                      {% endif %}
-                    </div>
-                  </div>
-                  <div class="form-group required">
-                    <label class="col-sm-2 control-label" for="input-image-location-width">{{ entry_image_location }}</label>
-                    <div class="col-sm-10">
-                      <div class="row">
-                        <div class="col-sm-6">
-                          <input type="text" name="theme_oc_ultra_image_location_width" value="{{ theme_oc_ultra_image_location_width }}" placeholder="{{ entry_width }}" id="input-image-location-width" class="form-control" />
-                        </div>
-                        <div class="col-sm-6">
-                          <input type="text" name="theme_oc_ultra_image_location_height" value="{{ theme_oc_ultra_image_location_height }}" placeholder="{{ entry_height }}" class="form-control" />
-                        </div>
-                      </div>
-                      {% if error_image_location %}
-                      <div class="text-danger">{{ error_image_location }}</div>
-                      {% endif %}
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
 
+
+            {% if section != 'global' %}
             <!-- Customize -->
             <div class="panel panel-default">
               <div class="panel-heading" style="cursor: pointer;" data-toggle="collapse" data-parent="#accordion" data-target="#collapse-customize">
@@ -901,9 +866,11 @@
                 </div>
               </div>
             </div>
+            {% endif %}
 
           </div>
 
+          {% if section != 'global' %}
           <div class="alert alert-info" style="margin-top: 20px;">
             <i class="fa fa-info-circle"></i>
             <strong>OC Ultra Theme</strong><br/>
@@ -916,6 +883,7 @@
             </ul>
             <p><strong>Report Issues or Request Features at:</strong> Whatsapp <code>+9232 0143 0963</code> or email support@iextendlabs.com</p>
           </div>
+          {% endif %}
  
         </form>
       </div>

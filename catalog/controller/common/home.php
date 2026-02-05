@@ -5,13 +5,6 @@ class ControllerCommonHome extends Controller {
 
         // Load custom theme settings for current language
         $this->load->model('setting/setting');
-        $current_language_id = (int)$this->config->get('config_language_id');
-        $current_store_id = (int)$this->config->get('config_store_id');
-        $theme_settings = $this->model_setting_setting->getSetting('theme_oc_ultra_' . $current_language_id, $current_store_id);
-        
-        foreach ($theme_settings as $key => $value) {
-            $this->config->set($key, $value);
-        }
         
         $data['text_shop_by_category'] = $this->language->get('text_shop_by_category');
         $data['text_shop_now'] = $this->language->get('text_shop_now');
@@ -31,8 +24,8 @@ class ControllerCommonHome extends Controller {
 		$data['featured_categories'] = [];
 
 		// Check if featured categories section is enabled
-		if ($this->config->get('theme_oc_ultra_featured_categories_status') && $this->config->get('theme_oc_ultra_featured_category')) {
-			$featured_categories = $this->config->get('theme_oc_ultra_featured_category');
+		if ($this->config->getLanguage('theme_oc_ultra_featured_categories_status') && $this->config->getLanguage('theme_oc_ultra_featured_category')) {
+			$featured_categories = $this->config->getLanguage('theme_oc_ultra_featured_category');
 
 			foreach ($featured_categories as $featured_category) {
 				$category_info = $this->model_catalog_category->getCategory($featured_category['category_id']);
@@ -50,29 +43,27 @@ class ControllerCommonHome extends Controller {
 				}
 			}
 		}
-
 		// Add FAQ section data - only if enabled
-		if ($this->config->get('theme_oc_ultra_faq_status')) {
-			$data['faq_heading'] = $this->config->get('theme_oc_ultra_faq_heading') ? $this->config->get('theme_oc_ultra_faq_heading') : 'Have a question? We are here to help.';
-			$data['faq_description'] = $this->config->get('theme_oc_ultra_faq_description') ? $this->config->get('theme_oc_ultra_faq_description') : 'Check out the most common questions our customers asked. Still have questions? Contact our customer support.';
-			$data['faq_support_text'] = $this->config->get('theme_oc_ultra_faq_support_text') ? $this->config->get('theme_oc_ultra_faq_support_text') : 'Our customer support is available monday to friday: 8am-8:30pm.';
-			$data['faq_support_hours'] = $this->config->get('theme_oc_ultra_faq_support_hours') ? $this->config->get('theme_oc_ultra_faq_support_hours') : 'Average answer time: 24h';
+		if ($this->config->getLanguage('theme_oc_ultra_faq_status')) {
+			$data['faq_heading'] = $this->config->getLanguage('theme_oc_ultra_faq_heading');
+			$data['faq_description'] = $this->config->getLanguage('theme_oc_ultra_faq_description');
+			$data['faq_support_text'] = $this->config->getLanguage('theme_oc_ultra_faq_support_text');
+			$data['faq_support_hours'] = $this->config->getLanguage('theme_oc_ultra_faq_support_hours');
 
 			$data['faqs'] = [];
-			if ($this->config->get('theme_oc_ultra_faq')) {
-				$data['faqs'] = $this->config->get('theme_oc_ultra_faq');
+			if ($this->config->getLanguage('theme_oc_ultra_faq')) {
+				$data['faqs'] = $this->config->getLanguage('theme_oc_ultra_faq');
 			}
 		} else {
 			$data['faqs'] = [];
 		}
-
 		// Add testimonials section data - only if enabled
 		$data['testimonials'] = [];
-		if ($this->config->get('theme_oc_ultra_testimonials_status')) {
-			$data['testimonials_heading'] = $this->config->get('theme_oc_ultra_testimonials_heading') ? $this->config->get('theme_oc_ultra_testimonials_heading') : 'What our customers are saying';
+		if ($this->config->getLanguage('theme_oc_ultra_testimonials_status')) {
+			$data['testimonials_heading'] = $this->config->getLanguage('theme_oc_ultra_testimonials_heading') ? $this->config->getLanguage('theme_oc_ultra_testimonials_heading') : 'What our customers are saying';
 
-			if ($this->config->get('theme_oc_ultra_testimonial')) {
-				$testimonials = $this->config->get('theme_oc_ultra_testimonial');
+			if ($this->config->getLanguage('theme_oc_ultra_testimonial')) {
+				$testimonials = $this->config->getLanguage('theme_oc_ultra_testimonial');
 
 				foreach ($testimonials as $testimonial) {
 					if (isset($testimonial['image']) && $testimonial['image'] && is_file(DIR_IMAGE . html_entity_decode($testimonial['image'], ENT_QUOTES, 'UTF-8'))) {
@@ -94,9 +85,9 @@ class ControllerCommonHome extends Controller {
 
 		// Add features section data - only if enabled
 		$data['features'] = [];
-		if ($this->config->get('theme_oc_ultra_features_status')) {
-			if ($this->config->get('theme_oc_ultra_feature')) {
-				$features = $this->config->get('theme_oc_ultra_feature');
+		if ($this->config->getLanguage('theme_oc_ultra_features_status')) {
+			if ($this->config->getLanguage('theme_oc_ultra_feature')) {
+				$features = $this->config->getLanguage('theme_oc_ultra_feature');
 
 				foreach ($features as $feature) {
 					$data['features'][] = [
@@ -107,7 +98,6 @@ class ControllerCommonHome extends Controller {
 				}
 			}
 		}
-
 		$data['column_left'] = $this->load->controller('common/column_left');
 		$data['column_right'] = $this->load->controller('common/column_right');
 		$data['content_top'] = $this->load->controller('common/content_top');

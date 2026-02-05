@@ -2,6 +2,11 @@
 class ControllerCommonCart extends Controller {
 	public function index() {
 		$this->load->language('common/cart');
+        
+        // Custom Language Logic
+        $data['text_cart'] = $this->language->get('text_cart');
+        $data['text_checkout'] = $this->language->get('text_checkout');
+        $data['text_shopping_cart'] = $this->language->get('text_shopping_cart');
 
 		// Totals
 		$this->load->model('setting/extension');

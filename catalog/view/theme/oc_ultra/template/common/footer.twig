@@ -14,35 +14,6 @@
           </div>
           <div id="newsletter-message" style="margin-top:10px;"></div>
         </form>
-        <script type="text/javascript">
-        $('#footer-newsletter-form').on('submit', function(e) {
-            e.preventDefault();
-            $.ajax({
-                url: 'index.php?route=extension/theme/oc_ultra/subscribe',
-                type: 'post',
-                dataType: 'json',
-                data: $(this).serialize(),
-                beforeSend: function() {
-                    $('#footer-newsletter-form button').button('loading');
-                },
-                complete: function() {
-                    $('#footer-newsletter-form button').button('reset');
-                },
-                success: function(json) {
-                    $('.alert-dismissible').remove();
-                    
-                    if (json['error']) {
-                        $('#newsletter-message').html('<div class="text-danger"><i class="fa fa-exclamation-circle"></i> ' + json['error'] + '</div>');
-                    }
-                    
-                    if (json['success']) {
-                        $('#newsletter-message').html('<div class="text-success"><i class="fa fa-check-circle"></i> ' + json['success'] + '</div>');
-                        $('#footer-newsletter-form input[name=\'email\']').val('');
-                    }
-                }
-            });
-        });
-        </script>
         <div class="social-icons" style="margin-top:20px;">
           {% if social_links %}
             {% for social in social_links %}
@@ -92,5 +63,10 @@
   </div>
 </footer>
 </div>
+{% if custom_js %}
+<script type="text/javascript">
+{{ custom_js }}
+</script>
+{% endif %}
 </body>
 </html>

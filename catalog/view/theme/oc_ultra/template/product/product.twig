@@ -79,6 +79,8 @@
             {% endif %}
             
             <form id="form-product">
+              <input type="hidden" name="product_id" value="{{ product_id }}" />
+              <div data-minimum="{{ minimum }}" style="display:none;"></div>
               {% if options %}
                 {% for option in options %}
                   {% if option.type == 'select' %}
@@ -210,7 +212,7 @@
                   <button type="button" class="btn btn-outline-secondary qty-increase" style="width: 35px; height: 35px; padding: 0;">+</button>
                   <input type="hidden" name="quantity" value="{{ minimum }}" id="input-quantity">
                 </div>
-                <button type="submit" id="button-cart" class="btn btn-dark btn-lg rounded-pill px-5">{{ button_cart }}</button>
+                <button type="submit" id="button-cart" class="btn btn-dark btn-lg rounded-pill px-5" data-text="{{ button_cart }}">{{ button_cart }}</button>
               </div>
               <input type="hidden" name="product_id" value="{{ product_id }}" id="input-product-id"/>
             </form>
@@ -281,6 +283,7 @@
                     <div id="review"></div>
                     <h2>{{ text_write }}</h2>
                     {% if review_guest %}
+                    <form id="form-review">
                     <div class="form-group required">
                     <div class="col-sm-12">
                         <label class="control-label" for="input-name">{{ entry_name }}</label>
@@ -315,6 +318,7 @@
                         <button type="button" id="button-review" data-loading-text="{{ text_loading }}" class="btn btn-primary">{{ button_continue }}</button>
                     </div>
                     </div>
+                    </form>
                     {% else %}
                     {{ text_login }}
                     {% endif %}
@@ -373,190 +377,4 @@
       {{ content_bottom }}</div>
     {{ column_right }}</div>
 </div>
-<script type="text/javascript"><!--
-// Product thumbnail switching
-document.querySelectorAll('.product-thumbnails img').forEach(function(thumb) {
-  thumb.addEventListener('click', function() {
-    document.querySelectorAll('.product-thumbnails img').forEach(function(img) {
-      img.classList.remove('active');
-    });
-    this.classList.add('active');
-    document.getElementById('main-product-image').src = this.dataset.image;
-  });
-});
-
-// Quantity selector
-document.querySelector('.qty-decrease')?.addEventListener('click', function() {
-  let qty = parseInt(document.querySelector('.qty-display').textContent);
-  let minQty = {{ minimum }};
-  if (qty > minQty) {
-    qty--;
-    document.querySelector('.qty-display').textContent = qty;
-    document.getElementById('input-quantity').value = qty;
-  }
-});
-
-document.querySelector('.qty-increase')?.addEventListener('click', function() {
-  let qty = parseInt(document.querySelector('.qty-display').textContent);
-  qty++;
-  document.querySelector('.qty-display').textContent = qty;
-  document.getElementById('input-quantity').value = qty;
-});
-
-// Form submission
-$('#form-product').on('submit', function(e) {
-    e.preventDefault();
-
-    $.ajax({
-        url: 'index.php?route=checkout/cart/add',
-        type: 'post',
-        data: $('#form-product').serialize(),
-        dataType: 'json',
-        beforeSend: function() {
-            $('#button-cart').prop('disabled', true).html('<i class="fa-solid fa-spinner fa-spin"></i> {{ button_cart }}');
-        },
-        complete: function() {
-            $('#button-cart').prop('disabled', false).html('{{ button_cart }}');
-        },
-        success: function(json) {
-            $('.invalid-feedback').removeClass('d-block');
-            $('.text-danger').remove();
-            $('.form-group').removeClass('has-error');
-
-            if (json['error']) {
-                if (json['error']['option']) {
-                    for (i in json['error']['option']) {
-                        var element = $('#input-option-' + i);
-                        $('#error-option-' + i).html(json['error']['option'][i]).addClass('d-block');
-                        element.closest('.form-group').addClass('has-error');
-                    }
-                }
-                 if (json['error']['recurring']) {
-                    $('select[name=\'recurring_id\']').after('<div class="text-danger">' + json['error']['recurring'] + '</div>');
-                }
-            }
-
-            if (json['success']) {
-                // Update side cart if exists or show alert
-                 $('html, body').animate({ scrollTop: 0 }, 'slow');
-                $('#content').parent().before('<div class="alert alert-success alert-dismissible"><i class="fa-solid fa-circle-check"></i> ' + json['success'] + ' <button type="button" class="close" data-dismiss="alert">&times;</button></div>');
-                
-                // Refresh cart module
-                $('#cart > button').html('<span id="cart-total"><i class="fa fa-shopping-cart"></i> ' + json['total'] + '</span>');
-				$('#cart > ul').load('index.php?route=common/cart/info ul li');
-                
-                // If slide-in cart exists
-                 if (typeof openSlideCart === 'function') {
-                    openSlideCart();
-                 }
-            }
-        },
-        error: function(xhr, ajaxOptions, thrownError) {
-            console.log(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
-        }
-    });
-});
-
-$('button[id^=\'button-upload\']').on('click', function() {
-	var node = this;
-
-	$('#form-upload').remove();
-
-	$('body').prepend('<form enctype="multipart/form-data" id="form-upload" style="display: none;"><input type="file" name="file" /></form>');
-
-	$('#form-upload input[name=\'file\']').trigger('click');
-
-	if (typeof timer != 'undefined') {
-    	clearInterval(timer);
-	}
-
-	timer = setInterval(function() {
-		if ($('#form-upload input[name=\'file\']').val() != '') {
-			clearInterval(timer);
-
-			$.ajax({
-				url: 'index.php?route=tool/upload',
-				type: 'post',
-				dataType: 'json',
-				data: new FormData($('#form-upload')[0]),
-				cache: false,
-				contentType: false,
-				processData: false,
-				beforeSend: function() {
-					$(node).button('loading');
-				},
-				complete: function() {
-					$(node).button('reset');
-				},
-				success: function(json) {
-					$('.text-danger').remove();
-
-					if (json['error']) {
-						$(node).parent().find('input').after('<div class="text-danger">' + json['error'] + '</div>');
-					}
-
-					if (json['success']) {
-						alert(json['success']);
-
-						$(node).parent().find('input').val(json['code']);
-					}
-				},
-				error: function(xhr, ajaxOptions, thrownError) {
-					alert(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
-				}
-			});
-		}
-	}, 500);
-});
-
-// Reviews handling
-$('#review').delegate('.pagination a', 'click', function(e) {
-    e.preventDefault();
-    $('#review').fadeOut('slow');
-    $('#review').load(this.href);
-    $('#review').fadeIn('slow');
-});
-
-$('#review').load('index.php?route=product/product/review&product_id={{ product_id }}');
-
-$('#button-review').on('click', function() {
-	$.ajax({
-		url: 'index.php?route=product/product/write&product_id={{ product_id }}',
-		type: 'post',
-		dataType: 'json',
-		data: $("#form-review").serialize(),
-		beforeSend: function() {
-			$('#button-review').button('loading');
-		},
-		complete: function() {
-			$('#button-review').button('reset');
-		},
-		success: function(json) {
-			$('.alert-dismissible').remove();
-
-			if (json['error']) {
-				$('#review').after('<div class="alert alert-danger alert-dismissible"><i class="fa fa-exclamation-circle"></i> ' + json['error'] + '</div>');
-			}
-
-			if (json['success']) {
-				$('#review').after('<div class="alert alert-success alert-dismissible"><i class="fa fa-check-circle"></i> ' + json['success'] + '</div>');
-
-				$('input[name=\'name\']').val('');
-				$('textarea[name=\'text\']').val('');
-				$('input[name=\'rating\']:checked').prop('checked', false);
-			}
-		}
-	});
-});
-
-$(document).ready(function() {
-	$('.thumbnails').magnificPopup({
-		type:'image',
-		delegate: 'a',
-		gallery: {
-			enabled:true
-		}
-	});
-});
-//--></script>
 {{ footer }}

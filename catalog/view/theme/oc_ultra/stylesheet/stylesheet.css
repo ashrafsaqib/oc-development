@@ -682,3 +682,39 @@ a {
     font-size: 18px;
     color: #333;
 }
+
+/* Dynamic Header Background - uses inline var from PHP */
+.top-background-color {
+    /* Background color set dynamically via template variable */
+}
+
+/* Fix for currency/language in navbar */
+.navbar-nav > li > form {
+    padding: 10px 15px;
+}
+.navbar-nav > li > form > .btn-group {
+    display: block;
+}
+.navbar-nav > li > form .btn-link {
+    color: #ddd;
+    text-decoration: none;
+    padding: 0;
+}
+.navbar-nav > li > form .btn-link:hover {
+    color: #fff;
+}
+/* Fix alignment for currency/language dropdowns */
+.navbar-nav > li > form .btn-group > .dropdown-toggle {
+    padding: 0;
+    background: none;
+    border: none;
+    box-shadow: none;
+}
+
+@media (min-width: 768px) {
+    .navbar-nav > li.dropdown > .dropdown-menu {
+        margin-top: 0;
+        border-top-left-radius: 0;
+        border-top-right-radius: 0;
+    }
+}

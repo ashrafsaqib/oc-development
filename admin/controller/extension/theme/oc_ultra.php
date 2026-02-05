@@ -2,6 +2,15 @@
 class ControllerExtensionThemeOcUltra extends Controller {
     private $error = array();
 
+    private function editSetting($data, $store_id = 0, $language_id = null) {
+        foreach ($data as $key => $value) {
+            $this->db->query("DELETE FROM `" . DB_PREFIX . "setting` WHERE store_id = '" . (int)$store_id . "' AND `key` = '" . $this->db->escape($key) .( $language_id != 0 && $language_id !== null ? "_" . (int)$language_id : "")  . "'");
+
+            $this->db->query("insert into " . DB_PREFIX . "setting set store_id = '" . (int)$store_id . "', `code` = 'theme_oc_ultra', `key` = '" . $this->db->escape($key) .($language_id != null ? "_" . (int)$language_id : "") . "', `value` = '" . $this->db->escape(is_array($value) ? json_encode($value) : $value) . "', serialized = '" . (is_array($value) ? 1 : 0) . "'");
+
+        }
+    }
+
     public function index() {
         $this->load->language('extension/theme/oc_ultra');
 
@@ -17,6 +26,9 @@ class ControllerExtensionThemeOcUltra extends Controller {
             $store_id = 0;
         }
 
+        $section = isset($this->request->get['section']) ? $this->request->get['section'] : 'language';
+        $data['section'] = $section;
+
         if (isset($this->request->get['language_id'])) {
             $language_id = (int)$this->request->get['language_id'];
         } else {
@@ -24,15 +36,22 @@ class ControllerExtensionThemeOcUltra extends Controller {
         }
         $data['active_language_id'] = $language_id;
 
+        $data['global_settings_url'] = $this->url->link('extension/theme/oc_ultra', 'user_token=' . $this->session->data['user_token'] . '&store_id=' . $store_id . '&section=global', true);
+
         foreach ($data['languages'] as &$language) {
-            $language['url'] = $this->url->link('extension/theme/oc_ultra', 'user_token=' . $this->session->data['user_token'] . '&store_id=' . $store_id . '&language_id=' . $language['language_id'], true);
+            $language['url'] = $this->url->link('extension/theme/oc_ultra', 'user_token=' . $this->session->data['user_token'] . '&store_id=' . $store_id . '&language_id=' . $language['language_id'] . '&section=language', true);
         }
 
         // Handle Form Save
-        if (($this->request->server['REQUEST_METHOD'] == 'POST') && $this->validate()) {
-            $this->model_setting_setting->editSetting('theme_oc_ultra_' . $language_id, $this->request->post, $store_id);
+        if (($this->request->server['REQUEST_METHOD'] == 'POST')) {
+            if ($section == 'global') {
+                $this->editSetting($this->request->post, $store_id);
+                $this->response->redirect($this->url->link('extension/theme/oc_ultra', 'user_token=' . $this->session->data['user_token'] . '&store_id=' . $store_id . '&section=global', true));
+            } else {
+                $this->editSetting($this->request->post, $store_id, $language_id);
+                $this->response->redirect($this->url->link('extension/theme/oc_ultra', 'user_token=' . $this->session->data['user_token'] . '&store_id=' . $store_id . '&language_id=' . $language_id . '&section=language', true));
+            }
             $this->session->data['success'] = $this->language->get('text_success');
-            $this->response->redirect($this->url->link('extension/theme/oc_ultra', 'user_token=' . $this->session->data['user_token'] . '&store_id=' . $store_id . '&language_id=' . $language_id, true));
         }
 
         $data['user_token'] = $this->session->data['user_token'];
@@ -48,39 +67,16 @@ class ControllerExtensionThemeOcUltra extends Controller {
         );
         $data['breadcrumbs'][] = array(
             'text' => $this->language->get('heading_title'),
-            'href' => $this->url->link('extension/theme/oc_ultra', 'user_token=' . $this->session->data['user_token'] . '&store_id=' . $store_id . '&language_id=' . $language_id, true)
+            'href' => $this->url->link('extension/theme/oc_ultra', 'user_token=' . $this->session->data['user_token'] . '&store_id=' . $store_id . '&language_id=' . $language_id . '&section=' . $section, true)
         );
 
-        $data['action'] = $this->url->link('extension/theme/oc_ultra', 'user_token=' . $this->session->data['user_token'] . '&store_id=' . $store_id . '&language_id=' . $language_id, true);
+        $data['action'] = $this->url->link('extension/theme/oc_ultra', 'user_token=' . $this->session->data['user_token'] . '&store_id=' . $store_id . '&language_id=' . $language_id . '&section=' . $section, true);
         $data['back'] = $this->url->link('marketplace/extension', 'user_token=' . $this->session->data['user_token'] . '&type=theme', true);
         $data['newsletter_entries'] = $this->url->link('extension/theme/oc_ultra/newsletter', 'user_token=' . $this->session->data['user_token']);
 
         // Load Settings
-        $config_keys = array(
+        $global_keys = array(
             'theme_oc_ultra_status',
-            'theme_oc_ultra_header_text',
-            'theme_oc_ultra_custom_css',
-            'theme_oc_ultra_custom_js',
-            'theme_oc_ultra_header_color_preset',
-            'theme_oc_ultra_header_color_custom',
-            'theme_oc_ultra_featured_categories_status',
-            'theme_oc_ultra_faq_status',
-            'theme_oc_ultra_testimonials_status',
-            'theme_oc_ultra_features_status',
-            'theme_oc_ultra_faq_heading',
-            'theme_oc_ultra_faq_description',
-            'theme_oc_ultra_faq_support_text',
-            'theme_oc_ultra_faq_support_hours',
-            'theme_oc_ultra_testimonials_heading',
-            'theme_oc_ultra_footer_text',
-            'theme_oc_ultra_newsletter_popup_status',
-            'theme_oc_ultra_newsletter_popup_title',
-            'theme_oc_ultra_newsletter_popup_subtitle',
-            'theme_oc_ultra_newsletter_popup_delay',
-            'theme_oc_ultra_newsletter_coupon_id',
-            'theme_oc_ultra_newsletter_email_subject',
-            'theme_oc_ultra_newsletter_email_message',
-            'theme_oc_ultra_newsletter_popup_image',
             'theme_oc_ultra_image_category_width',
             'theme_oc_ultra_image_category_height',
             'theme_oc_ultra_image_thumb_width',
@@ -105,47 +101,45 @@ class ControllerExtensionThemeOcUltra extends Controller {
             'theme_oc_ultra_product_description_length'
         );
 
-        // Default Image Values
-        $defaults = array(
-            'theme_oc_ultra_image_category_width' => 80,
-            'theme_oc_ultra_image_category_height' => 80,
-            'theme_oc_ultra_image_thumb_width' => 228,
-            'theme_oc_ultra_image_thumb_height' => 228,
-            'theme_oc_ultra_image_popup_width' => 500,
-            'theme_oc_ultra_image_popup_height' => 500,
-            'theme_oc_ultra_image_product_width' => 228,
-            'theme_oc_ultra_image_product_height' => 228,
-            'theme_oc_ultra_image_additional_width' => 74,
-            'theme_oc_ultra_image_additional_height' => 74,
-            'theme_oc_ultra_image_related_width' => 80,
-            'theme_oc_ultra_image_related_height' => 80,
-            'theme_oc_ultra_image_compare_width' => 90,
-            'theme_oc_ultra_image_compare_height' => 90,
-            'theme_oc_ultra_image_wishlist_width' => 47,
-            'theme_oc_ultra_image_wishlist_height' => 47,
-            'theme_oc_ultra_image_cart_width' => 47,
-            'theme_oc_ultra_image_cart_height' => 47,
-            'theme_oc_ultra_image_location_width' => 268,
-            'theme_oc_ultra_image_location_height' => 50,
-            'theme_oc_ultra_product_limit' => 15,
-            'theme_oc_ultra_product_description_length' => 100
+        $theme_config_keys = array(
+            'theme_oc_ultra_header_text',
+            'theme_oc_ultra_custom_css',
+            'theme_oc_ultra_custom_js',
+            'theme_oc_ultra_header_color_preset',
+            'theme_oc_ultra_header_color_custom',
+            'theme_oc_ultra_featured_categories_status',
+            'theme_oc_ultra_faq_status',
+            'theme_oc_ultra_testimonials_status',
+            'theme_oc_ultra_features_status',
+            'theme_oc_ultra_faq_heading',
+            'theme_oc_ultra_faq_description',
+            'theme_oc_ultra_faq_support_text',
+            'theme_oc_ultra_faq_support_hours',
+            'theme_oc_ultra_testimonials_heading',
+            'theme_oc_ultra_footer_text',
+            'theme_oc_ultra_newsletter_popup_status',
+            'theme_oc_ultra_newsletter_popup_title',
+            'theme_oc_ultra_newsletter_popup_subtitle',
+            'theme_oc_ultra_newsletter_popup_delay',
+            'theme_oc_ultra_newsletter_coupon_id',
+            'theme_oc_ultra_newsletter_email_subject',
+            'theme_oc_ultra_newsletter_email_message',
+            'theme_oc_ultra_newsletter_popup_image'
         );
 
-        $module_info = $this->model_setting_setting->getSetting('theme_oc_ultra_' . $language_id, $store_id);
-
-        foreach ($config_keys as $key) {
+         // get from config and pass to $data 
+        foreach ($theme_config_keys as $key) {
+            $data[$key] = $this->config->getLanguage($key);
+        }
+        // get from config and pass to $data 
+        foreach ($global_keys as $key) {
             if (isset($this->request->post[$key])) {
                 $data[$key] = $this->request->post[$key];
-            } elseif (isset($module_info[$key])) {
-                $data[$key] = $module_info[$key];
-            } elseif ($this->config->has($key)) {
-                $data[$key] = $this->config->get($key);
-            } elseif (isset($defaults[$key])) {
-                $data[$key] = $defaults[$key];
             } else {
                 $data[$key] = $this->config->get($key);
             }
         }
+      
 
         // Image Processing
         $this->load->model('tool/image');
@@ -153,7 +147,7 @@ class ControllerExtensionThemeOcUltra extends Controller {
 
         // Featured Categories Logic
         $data['theme_oc_ultra_featured_categories'] = array();
-        $featured_categories = $this->config->get('theme_oc_ultra_featured_category');
+        $featured_categories = $this->config->getLanguage('theme_oc_ultra_featured_category');
         if ($featured_categories) {
             foreach ($featured_categories as $fc) {
                 $category_info = $this->model_catalog_category->getCategory($fc['category_id']);
@@ -173,8 +167,8 @@ class ControllerExtensionThemeOcUltra extends Controller {
         }
 
         // Newsletter Image
-        if ($data['theme_oc_ultra_newsletter_popup_image'] && is_file(DIR_IMAGE . $data['theme_oc_ultra_newsletter_popup_image'])) {
-            $data['newsletter_thumb'] = $this->model_tool_image->resize($data['theme_oc_ultra_newsletter_popup_image'], 300, 300);
+        if ($this->config->get('theme_oc_ultra_newsletter_popup_image') && is_file(DIR_IMAGE . $this->config->get('theme_oc_ultra_newsletter_popup_image'))) {
+            $data['newsletter_thumb'] = $this->model_tool_image->resize($this->config->get('theme_oc_ultra_newsletter_popup_image'), 300, 300);
         } else {
             $data['newsletter_thumb'] = $this->model_tool_image->resize('no_image.png', 300, 300);
         }
@@ -194,11 +188,11 @@ class ControllerExtensionThemeOcUltra extends Controller {
         }
 
         // Repeater Fields (FAQs, Testimonials, etc)
-        $data['theme_oc_ultra_faqs'] = $this->config->get('theme_oc_ultra_faq') ? $this->config->get('theme_oc_ultra_faq') : array();
+        $data['theme_oc_ultra_faqs'] = $this->config->getLanguage('theme_oc_ultra_faq') ? $this->config->getLanguage('theme_oc_ultra_faq') : array();
         
         $data['theme_oc_ultra_testimonials'] = array();
-        if ($this->config->get('theme_oc_ultra_testimonial')) {
-            $testimonials = $this->config->get('theme_oc_ultra_testimonial');
+        if ($this->config->getLanguage('theme_oc_ultra_testimonial')) {
+            $testimonials = $this->config->getLanguage('theme_oc_ultra_testimonial');
             foreach ($testimonials as $testimonial) {
                 $image = isset($testimonial['image']) ? $testimonial['image'] : '';
                 $thumb = ($image && is_file(DIR_IMAGE . $image)) ? $this->model_tool_image->resize($image, 100, 100) : $this->model_tool_image->resize('no_image.png', 100, 100);
@@ -214,9 +208,9 @@ class ControllerExtensionThemeOcUltra extends Controller {
             }
         }
         
-        $data['theme_oc_ultra_features'] = $this->config->get('theme_oc_ultra_feature') ? $this->config->get('theme_oc_ultra_feature') : array();
-        $data['theme_oc_ultra_social_links'] = $this->config->get('theme_oc_ultra_social_link') ? $this->config->get('theme_oc_ultra_social_link') : array();
-        $data['theme_oc_ultra_payment_methods'] = $this->config->get('theme_oc_ultra_payment_method') ? $this->config->get('theme_oc_ultra_payment_method') : array();
+        $data['theme_oc_ultra_features'] = $this->config->getLanguage('theme_oc_ultra_feature') ? $this->config->getLanguage('theme_oc_ultra_feature') : array();
+        $data['theme_oc_ultra_social_links'] = $this->config->getLanguage('theme_oc_ultra_social_link') ? $this->config->getLanguage('theme_oc_ultra_social_link') : array();
+        $data['theme_oc_ultra_payment_methods'] = $this->config->getLanguage('theme_oc_ultra_payment_method') ? $this->config->getLanguage('theme_oc_ultra_payment_method') : array();
 
         $data['header'] = $this->load->controller('common/header');
         $data['column_left'] = $this->load->controller('common/column_left');
@@ -321,52 +315,56 @@ class ControllerExtensionThemeOcUltra extends Controller {
             $this->error['warning'] = $this->language->get('error_permission');
         }
 
-        if (!$this->request->post['theme_oc_ultra_product_limit']) {
-            $this->error['product_limit'] = $this->language->get('error_limit');
-        }
+        $section = isset($this->request->get['section']) ? $this->request->get['section'] : 'language';
 
-        if (!$this->request->post['theme_oc_ultra_product_description_length']) {
-            $this->error['product_description_length'] = $this->language->get('error_limit');
-        }
+        if ($section == 'global') {
+            if (!$this->request->post['theme_oc_ultra_product_limit']) {
+                $this->error['product_limit'] = $this->language->get('error_limit');
+            }
 
-        if (!$this->request->post['theme_oc_ultra_image_category_width'] || !$this->request->post['theme_oc_ultra_image_category_height']) {
-            $this->error['image_category'] = $this->language->get('error_image_category');
-        }
+            if (!$this->request->post['theme_oc_ultra_product_description_length']) {
+                $this->error['product_description_length'] = $this->language->get('error_limit');
+            }
 
-        if (!$this->request->post['theme_oc_ultra_image_thumb_width'] || !$this->request->post['theme_oc_ultra_image_thumb_height']) {
-            $this->error['image_thumb'] = $this->language->get('error_image_thumb');
-        }
+            if (!$this->request->post['theme_oc_ultra_image_category_width'] || !$this->request->post['theme_oc_ultra_image_category_height']) {
+                $this->error['image_category'] = $this->language->get('error_image_category');
+            }
 
-        if (!$this->request->post['theme_oc_ultra_image_popup_width'] || !$this->request->post['theme_oc_ultra_image_popup_height']) {
-            $this->error['image_popup'] = $this->language->get('error_image_popup');
-        }
+            if (!$this->request->post['theme_oc_ultra_image_thumb_width'] || !$this->request->post['theme_oc_ultra_image_thumb_height']) {
+                $this->error['image_thumb'] = $this->language->get('error_image_thumb');
+            }
 
-        if (!$this->request->post['theme_oc_ultra_image_product_width'] || !$this->request->post['theme_oc_ultra_image_product_height']) {
-            $this->error['image_product'] = $this->language->get('error_image_product');
-        }
+            if (!$this->request->post['theme_oc_ultra_image_popup_width'] || !$this->request->post['theme_oc_ultra_image_popup_height']) {
+                $this->error['image_popup'] = $this->language->get('error_image_popup');
+            }
 
-        if (!$this->request->post['theme_oc_ultra_image_additional_width'] || !$this->request->post['theme_oc_ultra_image_additional_height']) {
-            $this->error['image_additional'] = $this->language->get('error_image_additional');
-        }
+            if (!$this->request->post['theme_oc_ultra_image_product_width'] || !$this->request->post['theme_oc_ultra_image_product_height']) {
+                $this->error['image_product'] = $this->language->get('error_image_product');
+            }
 
-        if (!$this->request->post['theme_oc_ultra_image_related_width'] || !$this->request->post['theme_oc_ultra_image_related_height']) {
-            $this->error['image_related'] = $this->language->get('error_image_related');
-        }
+            if (!$this->request->post['theme_oc_ultra_image_additional_width'] || !$this->request->post['theme_oc_ultra_image_additional_height']) {
+                $this->error['image_additional'] = $this->language->get('error_image_additional');
+            }
 
-        if (!$this->request->post['theme_oc_ultra_image_compare_width'] || !$this->request->post['theme_oc_ultra_image_compare_height']) {
-            $this->error['image_compare'] = $this->language->get('error_image_compare');
-        }
+            if (!$this->request->post['theme_oc_ultra_image_related_width'] || !$this->request->post['theme_oc_ultra_image_related_height']) {
+                $this->error['image_related'] = $this->language->get('error_image_related');
+            }
 
-        if (!$this->request->post['theme_oc_ultra_image_wishlist_width'] || !$this->request->post['theme_oc_ultra_image_wishlist_height']) {
-            $this->error['image_wishlist'] = $this->language->get('error_image_wishlist');
-        }
+            if (!$this->request->post['theme_oc_ultra_image_compare_width'] || !$this->request->post['theme_oc_ultra_image_compare_height']) {
+                $this->error['image_compare'] = $this->language->get('error_image_compare');
+            }
 
-        if (!$this->request->post['theme_oc_ultra_image_cart_width'] || !$this->request->post['theme_oc_ultra_image_cart_height']) {
-            $this->error['image_cart'] = $this->language->get('error_image_cart');
-        }
+            if (!$this->request->post['theme_oc_ultra_image_wishlist_width'] || !$this->request->post['theme_oc_ultra_image_wishlist_height']) {
+                $this->error['image_wishlist'] = $this->language->get('error_image_wishlist');
+            }
 
-        if (!$this->request->post['theme_oc_ultra_image_location_width'] || !$this->request->post['theme_oc_ultra_image_location_height']) {
-            $this->error['image_location'] = $this->language->get('error_image_location');
+            if (!$this->request->post['theme_oc_ultra_image_cart_width'] || !$this->request->post['theme_oc_ultra_image_cart_height']) {
+                $this->error['image_cart'] = $this->language->get('error_image_cart');
+            }
+
+            if (!$this->request->post['theme_oc_ultra_image_location_width'] || !$this->request->post['theme_oc_ultra_image_location_height']) {
+                $this->error['image_location'] = $this->language->get('error_image_location');
+            }
         }
 
         return !$this->error;
@@ -386,7 +384,6 @@ class ControllerExtensionThemeOcUltra extends Controller {
         // Default settings with all options
         $this->load->model('setting/setting');
         $defaults = array(
-            'theme_oc_ultra_status' => 1,
             'theme_oc_ultra_header_text' => 'Free shipping on orders over $100 | Use code WELCOME10 for 10% off',
             'theme_oc_ultra_custom_css' => '',
             'theme_oc_ultra_custom_js' => '',
@@ -513,8 +510,11 @@ class ControllerExtensionThemeOcUltra extends Controller {
                     'name' => 'American Express',
                     'icon' => 'fa fa-cc-amex'
                 )
-            ),
-            'theme_oc_ultra_image_category_width' => 80,
+            )
+           
+        );
+        $global_settings =  array(
+            'theme_oc_ultra_status' => 1,
             'theme_oc_ultra_image_category_height' => 80,
             'theme_oc_ultra_image_thumb_width' => 228,
             'theme_oc_ultra_image_thumb_height' => 228,
@@ -537,8 +537,20 @@ class ControllerExtensionThemeOcUltra extends Controller {
             'theme_oc_ultra_product_limit' => 15,
             'theme_oc_ultra_product_description_length' => 100
         );
-        
-        $this->model_setting_setting->editSetting('theme_oc_ultra', $defaults, 0);
+
+        if (isset($this->request->get['language_id'])) {
+            $language_id = (int)$this->request->get['language_id'];
+        } else {
+             $language_id = (int)$this->config->get('config_language_id');
+        }
+
+        $language_defaults = array();
+        foreach ($defaults as $key => $value) {
+            $language_defaults[$key . '_' . $language_id] = $value;
+        }
+
+        $all_settings = array_merge($global_settings, $language_defaults);
+        $this->model_setting_setting->editSetting('theme_oc_ultra', $all_settings, 0);
     }
 
     public function uninstall() {
