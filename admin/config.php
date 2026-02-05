@@ -1,18 +1,18 @@
 <?php
 // HTTP
-define('HTTP_SERVER', 'http://dev.local/oc-development/admin/');
-define('HTTP_CATALOG', 'http://dev.local/oc-development/');
+define('HTTP_SERVER', 'http://dev.local/oc3theme/admin/');
+define('HTTP_CATALOG', 'http://dev.local/oc3theme/');
 
 // HTTPS
-define('HTTPS_SERVER', 'http://dev.local/oc-development/admin/');
-define('HTTPS_CATALOG', 'http://dev.local/oc-development/');
+define('HTTPS_SERVER', 'http://dev.local/oc3theme/admin/');
+define('HTTPS_CATALOG', 'http://dev.local/oc3theme/');
 
 // DIR
-define('DIR_APPLICATION', '/Users/saqibashraf/Desktop/oc/oc-development/admin/');
-define('DIR_SYSTEM', '/Users/saqibashraf/Desktop/oc/oc-development/system/');
-define('DIR_IMAGE', '/Users/saqibashraf/Desktop/oc/oc-development/image/');
+define('DIR_APPLICATION', '/Users/saqibashraf/Desktop/oc/oc3theme/admin/');
+define('DIR_SYSTEM', '/Users/saqibashraf/Desktop/oc/oc3theme/system/');
+define('DIR_IMAGE', '/Users/saqibashraf/Desktop/oc/oc3theme/image/');
 define('DIR_STORAGE', DIR_SYSTEM . 'storage/');
-define('DIR_CATALOG', '/Users/saqibashraf/Desktop/oc/oc-development/catalog/');
+define('DIR_CATALOG', '/Users/saqibashraf/Desktop/oc/oc3theme/catalog/');
 define('DIR_LANGUAGE', DIR_APPLICATION . 'language/');
 define('DIR_TEMPLATE', DIR_APPLICATION . 'view/template/');
 define('DIR_CONFIG', DIR_SYSTEM . 'config/');

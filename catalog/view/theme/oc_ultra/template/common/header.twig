@@ -20,8 +20,8 @@
 <script src="catalog/view/javascript/jquery/jquery-3.7.1.min.js" type="text/javascript"></script>
 <link href="catalog/view/javascript/bootstrap/css/bootstrap.css" rel="stylesheet" media="screen" />
 <script src="catalog/view/javascript/bootstrap/js/bootstrap.min.js" type="text/javascript"></script>
-<link href="catalog/view/javascript/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css" />
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+<link href="catalog/view/javascript/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css" />
 <link href="//fonts.googleapis.com/css?family=Open+Sans:400,400i,300,700" rel="stylesheet" type="text/css" />
 <link href="catalog/view/theme/oc_ultra/stylesheet/stylesheet.css" rel="stylesheet">
 {% for style in styles %}
@@ -30,22 +30,19 @@
 {% for script in scripts %}
 <script src="{{ script }}" type="text/javascript"></script>
 {% endfor %}
-<script src="catalog/view/javascript/common.js" type="text/javascript"></script>
+<script src="catalog/view/theme/oc_ultra/javascript/common.js" type="text/javascript"></script>
 {% for link in links %}
 <link href="{{ link.href }}" rel="{{ link.rel }}" />
 {% endfor %}
 {% for analytic in analytics %}
 {{ analytic }}
 {% endfor %}
-  {% if custom_css %}
+
   <style type="text/css">
-{{ custom_css }}
-  </style>
-  {% endif %}
-  <style type="text/css">
-.top-background-color {
-  background-color: {{ header_bg_color }};
-}
+    {% if custom_css %} {{ custom_css }} {% endif %}
+    .top-background-color {
+      background-color: {{ header_bg_color }};
+    }
   </style>
 </head>
 <body>
@@ -53,12 +50,12 @@
   <div id="alert"></div>
   <!-- Top Bar -->
   {% if theme_header_text %}
-  <div class="top-bar text-center">
-    <p>{{ theme_header_text }}</p>
+  <div class="top-bar text-center" style="background:#333; color:#fff; padding:8px 0;">
+    <p style="margin-bottom:0;">{{ theme_header_text }}</p>
   </div>
   {% endif %}
 
-  <header class="navbar navbar-inverse top-background-color" role="banner">
+  <header class="navbar navbar-inverse top-background-color" role="banner" style="border-radius:0; border:none; margin-bottom:0;">
     <div class="container">
       <div class="navbar-header">
         <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-collapse-header">
@@ -69,7 +66,7 @@
         </button>
         <a class="navbar-brand" href="{{ home }}">
           {% if logo %}
-            <img src="{{ logo }}" title="{{ name }}" alt="{{ name }}" class="img-responsive" />
+            <img src="{{ logo }}" title="{{ name }}" alt="{{ name }}" class="img-responsive" style="max-height: 40px;" />
           {% else %}
             {{ name }}
           {% endif %}
@@ -101,8 +98,8 @@
         </ul>
       </div>
     </div>
+    
   </header>
-  
   <!-- Search Slider Components -->
   <div class="search-slider-overlay"></div>
   <div class="search-slider">
@@ -114,4 +111,3 @@
   <!-- Cart Slider Components -->
   <div class="cart-slider-overlay"></div>
   {{ cart }}
-  <script src="catalog/view/theme/oc_ultra/js/common.js" type="text/javascript"></script>
