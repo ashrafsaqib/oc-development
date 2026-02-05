@@ -1,0 +1,11 @@
+model,name,price,quantity,sku,status,description,category_id,manufacturer_id,weight,tax_class_id,stock_status_id
+PROD-001,"Laptop Computer",799.99,50,LAP-001,1,"High performance laptop with 16GB RAM and 512GB SSD",2,1,2.5,9,7
+PROD-002,"Wireless Mouse",29.99,150,MOU-001,1,"Ergonomic wireless mouse with USB receiver",3,2,0.2,9,7
+PROD-003,"Mechanical Keyboard",89.99,75,KEY-001,1,"RGB mechanical gaming keyboard with Cherry MX switches",3,2,1.2,9,7
+PROD-004,"27 inch Monitor",299.99,30,MON-001,1,"Full HD IPS monitor with 144Hz refresh rate",2,1,5.5,9,7
+PROD-005,"USB-C Cable",12.99,200,CAB-001,1,"High-speed USB-C cable 2 meters length",4,3,0.1,9,7
+PROD-006,"Laptop Bag",45.99,100,BAG-001,1,"Durable laptop bag with multiple compartments",5,4,0.8,9,7
+PROD-007,"Webcam HD",79.99,60,CAM-001,1,"1080p HD webcam with built-in microphone",2,1,0.3,9,7
+PROD-008,"Desk Lamp LED",34.99,80,LAM-001,1,"Adjustable LED desk lamp with USB charging port",6,5,0.6,9,7
+PROD-009,"External SSD 1TB",129.99,40,SSD-001,1,"Portable external SSD with USB 3.1",4,3,0.15,9,7
+PROD-010,"Wireless Headphones",149.99,65,HEA-001,1,"Noise-cancelling Bluetooth headphones with 30h battery",7,2,0.25,9,7

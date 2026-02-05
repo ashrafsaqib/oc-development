@@ -1,0 +1,26 @@
+#!/bin/bash
+# Installation script for Import Data Module
+# This script is for reference only - OpenCart handles installation automatically
+
+echo "Import Data Module Installation"
+echo "================================"
+echo ""
+echo "Files to be installed:"
+echo "- admin/controller/extension/module/import_data.php"
+echo "- admin/model/extension/module/import_data.php"
+echo "- admin/language/en-gb/extension/module/import_data.php"
+echo "- admin/view/template/extension/module/import_data.tpl"
+echo "- admin/view/template/extension/module/import_data_mapping.tpl"
+echo "- admin/view/template/extension/module/import_data_settings.tpl"
+echo ""
+echo "Database tables to be created:"
+echo "- oc_import_history"
+echo "- oc_import_errors"
+echo ""
+echo "After installation:"
+echo "1. Go to Extensions > Extensions > Modules"
+echo "2. Find 'Import Data Module' and click Install"
+echo "3. Click Edit to configure"
+echo "4. Access via System > Import Data"
+echo ""
+echo "For documentation, see README.md"

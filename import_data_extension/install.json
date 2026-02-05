@@ -1,0 +1,8 @@
+{
+  "name": "Import Data Module",
+  "version": "1.0.0",
+  "author": "OpenCart Developer",
+  "link": "https://www.opencart.com",
+  "opencart_version": "2.3.0.0",
+  "description": "Advanced data import module for OpenCart 2.x. Import products, categories, customers, manufacturers, and orders from CSV/Excel files with field mapping, import modes (insert/update/upsert), and debug logging capabilities."
+}

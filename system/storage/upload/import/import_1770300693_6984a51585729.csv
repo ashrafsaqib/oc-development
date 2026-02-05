@@ -1,0 +1,8 @@
+category_id,name,parent_id,status,sort_order,description,meta_title
+1,Electronics,0,1,1,"Electronic products and gadgets","Electronics - Shop Online"
+2,Computers,1,1,1,"Desktop and laptop computers","Computers and Laptops"
+3,Computer Accessories,1,1,2,"Keyboards, mice, and other accessories","Computer Accessories"
+4,Cables & Adapters,1,1,3,"Various cables and adapters","Cables and Adapters"
+5,Bags & Cases,1,1,4,"Laptop bags and protective cases","Bags and Cases"
+6,Office Supplies,0,1,2,"Office furniture and supplies","Office Supplies"
+7,Audio Equipment,1,1,5,"Headphones, speakers, and audio devices","Audio Equipment"
