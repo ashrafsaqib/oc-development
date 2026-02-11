@@ -1,0 +1,128 @@
+{{ header }}{{ column_left }}
+<div id="content">
+  <div class="page-header">
+    <div class="container-fluid">
+      <div class="float-end">
+        <button type="submit" form="form-registration-upload" data-bs-toggle="tooltip" title="{{ button_save }}" class="btn btn-primary"><i class="fa-solid fa-save"></i></button>
+        <a href="{{ back }}" data-bs-toggle="tooltip" title="{{ button_back }}" class="btn btn-light"><i class="fa-solid fa-reply"></i></a>
+      </div>
+      <h1>{{ heading_title }}</h1>
+      <ol class="breadcrumb">
+        {% for breadcrumb in breadcrumbs %}
+          <li class="breadcrumb-item"><a href="{{ breadcrumb.href }}">{{ breadcrumb.text }}</a></li>
+        {% endfor %}
+      </ol>
+    </div>
+  </div>
+  <div class="container-fluid">
+    <div class="card">
+      <div class="card-header"><i class="fa-solid fa-pencil"></i> {{ text_edit }}</div>
+      <div class="card-body">
+        <form id="form-registration-upload" action="{{ save }}" method="post" data-oc-toggle="ajax">
+          <ul class="nav nav-tabs">
+              <li class="nav-item"><a href="#tab-uploads" data-bs-toggle="tab" class="nav-link active">{{ tab_uploads }}</a></li>
+            <li class="nav-item"><a href="#tab-settings" data-bs-toggle="tab" class="nav-link">{{ tab_settings }}</a></li>
+          </ul>
+          <div class="tab-content">
+
+          <div id="tab-uploads" class="tab-pane active">
+              <p>{{ text_info }}</p>
+              
+              {% if uploads %}
+                <div class="table-responsive">
+                  <table class="table table-bordered table-hover">
+                    <thead>
+                      <tr>
+                        <td class="text-start">{{ column_customer }}</td>
+                        <td class="text-start">{{ column_email }}</td>
+                        <td class="text-start">{{ column_filename }}</td>
+                        <td class="text-start">{{ column_date_added }}</td>
+                        <td class="text-end">{{ column_action }}</td>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {% for upload in uploads %}
+                        <tr>
+                          <td class="text-start">
+                            <a href="{{ upload.customer_link }}" target="_blank">{{ upload.customer_name }}</a>
+                          </td>
+                          <td class="text-start">{{ upload.customer_email }}</td>
+                          <td class="text-start">
+                            {% if upload.filename != 'N/A' %}
+                              {{ upload.filename }}
+                            {% else %}
+                              <span class="text-muted">{{ text_no_file }}</span>
+                            {% endif %}
+                          </td>
+                          <td class="text-start">{{ upload.date_added }}</td>
+                          <td class="text-end">
+                            {% if upload.download_link %}
+                              <a href="{{ upload.download_link }}" class="btn btn-primary btn-sm" data-bs-toggle="tooltip" title="{{ button_download }}">
+                                <i class="fa-solid fa-download"></i>
+                              </a>
+                            {% else %}
+                              <span class="text-muted">-</span>
+                            {% endif %}
+                          </td>
+                        </tr>
+                      {% endfor %}
+                    </tbody>
+                  </table>
+                </div>
+              {% else %}
+                <div class="alert alert-info">
+                  <i class="fa-solid fa-info-circle"></i> {{ text_no_results }}
+                </div>
+              {% endif %}
+            </div>
+            
+            <div id="tab-settings" class="tab-pane">
+              <div class="row mb-3">
+                <label class="col-sm-2 col-form-label">{{ entry_status }}</label>
+                <div class="col-sm-10">
+                  <div class="form-check form-switch form-switch-lg">
+                    <input type="hidden" name="other_registration_upload_status" value="0"/>
+                    <input type="checkbox" name="other_registration_upload_status" value="1" id="input-status" class="form-check-input"{% if other_registration_upload_status %} checked{% endif %}/>
+                  </div>
+                  <div class="form-text">{{ help_status }}</div>
+                </div>
+              </div>
+              
+              <div class="row mb-3">
+                <label class="col-sm-2 col-form-label">{{ entry_required }}</label>
+                <div class="col-sm-10">
+                  <div class="form-check form-switch form-switch-lg">
+                    <input type="hidden" name="other_registration_upload_required" value="0"/>
+                    <input type="checkbox" name="other_registration_upload_required" value="1" id="input-required" class="form-check-input"{% if other_registration_upload_required %} checked{% endif %}/>
+                  </div>
+                  <div class="form-text">{{ help_required }}</div>
+                </div>
+              </div>
+
+              <div class="row mb-3">
+                <label for="input-allowed-extensions" class="col-sm-2 col-form-label">{{ entry_allowed_extensions }}</label>
+                <div class="col-sm-10">
+                  <input type="text" name="other_registration_upload_allowed_extensions" value="{{ other_registration_upload_allowed_extensions }}" placeholder="jpg,jpeg,png,gif,pdf,doc,docx,txt" id="input-allowed-extensions" class="form-control"/>
+                  <div class="form-text">{{ help_allowed_extensions }}</div>
+                  <div id="error-allowed-extensions" class="invalid-feedback"></div>
+                </div>
+              </div>
+
+              <div class="row mb-3">
+                <label for="input-max-size" class="col-sm-2 col-form-label">{{ entry_max_size }}</label>
+                <div class="col-sm-10">
+                  <input type="number" name="other_registration_upload_max_size" value="{{ other_registration_upload_max_size }}" placeholder="2" min="0.1" max="50" step="0.1" id="input-max-size" class="form-control"/>
+                  <div class="form-text">{{ help_max_size }}</div>
+                  <div id="error-max-size" class="invalid-feedback"></div>
+                </div>
+              </div>
+            </div>
+
+            
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{{ footer }}

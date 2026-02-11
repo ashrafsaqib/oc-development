@@ -1,0 +1,7 @@
+{
+  "name": "Registration Upload Field",
+  "description": "Adds a file upload field to the customer registration form using events.",
+  "version": "1.0.0",
+  "author": "Custom",
+  "link": ""
+}
