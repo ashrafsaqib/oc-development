@@ -1,0 +1,523 @@
+{{ header }}
+{{ column_left }}
+<div id="content">
+  <div class="page-header">
+    <div class="container-fluid">
+            <div class="pull-right">
+        <a href="index.php?route=extension/module/inventory_manager&user_token={{user_token}}" class="btn btn-info">
+  <i class="fa fa-list"></i>
+</a>
+        <a href="{{ clear_logs }}" data-toggle="tooltip" class="btn btn-danger" onclick="return confirm('{{ text_confirm_clear_logs }}');"><i class="fa fa-trash"></i></a>
+
+      </div>
+      <h1>{{ heading_title }}</h1>
+      <ul class="breadcrumb">
+        {% for breadcrumb in breadcrumbs %}
+        <li><a href="{{ breadcrumb.href }}">{{ breadcrumb.text }}</a></li>
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
+  <div class="container-fluid">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title"><i class="fa fa-pencil"></i> {{ text_form }}</h3>
+      </div>
+      <div class="panel-body">
+        <form action="{{ action }}" method="post" enctype="multipart/form-data" id="form-inventory-manager" class="form-horizontal">
+          <input type="hidden" name="product_id" value="{{ filter_product_id }}" id="input-product-id" />
+          <div class="form-group required">
+            <label class="col-sm-2 control-label" for="input-stock-change">{{ entry_change }}</label>
+            <div class="col-sm-10">
+              <input type="number" name="stock_change" value="{{ stock_change }}" placeholder="{{ entry_change }}" id="input-stock-change" class="form-control" />
+              {% if error_stock_change %}
+              <div class="text-danger">{{ error_stock_change }}</div>
+              {% endif %}
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-sm-2 control-label" for="input-notes">{{ entry_notes }}</label>
+            <div class="col-sm-10">
+<select name="notes" id="input-notes" class="form-control" onchange="toggleOtherNotes(this)">
+                        <option value="{{ text_note_inventory_entry }}" selected="selected">{{ text_note_inventory_entry }}</option>
+                        <option value="{{ text_note_stock_adjustment }}">{{ text_note_stock_adjustment }}</option>
+                        <option value="{{ text_note_damaged_items }}">{{ text_note_damaged_items }}</option>
+                        <option value="{{ text_note_customer_return }}">{{ text_note_customer_return }}</option>
+                        <option value="{{ text_note_supplier_restock }}">{{ text_note_supplier_restock }}</option>
+                        <option value="{{ text_note_other }}">{{ text_note_other }}</option>
+                    </select>
+
+            </div>
+          </div>
+          <div class="form-group">
+            <div class="col-sm-offset-2 col-sm-10">
+              <button type="submit" form="form-inventory-manager" data-toggle="tooltip" title="{{ button_save }}" class="btn btn-primary"><i class="fa fa-save"></i> {{ button_save }}</button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-sm-12">
+        <div class="well">
+            <input type="hidden" name="filter_product_id" value="{{ filter_product_id }}" id="input-product-id" />
+          
+          <div class="row">
+            <div class="col-sm-12">
+                <div class="form-group">
+                    <input type="text" id="filterInput" placeholder="Filter by notes or reference..." class="form-control">
+                </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-sm-12">
+                <div class="form-group">
+                    <input type="text" id="orderIdFilter" placeholder="Filter by Order ID..." class="form-control">
+                </div>
+            </div>
+          </div>
+
+          <div class="row filter-options">
+            <div class="col-sm-4">
+              <div class="form-group">
+                <label for="fromDate">From Date:</label>
+                <input type="date" id="fromDate" class="form-control">
+              </div>
+            </div>
+            <div class="col-sm-4">
+              <div class="form-group">
+                <label for="toDate">To Date:</label>
+                <input type="date" id="toDate" class="form-control">
+              </div>
+            </div>
+            <div class="col-sm-4">
+              <div class="form-group log-type-options">
+                <label>Log Types:</label>
+                <div class="checkbox">
+                  <label>
+                    <input type="checkbox" id="filterManual" name="log-type" value="manual" checked>
+                    Manual Entry
+                  </label>
+                </div>
+                <div class="checkbox">
+                  <label>
+                    <input type="checkbox" id="filterOrder" name="log-type" value="order" checked>
+                    Order Deduction
+                  </label>
+                </div>
+                <div class="checkbox">
+                  <label>
+                    <input type="checkbox" id="filterReturn" name="log-type" value="return" checked>
+                    Return Restock
+                  </label>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="clearfix">
+              <button id="toggleButton" class="btn btn-info pull-left">
+                Minimize All Deductions
+              </button>
+              <button type="button" id="button-filter" class="btn btn-primary pull-right"><i class="fa fa-filter"></i> {{ button_filter }}</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-sm-12">
+        <div class="panel panel-default">
+          <div class="panel-heading">
+            <h3 class="panel-title"><i class="fa fa-bar-chart-o"></i> {{ product }}</h3>
+          </div>
+          <div class="panel-body">
+            <style>
+                body {
+                    font-family: 'Inter', sans-serif;
+                    background-color: #e5e7eb;
+                    color: #1f2937;
+                }
+
+                #app {
+                    min-height: 100vh;
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+                    justify-content: flex-start;
+                    padding: 2rem;
+                }
+
+                .container-main {
+                    max-width: 900px;
+                    width: 100%;
+                    background-color: #f9fafb;
+                    border-radius: 1.5rem;
+                    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+                    padding: 2rem;
+                    display: flex;
+                    flex-direction: column;
+                    gap: 1.5rem;
+                }
+
+                .timeline-container {
+                    position: relative;
+                    padding: 20px 0;
+                    overflow: auto;
+                    background-color: #ffffff;
+                    border-radius: 0.75rem;
+                    box-shadow: inset 0 2px 4px 0 rgba(0, 0, 0, 0.06);
+                }
+
+                .timeline-line {
+                    position: absolute;
+                    left: 50%;
+                    top: 0;
+                    bottom: 0;
+                    width: 4px;
+                    background-color: #d1d5db;
+                    transform: translateX(-50%);
+                }
+                
+                .timeline-event {
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                    margin-bottom: 20px;
+                    transition: opacity 0.3s ease-in-out;
+                }
+
+                .timeline-event.hidden {
+                    display: none;
+                }
+                
+                .timeline-event.left {
+                    flex-direction: row-reverse;
+                    padding-right: 50%;
+                }
+
+                .timeline-event.right {
+                    flex-direction: row;
+                    padding-left: 50%;
+                }
+
+                .timeline-card {
+                    background-color: #ffffff;
+                    border-radius: 0.75rem;
+                    padding: 1rem;
+                    width: calc(50% - 30px);
+                    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+                    position: relative;
+                    border: 1px solid #e5e7eb;
+                }
+                
+                .timeline-card h3 {
+                    font-weight: 600;
+                    color: #374151;
+                    margin-bottom: 0.5rem;
+                }
+                
+                .timeline-card p {
+                    font-size: 0.875rem;
+                    color: #6b7280;
+                }
+
+                /* Connecting arrow/line */
+                .timeline-card::after {
+                    content: '';
+                    position: absolute;
+                    top: 50%;
+                    width: 25px;
+                    height: 2px;
+                    background-color: #3b82f6;
+                    transform: translateY(-50%);
+                }
+
+                .timeline-event.left .timeline-card::after {
+                    right: -25px;
+                }
+
+                .timeline-event.right .timeline-card::after {
+                    left: -25px;
+                }
+
+                /* Quantity badge */
+                .quantity-badge {
+                    position: absolute;
+                    top: 50%;
+                    transform: translateY(-50%);
+                    width: 60px;
+                    height: 60px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    font-size: 1.25rem;
+                    font-weight: 700;
+                    color: #ffffff;
+                    border-radius: 9999px;
+                    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+                    z-index: 10;
+                }
+
+                .timeline-event.left .quantity-badge {
+                    right: -85px;
+                }
+
+                .timeline-event.right .quantity-badge {
+                    left: -85px;
+                }
+            </style>
+            <div id="app">
+              <div class="container-main">
+                <header class="text-center mb-6">
+                </header>
+                <div class="timeline-container">
+                  <div class="timeline-line"></div>
+                  <div id="timelineEvents">
+                    <!-- Timeline events will be injected here by JavaScript -->
+                    <div id="loading" class="text-center text-gray-500 hidden">Loading...</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        
+        const inventoryEvents = {% if inventory_events is defined %}{{ inventory_events|json_encode()|raw }}{% else %}[]{% endif %};
+        console.log('Inventory Events loaded:', inventoryEvents);
+
+        let isAllExpanded = true;
+
+        const timelineEventsDiv = document.getElementById('timelineEvents');
+        const loadingIndicator = document.getElementById('loading');
+        const toggleButton = document.getElementById('toggleButton');
+        const filterInput = document.getElementById('filterInput');
+        const orderIdFilter = document.getElementById('orderIdFilter');
+        const fromDateInput = document.getElementById('fromDate');
+        const toDateInput = document.getElementById('toDate');
+        const typeFilters = document.querySelectorAll('input[name="log-type"]');
+        const buttonFilter = document.getElementById('button-filter');
+
+        const referenceTypeLabels = {
+            'order': 'Order Deduction',
+            'return': 'Return Restock',
+            'manual': 'Manual Entry',
+        };
+
+        function createEventCard(event, side) {
+            const eventElement = document.createElement('div');
+            eventElement.className = `timeline-event ${side}`;
+            
+            const badgeColorClass = event.stock_change >= 0 ? 'bg-success' : 'bg-danger';
+            const quantityChangeIcon = event.stock_change > 0
+                ? `<i class="fa fa-plus-circle text-success" aria-hidden="true"></i>`
+                : `<i class="fa fa-minus-circle text-danger" aria-hidden="true"></i>`;
+            
+            const cardHtml = `
+                <div class="timeline-card" data-type="${event.reference_type}">
+                    <div class="quantity-badge ${badgeColorClass}">${event.current_stock}</div>
+                    <h3>
+                        ${quantityChangeIcon}
+                        <span class="${event.stock_change > 0 ? 'text-success' : 'text-danger'}">${referenceTypeLabels[event.reference_type] || event.reference_type}</span>
+                        <span class="text-muted">- ${event.date_added.substring(0, 10)}</span>
+                    </h3>
+                    <p>${event.notes}</p>
+                    <p class="font-weight-bold">Change: ${event.stock_change > 0 ? '+' : ''}${event.stock_change}</p>
+                </div>
+            `;
+            eventElement.innerHTML = cardHtml;
+            return eventElement;
+        }
+
+        function renderTimeline(events) {
+            let side = 'left';
+            timelineEventsDiv.innerHTML = ''; 
+
+            if (events.length === 0) {
+                timelineEventsDiv.innerHTML = '<div class="alert alert-info text-center">{{ text_no_results }}</div>';
+                return;
+            }
+
+            const sortedEvents = events.sort((a, b) => new Date(a.date_added) - new Date(b.date_added));
+
+            let i = 0;
+            while (i < sortedEvents.length) {
+                const event = sortedEvents[i];
+                
+                if (event.reference_type === 'order') {
+                    let group = [];
+                    let groupTotalChange = 0;
+                    let j = i;
+                    
+                    while (j < sortedEvents.length && sortedEvents[j].reference_type === 'order') {
+                        group.push(sortedEvents[j]);
+                        groupTotalChange += sortedEvents[j].stock_change;
+                        j++;
+                    }
+
+                    if (group.length > 5) {
+                        const eventElement = document.createElement('div');
+                        eventElement.className = `timeline-event ${side} is-grouped`;
+                        eventElement.dataset.group = 'collapsed';
+                        eventElement.dataset.events = JSON.stringify(group);
+
+                        const badgeColorClass = groupTotalChange >= 0 ? 'bg-success' : 'bg-danger';
+                        const quantityChangeIcon = groupTotalChange > 0
+                            ? `<i class="fa fa-plus-circle text-success" aria-hidden="true"></i>`
+                            : `<i class="fa fa-minus-circle text-danger" aria-hidden="true"></i>`;
+                        
+                        const finalStock = group[group.length - 1].current_stock;
+
+                        const cardHtml = `
+                            <div class="timeline-card" data-type="grouped_deductions">
+                                <div class="quantity-badge ${badgeColorClass}">${finalStock}</div>
+                                <h3>
+                                    ${quantityChangeIcon}
+                                    <span class="${groupTotalChange > 0 ? 'text-success' : 'text-danger'}">Order Deductions</span>
+                                    <span class="text-muted">- ${group[0].date_added.substring(0, 10)} to ${group[group.length - 1].date_added.substring(0, 10)}</span>
+                                </h3>
+                                <p>Grouped ${group.length} order deductions.</p>
+                                <p class="font-weight-bold">Total Change: ${groupTotalChange > 0 ? '+' : ''}${groupTotalChange}</p>
+                                <button class="expand-button btn btn-xs btn-default">Expand</button>
+                            </div>
+                        `;
+                        eventElement.innerHTML = cardHtml;
+                        timelineEventsDiv.appendChild(eventElement);
+
+                        const expandButton = eventElement.querySelector('.expand-button');
+                        if(expandButton) expandButton.addEventListener('click', handleGroupToggle);
+
+                        side = (side === 'left') ? 'right' : 'left';
+                    } else {
+                        for (const groupEvent of group) {
+                            const eventElement = createEventCard(groupEvent, side);
+                            timelineEventsDiv.appendChild(eventElement);
+                            side = (side === 'left') ? 'right' : 'left';
+                        }
+                    }
+                    i = j;
+                } else {
+                    const eventElement = createEventCard(event, side);
+                    timelineEventsDiv.appendChild(eventElement);
+                    side = (side === 'left') ? 'right' : 'left';
+                    i++;
+                }
+            }
+        }
+        
+        function handleGroupToggle(event) {
+            const groupedEvent = event.target.closest('.is-grouped');
+            const isExpanded = groupedEvent.dataset.group === 'expanded';
+            const eventsData = JSON.parse(groupedEvent.dataset.events);
+
+            if (isExpanded) {
+                const individualCards = timelineEventsDiv.querySelectorAll(`[data-group-id="${groupedEvent.dataset.groupId}"]`);
+                individualCards.forEach(card => card.remove());
+                groupedEvent.classList.remove('hidden');
+                event.target.textContent = 'Expand';
+                groupedEvent.dataset.group = 'collapsed';
+            } else {
+                groupedEvent.classList.add('hidden');
+                let side = groupedEvent.classList.contains('right') ? 'left' : 'right';
+                const groupId = Date.now();
+                groupedEvent.dataset.groupId = groupId;
+
+                eventsData.forEach(eventData => {
+                    const eventElement = createEventCard(eventData, side);
+                    eventElement.dataset.groupId = groupId;
+                    groupedEvent.after(eventElement);
+                    side = (side === 'left') ? 'right' : 'left';
+                });
+                
+                event.target.textContent = 'Collapse';
+                groupedEvent.dataset.group = 'expanded';
+            }
+        }
+
+        function clientSideFilter() {
+            const query = filterInput.value.toLowerCase();
+            const orderIdQuery = orderIdFilter.value.toLowerCase();
+            const fromDate = fromDateInput.value ? new Date(fromDateInput.value) : null;
+            const toDate = toDateInput.value ? new Date(toDateInput.value) : null;
+            
+            const selectedTypes = Array.from(typeFilters)
+                .filter(checkbox => checkbox.checked)
+                .map(checkbox => checkbox.value);
+
+            const filteredEvents = inventoryEvents.filter(event => {
+                const eventDate = new Date(event.date_added.split(' ')[0]);
+
+                const dateMatch = (!fromDate || eventDate >= fromDate) && (!toDate || eventDate <= toDate);
+                const orderIdMatch = !orderIdQuery || (event.reference_type === 'order' && event.reference_id && event.reference_id.toString().includes(orderIdQuery));
+                const generalMatch = selectedTypes.includes(event.reference_type) &&
+                    ((event.notes && event.notes.toLowerCase().includes(query) )|| 
+                     event.reference_type.toLowerCase().includes(query) || 
+                     (event.reference_id && event.reference_id.toString().includes(query)));
+                
+                return dateMatch && orderIdMatch && generalMatch;
+            });
+            console.log('Filtered Events count:', filteredEvents.length);
+            renderTimeline(filteredEvents);
+        }
+
+        toggleButton.addEventListener('click', () => {
+            const groupedEvents = timelineEventsDiv.querySelectorAll('.is-grouped');
+            isAllExpanded = !isAllExpanded;
+            
+            groupedEvents.forEach(groupedEvent => {
+                const isCurrentlyExpanded = groupedEvent.dataset.group === 'expanded';
+                const expandButton = groupedEvent.querySelector('.expand-button');
+                
+                if (isAllExpanded && !isCurrentlyExpanded) {
+                    if(expandButton) expandButton.click();
+                } else if (!isAllExpanded && isCurrentlyExpanded) {
+                    if(expandButton) expandButton.click();
+                }
+            });
+            
+            if (isAllExpanded) {
+                toggleButton.textContent = 'Minimize All Deductions';
+            } else {
+                toggleButton.textContent = 'Expand All Deductions';
+            }
+        });
+
+        // Event listeners for filtering
+        fromDateInput.addEventListener('change', clientSideFilter);
+        toDateInput.addEventListener('change', clientSideFilter);
+        orderIdFilter.addEventListener('input', clientSideFilter);
+        filterInput.addEventListener('input', clientSideFilter);
+        typeFilters.forEach(checkbox => {
+            checkbox.addEventListener('change', clientSideFilter);
+        });
+
+    buttonFilter.addEventListener('click', function() {
+  // Gather filter values
+  var productId = document.querySelector('input[name="filter_product_id"]').value;
+  var notes = document.getElementById('filterInput').value;
+  var typeCheckboxes = document.querySelectorAll('input[name="log-type"]:checked');
+  var referenceTypes = Array.from(typeCheckboxes).map(cb => cb.value).join(',');
+  var fromDate = document.getElementById('fromDate').value;
+  var toDate = document.getElementById('toDate').value;
+
+  // Build URL
+  var url = 'index.php?route=extension/module/inventory_report&user_token={{ user_token }}';
+  if (productId) url += '&filter_product_id=' + encodeURIComponent(productId);
+  if (referenceTypes) url += '&filter_reference_type=' + encodeURIComponent(referenceTypes);
+  if (notes) url += '&filter_notes=' + encodeURIComponent(notes);
+  if (fromDate) url += '&filter_date_start=' + encodeURIComponent(fromDate);
+  if (toDate) url += '&filter_date_end=' + encodeURIComponent(toDate);
+
+  window.location = url;
+    });
+
+    clientSideFilter();
+    });
+</script>
+{{ footer }}

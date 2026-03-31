@@ -247,7 +247,54 @@ class Setting extends \Opencart\System\Engine\Controller {
 			$data['config_invoice_prefix'] = 'INV-' . date('Y') . '-00';
 		}
 
+<<<<<<< Updated upstream
 		// Order Status
+=======
+		if (isset($this->request->post['config_order_status_id'])) {
+			$data['config_order_status_id'] = $this->request->post['config_order_status_id'];
+		} else {
+			$data['config_order_status_id'] = $this->config->get('config_order_status_id');
+		}
+
+if (isset($this->request->post['config_subtract_status'])) {
+			$data['config_subtract_status'] = $this->request->post['config_subtract_status'];
+		} elseif ($this->config->get('config_subtract_status')) {
+			$data['config_subtract_status'] = $this->config->get('config_subtract_status');
+		} else {
+			$data['config_subtract_status'] = array();
+		}
+
+
+		if (isset($this->request->post['config_restock_status'])) {
+			$data['config_restock_status'] = $this->request->post['config_restock_status'];
+		} elseif ($this->config->get('config_restock_status')) {
+			$data['config_restock_status'] = $this->config->get('config_restock_status');
+		} else {
+			$data['config_restock_status'] = array();
+		}
+		if (isset($this->request->post['config_processing_status'])) {
+			$data['config_processing_status'] = $this->request->post['config_processing_status'];
+		} elseif ($this->config->get('config_processing_status')) {
+			$data['config_processing_status'] = $this->config->get('config_processing_status');
+		} else {
+			$data['config_processing_status'] = array();
+		}
+
+		if (isset($this->request->post['config_complete_status'])) {
+			$data['config_complete_status'] = $this->request->post['config_complete_status'];
+		} elseif ($this->config->get('config_complete_status')) {
+			$data['config_complete_status'] = $this->config->get('config_complete_status');
+		} else {
+			$data['config_complete_status'] = array();
+		}
+
+		if (isset($this->request->post['config_fraud_status_id'])) {
+			$data['config_fraud_status_id'] = $this->request->post['config_fraud_status_id'];
+		} else {
+			$data['config_fraud_status_id'] = $this->config->get('config_fraud_status_id');
+		}
+
+>>>>>>> Stashed changes
 		$this->load->model('localisation/order_status');
 
 		$data['order_statuses'] = $this->model_localisation_order_status->getOrderStatuses();

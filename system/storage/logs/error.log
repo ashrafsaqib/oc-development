@@ -1,3 +1,4 @@
+<<<<<<< Updated upstream
 2026-01-12 13:58:14 - Error: Error: Could not make a database link using root@localhost!<br/>Message: Unknown database 'oc4development'
 File: /Users/saqibashraf/Desktop/oc/oc-development/system/library/db/mysqli.php
 Line: 86
@@ -18,3 +19,17 @@ Backtrace: 2
 File: /Users/saqibashraf/Desktop/oc/oc-development/index.php
 Line: 20
 Function: require_once
+=======
+2026-03-31 19:13:01 - PHP Warning:  rmdir(/Users/saqibashraf/Desktop/oc/oc-development/system/storage/modification/admin/controller): Directory not empty in /Users/saqibashraf/Desktop/oc/oc-development/admin/controller/marketplace/modification.php on line 105
+2026-03-31 19:13:01 - PHP Warning:  rmdir(/Users/saqibashraf/Desktop/oc/oc-development/system/storage/modification/admin): Directory not empty in /Users/saqibashraf/Desktop/oc/oc-development/admin/controller/marketplace/modification.php on line 105
+2026-03-31 19:13:43 - PHP Warning:  rmdir(/Users/saqibashraf/Desktop/oc/oc-development/system/storage/modification/admin/controller): Directory not empty in /Users/saqibashraf/Desktop/oc/oc-development/admin/controller/marketplace/modification.php on line 105
+2026-03-31 19:13:43 - PHP Warning:  rmdir(/Users/saqibashraf/Desktop/oc/oc-development/system/storage/modification/admin): Directory not empty in /Users/saqibashraf/Desktop/oc/oc-development/admin/controller/marketplace/modification.php on line 105
+2026-03-31 19:15:00 - PHP Warning:  mysqli::query(): (42S02/1146): Table 'devoc3.oc_inventory_log' doesn't exist in /Users/saqibashraf/Desktop/oc/oc-development/system/library/db/mysqli.php on line 25
+2026-03-31 19:15:42 - PHP Warning:  mysqli::query(): (42000/1064): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'ORDER BY pd.name ASC LIMIT 0,20' at line 1 in /Users/saqibashraf/Desktop/oc/oc-development/system/library/db/mysqli.php on line 25
+2026-03-31 19:15:46 - PHP Warning:  mysqli::query(): (42000/1064): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'ORDER BY pd.name ASC LIMIT 0,20' at line 1 in /Users/saqibashraf/Desktop/oc/oc-development/system/library/db/mysqli.php on line 25
+2026-03-31 19:36:15 - PHP Warning:  mysqli::query(): (42000/1064): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'ORDER BY pd.name ASC LIMIT 0,20' at line 1 in /Users/saqibashraf/Desktop/oc/oc-development/system/library/db/mysqli.php on line 25
+2026-03-31 19:38:04 - PHP Warning:  mysqli::query(): (42000/1064): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'ORDER BY pd.name ASC LIMIT 0,20' at line 1 in /Users/saqibashraf/Desktop/oc/oc-development/system/library/db/mysqli.php on line 25
+2026-03-31 19:46:10 - PHP Warning:  mysqli::query(): (42000/1064): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'ORDER BY pd.name ASC LIMIT 0,20' at line 1 in /Users/saqibashraf/Desktop/oc/oc-development/system/library/db/mysqli.php on line 25
+2026-03-31 19:46:11 - PHP Warning:  mysqli::query(): (42000/1064): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'ORDER BY pd.name ASC LIMIT 0,20' at line 1 in /Users/saqibashraf/Desktop/oc/oc-development/system/library/db/mysqli.php on line 25
+2026-03-31 19:46:22 - PHP Warning:  mysqli::query(): (42000/1064): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'ORDER BY pd.name ASC LIMIT 0,20' at line 1 in /Users/saqibashraf/Desktop/oc/oc-development/system/library/db/mysqli.php on line 25
+>>>>>>> Stashed changes

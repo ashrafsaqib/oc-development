@@ -848,6 +848,13 @@ class Order extends \Opencart\System\Engine\Model {
 					}
 				}
 
+<<<<<<< Updated upstream
+=======
+				// Stock subtraction
+				$order_products = array();
+                
+
+>>>>>>> Stashed changes
 				foreach ($order_products as $order_product) {
 					// Stock subtraction
 					$this->db->query("UPDATE `" . DB_PREFIX . "product` SET `quantity` = (`quantity` - " . (int)$order_product['quantity'] . ") WHERE `product_id` = '" . (int)$order_product['product_id'] . "' AND `subtract` = '1'");
@@ -978,7 +985,46 @@ class Order extends \Opencart\System\Engine\Model {
 			// Update the DB with the new statuses
 			$this->model_checkout_order->editOrderStatusId($order_id, $order_status_id);
 
+<<<<<<< Updated upstream
 			$this->db->query("INSERT INTO `" . DB_PREFIX . "order_history` SET `order_id` = '" . (int)$order_id . "', `order_status_id` = '" . (int)$order_status_id . "', `notify` = '" . (int)$notify . "', `comment` = '" . $this->db->escape($comment) . "', `date_added` = NOW()");
+=======
+			$this->db->query("INSERT INTO " . DB_PREFIX . "order_history SET order_id = '" . (int)$order_id . "', order_status_id = '" . (int)$order_status_id . "', notify = '" . (int)$notify . "', comment = '" . $this->db->escape($comment) . "', date_added = NOW()");
+
+			// If old order status is the processing or complete status but new status is not then commence restock, and remove coupon, voucher and reward history
+			if (in_array($order_info['order_status_id'], array_merge($this->config->get('config_processing_status'), $this->config->get('config_complete_status'))) && !in_array($order_status_id, array_merge($this->config->get('config_processing_status'), $this->config->get('config_complete_status')))) {
+				// Restock
+				$order_products = array();
+                
+
+				foreach($order_products as $order_product) {
+					$this->db->query("UPDATE `" . DB_PREFIX . "product` SET quantity = (quantity + " . (int)$order_product['quantity'] . ") WHERE product_id = '" . (int)$order_product['product_id'] . "' AND subtract = '1'");
+
+					$order_options = $this->getOrderOptions($order_id, $order_product['order_product_id']);
+
+					foreach ($order_options as $order_option) {
+						$this->db->query("UPDATE " . DB_PREFIX . "product_option_value SET quantity = (quantity + " . (int)$order_product['quantity'] . ") WHERE product_option_value_id = '" . (int)$order_option['product_option_value_id'] . "' AND subtract = '1'");
+					}
+				}
+
+				// Remove coupon, vouchers and reward points history
+				$order_totals = $this->getOrderTotals($order_id);
+				
+				foreach ($order_totals as $order_total) {
+					$this->load->model('extension/total/' . $order_total['code']);
+
+					if (property_exists($this->{'model_extension_total_' . $order_total['code']}, 'unconfirm')) {
+						$this->{'model_extension_total_' . $order_total['code']}->unconfirm($order_id);
+					}
+				}
+
+				// Remove commission if sale is linked to affiliate referral.
+				if ($order_info['affiliate_id']) {
+					$this->load->model('account/customer');
+					
+					$this->model_account_customer->deleteTransactionByOrderId($order_id);
+				}
+			}
+>>>>>>> Stashed changes
 
 			$this->cache->delete('product');
 		}

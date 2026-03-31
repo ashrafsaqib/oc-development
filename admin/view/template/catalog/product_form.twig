@@ -164,6 +164,7 @@
                     <div id="error-model" class="invalid-feedback"></div>
                   </div>
                 </div>
+<<<<<<< Updated upstream
                 <div class="row mb-3">
                   <label class="col-sm-2 col-form-label">{{ entry_product_code }}</label>
                   <div class="col-sm-10">
@@ -201,6 +202,68 @@
                             <label for="input-variant-code" class="form-check-label"></label>
                           </div>
                         </div>
+=======
+              </div>
+              <div class="form-group">
+                <label class="col-sm-2 control-label" for="input-quantity">{{ entry_quantity }}</label>
+                <div class="col-sm-10">
+                   <!-- Stock Control - begin -->
+               <input type="text" name="quantity" value="{{ quantity }}" readonly placeholder="{{ entry_quantity }}" id="input-quantity" class="form-control"/>
+			<!-- Stock Control - end --> 
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="col-sm-2 control-label" for="input-minimum"><span data-toggle="tooltip" title="{{ help_minimum }}">{{ entry_minimum }}</span></label>
+                <div class="col-sm-10">
+                  <input type="text" name="minimum" value="{{ minimum }}" placeholder="{{ entry_minimum }}" id="input-minimum" class="form-control"/>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="col-sm-2 control-label" for="input-subtract">{{ entry_subtract }}</label>
+                <div class="col-sm-10">
+                  <select name="subtract" id="input-subtract" class="form-control">
+
+
+                    {% if subtract %}
+
+
+                      <option value="1" selected="selected">{{ text_yes }}</option>
+                      <option value="0">{{ text_no }}</option>
+
+
+                    {% else %}
+
+
+                      <option value="1">{{ text_yes }}</option>
+                      <option value="0" selected="selected">{{ text_no }}</option>
+
+
+                    {% endif %}
+
+
+                  </select>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="col-sm-2 control-label" for="input-stock-status"><span data-toggle="tooltip" title="{{ help_stock_status }}">{{ entry_stock_status }}</span></label>
+                <div class="col-sm-10">
+                  <select name="stock_status_id" id="input-stock-status" class="form-control">
+
+
+                    {% for stock_status in stock_statuses %}
+                      {% if stock_status.stock_status_id == stock_status_id %}
+
+
+                        <option value="{{ stock_status.stock_status_id }}" selected="selected">{{ stock_status.name }}</option>
+
+
+                      {% else %}
+
+
+                        <option value="{{ stock_status.stock_status_id }}">{{ stock_status.name }}</option>
+
+
+>>>>>>> Stashed changes
                       {% endif %}
                     </div>
                     <div class="form-text">{{ help_product_code }}</div>

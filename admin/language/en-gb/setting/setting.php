@@ -1,4 +1,8 @@
 <?php
+$_['entry_subtract_status']          = 'Subtract Stock Status';
+$_['help_subtract_status']          = 'Once Order in this status it will subtract product stock';
+$_['entry_restock_status']          = 'Re Stock Status';
+$_['help_restock_status']          = 'Once Order in this status it will subtract product stock';
 // Heading
 $_['heading_title']                       = 'Settings';
 

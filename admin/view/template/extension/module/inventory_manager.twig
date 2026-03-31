@@ -1,0 +1,510 @@
+{{ header }}{{ column_left }}
+<div id="content">
+  <div class="page-header">
+    <div class="container-fluid">
+      <div class="pull-right">
+        <a href="{{ dashboard }}" data-toggle="tooltip" class="btn btn-default"><i class="fa fa-bar-chart-o"></i></a>
+        <a href="{{ clear_logs }}" data-toggle="tooltip" class="btn btn-danger" onclick="return confirm('{{ text_confirm_clear_logs }}');"><i class="fa fa-trash"></i></a>
+      </div>
+      <h1>{{ heading_title }}</h1>
+      <ul class="breadcrumb">
+        {% for breadcrumb in breadcrumbs %}
+        <li><a href="{{ breadcrumb.href }}">{{ breadcrumb.text }}</a></li>
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
+  <div class="container-fluid">
+    {% if error_warning %}
+    <div class="alert alert-danger alert-dismissible"><i class="fa fa-exclamation-circle"></i> {{ error_warning }}
+      <button type="button" class="close" data-dismiss="alert">&times;</button>
+    </div>
+    {% endif %}
+    {% if success %}
+    <div class="alert alert-success alert-dismissible"><i class="fa fa-check-circle"></i> {{ success }}
+      <button type="button" class="close" data-dismiss="alert">&times;</button>
+    </div>
+    {% endif %}
+
+        <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title"><i class="fa fa-pencil"></i> {{ text_form }}</h3>
+      </div>
+      <div class="panel-body">
+        <form action="{{ action }}" method="post" enctype="multipart/form-data" id="form-inventory-manager" class="form-horizontal">
+          <div class="form-group required">
+            <label class="col-sm-2 control-label" for="input-product-name">{{ entry_product }}</label>
+            <div class="col-sm-10">
+              <input type="text" name="product_name" value="{{ product_name }}" placeholder="{{ entry_product }}" id="input-product-name" class="form-control" />
+              <input type="hidden" name="product_id" value="{{ product_id }}" id="input-product-id" />
+              {% if error_product_id %}
+              <div class="text-danger">{{ error_product_id }}</div>
+              {% endif %}
+            </div>
+          </div>
+          <div class="form-group required">
+            <label class="col-sm-2 control-label" for="input-stock-change">{{ entry_change }}</label>
+            <div class="col-sm-10">
+              <input type="number" name="stock_change" value="{{ stock_change }}" placeholder="{{ entry_change }}" id="input-stock-change" class="form-control" />
+              {% if error_stock_change %}
+              <div class="text-danger">{{ error_stock_change }}</div>
+              {% endif %}
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-sm-2 control-label" for="input-notes">{{ entry_notes }}</label>
+            <div class="col-sm-10">
+<select name="notes" id="input-notes" class="form-control" onchange="toggleOtherNotes(this)">
+                        <option value="{{ text_note_inventory_entry }}" selected="selected">{{ text_note_inventory_entry }}</option>
+                        <option value="{{ text_note_stock_adjustment }}">{{ text_note_stock_adjustment }}</option>
+                        <option value="{{ text_note_damaged_items }}">{{ text_note_damaged_items }}</option>
+                        <option value="{{ text_note_customer_return }}">{{ text_note_customer_return }}</option>
+                        <option value="{{ text_note_supplier_restock }}">{{ text_note_supplier_restock }}</option>
+                        <option value="{{ text_note_other }}">{{ text_note_other }}</option>
+                    </select>
+
+            </div>
+          </div>
+          <div class="form-group">
+            <div class="col-sm-offset-2 col-sm-10">
+              <button type="submit" form="form-inventory-manager" data-toggle="tooltip" title="{{ button_save }}" class="btn btn-primary"><i class="fa fa-save"></i> {{ button_save }}</button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title"><i class="fa fa-upload"></i> Import</h3>
+      </div>
+      <div class="panel-body">
+        <form id="form-import" class="form-horizontal" enctype="multipart/form-data">
+          <div class="form-group">
+            <label class="col-sm-2 control-label" for="input-import-file">{{ entry_import_file|default('File') }}</label>
+            <div class="col-sm-6">
+              <input type="file" name="import_file" id="input-import-file" accept=".csv,text/csv" class="form-control" />
+            </div>
+            <div class="col-sm-4">
+              <button type="button" id="button-analyze" class="btn btn-info"><i class="fa fa-search"></i> {{ text_analyze|default('Analyze & Map') }}</button>
+              <small class="help-block">{{ help_import|default('Upload a CSV file to map columns and import quantities') }}</small>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title"><i class="fa fa-list"></i> Inventory Log</h3>
+      </div>
+      <div class="panel-body">
+        <div class="well">
+          <div class="row">
+              <div class="form-group col-sm-6">
+                <label class="col-sm-4 control-label" for="input-filter-product">{{ entry_product }}</label>
+                <div class="col-sm-8">
+                  <input type="text" name="filter_product" value="{{ filter_product }}" placeholder="{{ entry_product }}" id="input-filter-product" class="form-control" />
+                  <input type="hidden" name="filter_product_id" value="{{ filter_product_id }}" id="input-filter-product-id" />
+                </div>
+              </div>
+              <div class="form-group col-sm-6">
+                <label class="col-sm-4 control-label" for="input-filter-date-start">{{ entry_date_start }}</label>
+                <div class="col-sm-8">
+                  <div class="input-group date">
+                    <input type="text" name="filter_date_start" value="{{ filter_date_start }}" placeholder="{{ entry_date_start }}" data-date-format="YYYY-MM-DD" id="input-filter-date-start" class="form-control" />
+                    <span class="input-group-btn">
+                      <button type="button" class="btn btn-default"><i class="fa fa-calendar"></i></button>
+                    </span>
+                  </div>
+                </div>
+              </div>
+              <div class="form-group col-sm-6">
+                <label class="col-sm-4 control-label" for="input-filter-reference-type">{{ entry_reference_type }}</label>
+                <div class="col-sm-8">
+                  <select name="filter_reference_type" id="input-filter-reference-type" class="form-control">
+                    <option value="">{{ text_select_all }}</option>
+                    {% for key, value in reference_types %}
+                      <option value="{{ key }}" {% if filter_reference_type == key %}selected="selected"{% endif %}>{{ value }}</option>
+                    {% endfor %}
+                  </select>
+                </div>
+              </div>
+              <div class="form-group col-sm-6">
+                <label class="col-sm-4 control-label" for="input-filter-date-end">{{ entry_date_end }}</label>
+                <div class="col-sm-8">
+                  <div class="input-group date">
+                    <input type="text" name="filter_date_end" value="{{ filter_date_end }}" placeholder="{{ entry_date_end }}" data-date-format="YYYY-MM-DD" id="input-filter-date-end" class="form-control" />
+                    <span class="input-group-btn">
+                      <button type="button" class="btn btn-default"><i class="fa fa-calendar"></i></button>
+                    </span>
+                  </div>
+                </div>
+              </div>
+          </div>
+          <div class="row">
+            <div class="col-sm-12 text-right">
+              <button type="button" id="button-filter" class="btn btn-primary"><i class="fa fa-filter"></i> {{ button_filter }}</button>
+              <button type="button" id="button-clear-filter" class="btn btn-default"><i class="fa fa-refresh"></i> {{ button_clear_filter }}</button>
+              <button type="button" id="button-export" class="btn btn-success"><i class="fa fa-download"></i> {{ button_export|default('Export CSV') }}</button>
+            </div>
+          </div>
+        </div>
+        <div class="table-responsive">
+          <table class="table table-bordered table-hover">
+            <thead>
+              <tr>
+                <td class="text-left">{{ column_date }}</td>
+                <td class="text-left">{{ column_product }}</td>
+                <td class="text-left">{{ column_stock_change }}</td>
+                <td class="text-left">{{ column_current_stock }}</td>
+                <td class="text-left">{{ column_notes }}</td>
+                <td class="text-left">{{ column_reference }}</td>
+                <td class="text-left">{{ column_order_status }}</td>
+                <td class="text-left">{{ column_user }}</td>
+              </tr>
+            </thead>
+            <tbody>
+              {% if inventory_logs %}
+              {% for log in inventory_logs %}
+              <tr>
+                <td class="text-left">{{ log.date_added }}</td>
+                <td class="text-left"><a href="{{ log.href }}">{{ log.product_name }}</a> </td>
+                <td class="text-left">
+                  {% if log.stock_change > 0 %}
+                    <span class="label label-success">+{{ log.stock_change }}</span>
+                  {% else %}
+                    <span class="label label-danger">{{ log.stock_change }}</span>
+                  {% endif %}
+                </td>
+                <td class="text-left">{{ log.current_stock }}</td>
+                <td class="text-left">{{ log.notes }}</td>
+                <td class="text-left">
+                  {% if log.reference_id %}
+                    {{ log.reference_type }} (#{{ log.reference_id }})
+                  {% else %}
+                    {{ log.reference_type }}
+                  {% endif %}
+                </td>
+                <td class="text-left">{{ log.order_status_name }}</td>
+                <td class="text-left">{{ log.user_name }}</td>
+              </tr>
+              {% endfor %}
+              {% else %}
+              <tr>
+                <td class="text-center" colspan="8">{{ text_no_results }}</td>
+              </tr>
+              {% endif %}
+            </tbody>
+          </table>
+        </div>
+        <div class="row">
+          <div class="col-sm-6 text-left">{{ pagination }}</div>
+          <div class="col-sm-6 text-right">{{ results }}</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- Import column mapping modal -->
+<div id="modal-import-mapping" class="modal fade" tabindex="-1" role="dialog">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+        <h4 class="modal-title">{{ text_map_columns|default('Map Columns') }}</h4>
+      </div>
+      <div class="modal-body">
+        <div class="row form-horizontal">
+          <div class="form-group">
+            <label class="col-sm-3 control-label">{{ text_product_field|default('Product Field') }}</label>
+            <div class="col-sm-9">
+              <select id="import-product-field" class="form-control">
+                <option value="product_id">product_id</option>
+                <option value="name">name</option>
+                <option value="sku">sku</option>
+                <option value="ean">ean</option>
+                <option value="model">model</option>
+                <option value="upc">upc</option>
+                <option value="jan">jan</option>
+                <option value="isbn">isbn</option>
+                <option value="mpn">mpn</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-sm-3 control-label">{{ text_product_identifier|default('Product identifier') }}</label>
+            <div class="col-sm-9">
+              <select id="import-map-product" class="form-control"></select>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-sm-3 control-label">{{ text_quantity|default('Quantity') }}</label>
+            <div class="col-sm-9">
+              <select id="import-map-quantity" class="form-control"></select>
+            </div>
+          </div>
+          <div class="form-group">
+            <div class="col-sm-offset-3 col-sm-9">
+              <div class="checkbox"><label><input type="checkbox" id="import-has-header" /> {{ text_first_row_header|default('First row is header') }}</label></div>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-sm-3 control-label">{{ text_import_mode|default('Import mode') }}</label>
+            <div class="col-sm-9">
+              <label class="radio-inline"><input type="radio" name="import-mode" value="absolute" checked /> {{ text_import_mode_absolute|default('Set absolute quantity') }}</label>
+              <label class="radio-inline"><input type="radio" name="import-mode" value="delta" /> {{ text_import_mode_delta|default('Adjust by quantity (delta)') }}</label>
+              <p class="help-block">{{ text_import_mode_help|default('Absolute will set product stock to the CSV value. Delta will add the CSV value to current stock.') }}</p>
+            </div>
+          </div>
+        </div>
+
+        <h5>{{ text_preview|default('Preview') }}</h5>
+        <div class="table-responsive">
+          <table id="import-preview" class="table table-bordered table-condensed">
+            <thead></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" id="button-start-import" class="btn btn-primary">{{ text_import|default('Import') }}</button>
+        <button type="button" class="btn btn-default" data-dismiss="modal">{{ button_close|default('Close') }}</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script type="text/javascript"><!--
+  // Autocomplete for product search
+  $('input[name=\'product_name\']').autocomplete({
+    'source': function(request, response) {
+      $.ajax({
+        url: 'index.php?route=extension/module/inventory_manager/autocomplete&user_token={{ user_token }}&filter_name=' +  encodeURIComponent(request),
+        dataType: 'json',
+        success: function(json) {
+          // if only one result fill name and product_id
+          if (json.length == 1) {
+              $('input[name=\'product_name\']').val(json[0]['name']);
+              $('input[name=\'product_id\']').val(json[0]['product_id']);
+          } else {
+          response($.map(json, function(item) {
+            return {
+              label: item['name'],
+              value: item['product_id']
+            }
+          }));
+        }
+        }
+      });
+    },
+    'select': function(item) {
+      $('input[name=\'product_name\']').val(item['label']);
+      $('input[name=\'product_id\']').val(item['value']);
+    }
+  });
+
+    $('input[name=\'filter_product\']').autocomplete({
+    'source': function(request, response) {
+      $.ajax({
+        url: 'index.php?route=extension/module/inventory_manager/autocomplete&user_token={{ user_token }}&filter_name=' +  encodeURIComponent(request),
+        dataType: 'json',
+        success: function(json) {
+          // if only one result fill name and product_id
+          if (json.length == 1) {
+              $('input[name=\'filter_product\']').val(json[0]['name']);
+              $('input[name=\'filter_product_id\']').val(json[0]['product_id']);
+          } else {
+          response($.map(json, function(item) {
+            return {
+              label: item['name'],
+              value: item['product_id']
+            }
+          }));
+        }
+        }
+      });
+    },
+    'select': function(item) {
+      $('input[name=\'filter_product\']').val(item['label']);
+      $('input[name=\'filter_product_id\']').val(item['value']);
+    }
+  });
+
+  // Filter button
+  $('#button-filter').on('click', function() {
+    var url = '';
+
+    var filter_product_id = $('input[name=\'filter_product_id\']').val();
+
+    if (filter_product_id) {
+      url += '&filter_product_id=' + encodeURIComponent(filter_product_id);
+    }
+
+    var filter_reference_type = $('select[name=\'filter_reference_type\']').val();
+
+    if (filter_reference_type) {
+      url += '&filter_reference_type=' + encodeURIComponent(filter_reference_type);
+    }
+    
+    var filter_date_start = $('input[name=\'filter_date_start\']').val();
+    
+    if (filter_date_start) {
+      url += '&filter_date_start=' + encodeURIComponent(filter_date_start);
+    }
+    
+    var filter_date_end = $('input[name=\'filter_date_end\']').val();
+    
+    if (filter_date_end) {
+      url += '&filter_date_end=' + encodeURIComponent(filter_date_end);
+    }
+
+    location = 'index.php?route=extension/module/inventory_manager&user_token={{ user_token }}' + url;
+  });
+
+  // Clear Filter button
+  $('#button-clear-filter').on('click', function() {
+    location = 'index.php?route=extension/module/inventory_manager&user_token={{ user_token }}';
+  });
+
+  // Export logs as CSV (filtered or unfiltered)
+  $('#button-export').on('click', function() {
+    var url = '';
+
+    var filter_product_id = $('input[name=\'filter_product_id\']').val();
+
+    if (filter_product_id) {
+      url += '&filter_product_id=' + encodeURIComponent(filter_product_id);
+    }
+
+    var filter_reference_type = $('select[name=\'filter_reference_type\']').val();
+
+    if (filter_reference_type) {
+      url += '&filter_reference_type=' + encodeURIComponent(filter_reference_type);
+    }
+
+    var filter_date_start = $('input[name=\'filter_date_start\']').val();
+
+    if (filter_date_start) {
+      url += '&filter_date_start=' + encodeURIComponent(filter_date_start);
+    }
+
+    var filter_date_end = $('input[name=\'filter_date_end\']').val();
+
+    if (filter_date_end) {
+      url += '&filter_date_end=' + encodeURIComponent(filter_date_end);
+    }
+
+    location = 'index.php?route=extension/module/inventory_manager/export&user_token={{ user_token }}' + url;
+  });
+
+  // Datepickers
+  $('.date').datetimepicker({
+    language: '{{ date_format }}',
+    pickTime: false
+  });
+
+  // Analyze file and show mapping modal
+  $('#button-analyze').on('click', function() {
+    var fileInput = $('#input-import-file')[0];
+    if (!fileInput.files || !fileInput.files.length) {
+      alert('{{ error_no_file|default("Please select a file to analyze.") }}');
+      return;
+    }
+
+    var file = fileInput.files[0];
+    var formData = new FormData();
+    formData.append('import_file', file);
+
+    $.ajax({
+      url: 'index.php?route=extension/module/inventory_manager/import_analyze&user_token={{ user_token }}',
+      data: formData,
+      type: 'POST',
+      dataType: 'json',
+      processData: false,
+      contentType: false,
+      beforeSend: function() {
+        $('#button-analyze').prop('disabled', true).text('{{ text_analyzing|default("Analyzing...") }}');
+      },
+      success: function(json) {
+        $('#button-analyze').prop('disabled', false).html('<i class="fa fa-search"></i> {{ text_analyze|default("Analyze & Map") }}');
+        if (json.error) { alert(json.error); return; }
+        if (!json.columns || !json.columns.length) { alert('{{ error_no_columns|default("No columns detected in file.") }}'); return; }
+
+        var $productSelect = $('#import-map-product').empty();
+        var $quantitySelect = $('#import-map-quantity').empty();
+        $productSelect.append($('<option>').attr('value','').text('{{ text_select|default("Select column") }}'));
+        $quantitySelect.append($('<option>').attr('value','').text('{{ text_select|default("Select column") }}'));
+        $.each(json.columns, function(i, col) {
+           $productSelect.append($('<option>').attr('value', i).text(col));
+           $quantitySelect.append($('<option>').attr('value', i).text(col));
+        });
+
+        var $preview = $('#import-preview tbody').empty();
+        if (json.preview && json.preview.length) {
+           $.each(json.preview, function(i, row) {
+             var $tr = $('<tr>');
+             $.each(row, function(j, cell) { $tr.append($('<td>').text(cell)); });
+             $preview.append($tr);
+           });
+        }
+
+        $('#import-has-header').prop('checked', !!json.has_header);
+        $('#modal-import-mapping').modal('show');
+      },
+      error: function() {
+        $('#button-analyze').prop('disabled', false).html('<i class="fa fa-search"></i> {{ text_analyze|default("Analyze & Map") }}');
+        alert('{{ error_analyze|default("An error occurred while analyzing the file.") }}');
+      }
+    });
+  });
+
+  // Start import using mapping
+  $('#button-start-import').on('click', function() {
+    var fileInput = $('#input-import-file')[0];
+    if (!fileInput.files || !fileInput.files.length) { alert('{{ error_no_file|default("Please select a file to import.") }}'); return; }
+    var productCol = $('#import-map-product').val();
+    var quantityCol = $('#import-map-quantity').val();
+    if (productCol === '' || quantityCol === '') { alert('{{ error_choose_mapping|default("Please map both product identifier and quantity columns.") }}'); return; }
+
+    var formData = new FormData();
+    formData.append('import_file', fileInput.files[0]);
+    formData.append('product_column', productCol);
+    formData.append('quantity_column', quantityCol);
+  formData.append('has_header', $('#import-has-header').is(':checked') ? 1 : 0);
+  var importMode = $('input[name="import-mode"]:checked').val() || 'absolute';
+  formData.append('import_mode', importMode);
+    var productField = $('#import-product-field').val() || 'sku';
+    formData.append('product_field', productField);
+
+    $.ajax({
+      url: 'index.php?route=extension/module/inventory_manager/import_do&user_token={{ user_token }}',
+      data: formData,
+      type: 'POST',
+      dataType: 'json',
+      processData: false,
+      contentType: false,
+      beforeSend: function() {
+        $('#button-start-import').prop('disabled', true).text('{{ text_importing|default("Importing...") }}');
+      },
+      success: function(json) {
+        $('#button-start-import').prop('disabled', false).html('{{ text_import|default("Import") }}');
+        if (json.error) { alert(json.error); return; }
+        if (json.success) {
+          alert(json.success);
+          $('#modal-import-mapping').modal('hide');
+          location.reload();
+        } else {
+          alert('{{ text_import_complete|default("Import completed") }}');
+          $('#modal-import-mapping').modal('hide');
+          location.reload();
+        }
+      },
+      error: function() {
+        $('#button-start-import').prop('disabled', false).html('{{ text_import|default("Import") }}');
+        alert('{{ error_import|default("An error occurred while importing file.") }}');
+      }
+    });
+  });
+//--></script>
+{{ footer }}

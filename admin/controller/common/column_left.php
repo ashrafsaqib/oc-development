@@ -157,6 +157,16 @@ class ColumnLeft extends \Opencart\System\Engine\Controller {
 				];
 			}
 
+
+            // Inventory Manager - add link under Catalog
+            if ($this->user->hasPermission('access', 'extension/module/inventory_manager')) {
+                $catalog[] = array(
+                    'name'     => $this->language->get('text_inventory_manager'),
+                    'href'     => $this->url->link('extension/module/inventory_manager', 'user_token=' . $this->session->data['user_token'], true),
+                    'children' => array()
+                );
+            }
+            
 			if ($catalog) {
 				$data['menus'][] = [
 					'id'       => 'menu-catalog',
@@ -776,6 +786,16 @@ class ColumnLeft extends \Opencart\System\Engine\Controller {
 			}
 
 			$report = [];
+
+            // Inventory Report - add link under Reports
+            if ($this->user->hasPermission('access', 'extension/module/inventory')) {
+                $report[] = array(
+                    'name'     => $this->language->get('text_inventory_report'),
+                    'href'     => $this->url->link('extension/module/inventory', 'user_token=' . $this->session->data['user_token'], true),
+                    'children' => array()
+                );
+            }
+            
 
 			if ($this->user->hasPermission('access', 'report/report')) {
 				$report[] = [
