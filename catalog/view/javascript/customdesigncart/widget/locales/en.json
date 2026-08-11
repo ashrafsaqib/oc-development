@@ -49,8 +49,9 @@
     "sidebar.add_elements": "Add Layer",
     "sidebar.allow_add_text": "Allow adding text",
     "sidebar.allow_add_image": "Allow adding image",
-    "sidebar.add_text": "Add text",
-    "sidebar.add_image": "Add image",
+    "sidebar.add_text": "+ Text",
+    "sidebar.add_image": "+ Image",
+    "sidebar.add_clipart": "+ Clipart",
     "sidebar.layer_management": "Layer management",
     "sidebar.properties": "Layer Controls",
     "logo_controls.image": "Image",
@@ -62,7 +63,20 @@
     "logo_controls.opacity": "Opacity",
     "text_controls.color_picker_label": "Choose color",
     "canvas_area.grid": "Grid",
+    "canvas_area.disclaimer.title": "Important engraving information",
+    "canvas_area.disclaimer.cta": "Important info",
+    "canvas_area.disclaimer.show": "Show engraving info",
+    "canvas_area.disclaimer.hide": "Hide engraving info",
+    "canvas_area.disclaimer.close": "Close engraving info",
+    "canvas_area.disclaimer.line_1": "Make your product unique with our design tool. Add text, clipart, or your own image.",
+    "canvas_area.disclaimer.line_2": "After finishing your design, click the Order button to send your file.",
+    "canvas_area.disclaimer.line_3": "We do not engrave in color. Engraving color depends on the product material.",
+    "canvas_area.disclaimer.line_4": "If text and image use different colors, the final engraving will still be one color.",
+    "canvas_area.disclaimer.line_5": "Most photos are not suitable for engraving.",
+    "canvas_area.disclaimer.line_6": "If you want to try a photo, email it to us before ordering so we can check it.",
     "logo_controls.color": "Color",
     "sidebar.move_up": "Bring to front",
-    "sidebar.move_down": "Send to back"
+    "sidebar.move_down": "Send to back",
+    "canvas_area.add_to_cart": "Add to cart"
+
 }
