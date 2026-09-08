@@ -46,7 +46,14 @@ class ControllerExtensionModuleCustomDesignCart extends Controller {
         
         $this->load->model('setting/setting');
 
+        if ($this->request->server['REQUEST_METHOD'] == 'POST' && isset($this->request->post['bulk_price_update'])) {
+            $this->bulkpriceupdate();
+            return;
+        }
+
         if (($this->request->server['REQUEST_METHOD'] == 'POST') && $this->validate()) {
+            $base_iframe_url = isset($this->request->post['module_customdesigncart_iframe_url']) ? trim((string)$this->request->post['module_customdesigncart_iframe_url']) : '';
+            $this->request->post['module_customdesigncart_admin_iframe_url'] = $this->buildIframeUrlWithDisabledSettings($this->request->post, $base_iframe_url);
             $this->model_setting_setting->editSetting('module_customdesigncart', $this->request->post);
             
             $this->session->data['success'] = $this->language->get('text_success');
@@ -64,6 +71,31 @@ class ControllerExtensionModuleCustomDesignCart extends Controller {
         $data['entry_iframe_url'] = $this->language->get('entry_iframe_url');
         $data['entry_source_product'] = $this->language->get('entry_source_product');
         $data['entry_target_products'] = $this->language->get('entry_target_products');
+        $data['entry_admin_iframe_url'] = $this->language->get('entry_admin_iframe_url');
+        $data['entry_text_global_settings'] = $this->language->get('entry_text_global_settings');
+        $data['entry_image_global_settings'] = $this->language->get('entry_image_global_settings');
+        $data['entry_boundary_global_settings'] = $this->language->get('entry_boundary_global_settings');
+        $data['entry_boundary'] = $this->language->get('entry_boundary');
+        $data['entry_text_font'] = $this->language->get('entry_text_font');
+        $data['entry_text_curve'] = $this->language->get('entry_text_curve');
+        $data['entry_text_space'] = $this->language->get('entry_text_space');
+        $data['entry_text_style'] = $this->language->get('entry_text_style');
+        $data['entry_text_align'] = $this->language->get('entry_text_align');
+        $data['entry_text_size'] = $this->language->get('entry_text_size');
+        $data['entry_text_color'] = $this->language->get('entry_text_color');
+        $data['entry_text_pos'] = $this->language->get('entry_text_pos');
+        $data['entry_text_rot'] = $this->language->get('entry_text_rot');
+        $data['entry_image_upload'] = $this->language->get('entry_image_upload');
+        $data['entry_image_opacity'] = $this->language->get('entry_image_opacity');
+        $data['entry_image_size'] = $this->language->get('entry_image_size');
+        $data['entry_image_color'] = $this->language->get('entry_image_color');
+        $data['entry_image_pos'] = $this->language->get('entry_image_pos');
+        $data['entry_image_rot'] = $this->language->get('entry_image_rot');
+        $data['entry_price_custom_product'] = $this->language->get('entry_price_custom_product');
+        $data['entry_price_text_layer'] = $this->language->get('entry_price_text_layer');
+        $data['entry_price_image_layer'] = $this->language->get('entry_price_image_layer');
+        $data['entry_bulk_price_update'] = $this->language->get('entry_bulk_price_update');
+        $data['entry_bulk_price'] = $this->language->get('entry_bulk_price');
         $data['tab_custom_fonts'] = $this->language->get('tab_custom_fonts');
         
         $data['button_save'] = $this->language->get('button_save');
@@ -73,6 +105,13 @@ class ControllerExtensionModuleCustomDesignCart extends Controller {
             $data['error_warning'] = $this->error['warning'];
         } else {
             $data['error_warning'] = '';
+        }
+
+        if (isset($this->session->data['success'])) {
+            $data['success'] = $this->session->data['success'];
+            unset($this->session->data['success']);
+        } else {
+            $data['success'] = '';
         }
 
         $data['breadcrumbs'] = array();
@@ -118,6 +157,38 @@ class ControllerExtensionModuleCustomDesignCart extends Controller {
             } else {
                 $data['module_customdesigncart_iframe_url'] = $this->config->get('module_customdesigncart_iframe_url');
             }
+        }
+
+        if (isset($this->request->post['module_customdesigncart_admin_iframe_url'])) {
+            $data['module_customdesigncart_admin_iframe_url'] = $this->request->post['module_customdesigncart_admin_iframe_url'];
+        } else {
+            $data['module_customdesigncart_admin_iframe_url'] = $this->config->get('module_customdesigncart_admin_iframe_url');
+        }
+
+        $setting_keys = array(
+            'module_customdesigncart_global_boundary',
+            'module_customdesigncart_text_global_font',
+            'module_customdesigncart_text_global_curve',
+            'module_customdesigncart_text_global_space',
+            'module_customdesigncart_text_global_style',
+            'module_customdesigncart_text_global_align',
+            'module_customdesigncart_text_global_size',
+            'module_customdesigncart_text_global_color',
+            'module_customdesigncart_text_global_pos',
+            'module_customdesigncart_text_global_rot',
+            'module_customdesigncart_image_global_upload',
+            'module_customdesigncart_image_global_opacity',
+            'module_customdesigncart_image_global_size',
+            'module_customdesigncart_image_global_color',
+            'module_customdesigncart_image_global_pos',
+            'module_customdesigncart_image_global_rot',
+            'module_customdesigncart_price_custom_product',
+            'module_customdesigncart_price_text_layer',
+            'module_customdesigncart_price_image_layer'
+        );
+
+        foreach ($setting_keys as $key) {
+            $data[$key] = isset($this->request->post[$key]) ? $this->request->post[$key] : $this->config->get($key);
         }
 
         $this->load->model('catalog/product');
@@ -717,6 +788,108 @@ class ControllerExtensionModuleCustomDesignCart extends Controller {
 
         $this->response->addHeader('Content-Type: application/json');
         $this->response->setOutput(json_encode($json));
+    }
+
+    public function bulkpriceupdate() {
+        $this->load->language('extension/module/customdesigncart');
+
+        if ($this->request->server['REQUEST_METHOD'] != 'POST' || !$this->user->hasPermission('modify', 'extension/module/customdesigncart')) {
+            $this->session->data['success'] = $this->language->get('error_permission');
+        } elseif (!isset($this->request->post['custom_product_additional_price']) || !is_numeric($this->request->post['custom_product_additional_price'])) {
+            $this->session->data['success'] = $this->language->get('error_bulk_price_invalid');
+        } else {
+            $price = (float)$this->request->post['custom_product_additional_price'];
+            $updated = 0;
+            $skipped = 0;
+            $query = $this->db->query("SELECT config_id, custom_data FROM " . DB_PREFIX . "product_custom_config");
+
+            foreach ($query->rows as $row) {
+                $custom_data = json_decode($row['custom_data'], true);
+
+                if (!is_array($custom_data)) {
+                    $skipped++;
+                    continue;
+                }
+
+                if (!isset($custom_data['globalSettings']) || !is_array($custom_data['globalSettings'])) {
+                    $custom_data['globalSettings'] = array();
+                }
+
+                $custom_data['globalSettings']['customProductAdditionalPrice'] = $price;
+                $this->db->query("UPDATE " . DB_PREFIX . "product_custom_config SET custom_data = '" . $this->db->escape(json_encode($custom_data, JSON_PRETTY_PRINT)) . "' WHERE config_id = '" . (int)$row['config_id'] . "'");
+                $updated++;
+            }
+
+            $this->session->data['success'] = sprintf($this->language->get('text_bulk_price_success'), $updated, $skipped);
+        }
+
+        $this->response->redirect($this->url->link('extension/module/customdesigncart', 'token=' . $this->session->data['token'], true));
+    }
+
+    private function buildIframeUrlWithDisabledSettings($post, $iframe_url = '') {
+        if ($iframe_url === '' && isset($post['module_customdesigncart_iframe_url'])) {
+            $iframe_url = trim((string)$post['module_customdesigncart_iframe_url']);
+        }
+
+        if ($iframe_url === '') {
+            return $iframe_url;
+        }
+
+        $setting_map = array(
+            'module_customdesigncart_global_boundary' => 'boundary',
+            'module_customdesigncart_text_global_font' => 'textglobalfont',
+            'module_customdesigncart_text_global_curve' => 'textglobalcurve',
+            'module_customdesigncart_text_global_space' => 'textglobalspace',
+            'module_customdesigncart_text_global_style' => 'textglobalstyle',
+            'module_customdesigncart_text_global_align' => 'textglobalalign',
+            'module_customdesigncart_text_global_size' => 'textglobalsize',
+            'module_customdesigncart_text_global_color' => 'textglobalcolor',
+            'module_customdesigncart_text_global_pos' => 'textglobalpos',
+            'module_customdesigncart_text_global_rot' => 'textglobalrot',
+            'module_customdesigncart_image_global_upload' => 'imageglobalupload',
+            'module_customdesigncart_image_global_opacity' => 'imageglobalopacity',
+            'module_customdesigncart_image_global_size' => 'imageglobalsize',
+            'module_customdesigncart_image_global_color' => 'imageglobalcolor',
+            'module_customdesigncart_image_global_pos' => 'imageglobalpos',
+            'module_customdesigncart_image_global_rot' => 'imageglobalrot'
+        );
+
+        $price_map = array(
+            'module_customdesigncart_price_custom_product' => 'price_custom_product',
+            'module_customdesigncart_price_text_layer' => 'price_text_layer',
+            'module_customdesigncart_price_image_layer' => 'price_image_layer'
+        );
+
+        $parts = explode('#', $iframe_url, 2);
+        $url_without_fragment = $parts[0];
+        $fragment = isset($parts[1]) ? '#' . $parts[1] : '';
+        $url_parts = explode('?', $url_without_fragment, 2);
+        $base_url = $url_parts[0];
+        $query_params = array();
+
+        if (isset($url_parts[1])) {
+            parse_str($url_parts[1], $query_params);
+        }
+
+        foreach ($setting_map as $setting_key => $param_key) {
+            if (isset($post[$setting_key]) && $post[$setting_key] == '1') {
+                unset($query_params[$param_key]);
+            } else {
+                $query_params[$param_key] = '0';
+            }
+        }
+
+        foreach ($price_map as $setting_key => $param_key) {
+            if (isset($post[$setting_key]) && trim((string)$post[$setting_key]) !== '') {
+                $query_params[$param_key] = trim((string)$post[$setting_key]);
+            } else {
+                unset($query_params[$param_key]);
+            }
+        }
+
+        $new_query = http_build_query($query_params);
+
+        return $base_url . ($new_query !== '' ? '?' . $new_query : '') . $fragment;
     }
 
     protected function validate() {

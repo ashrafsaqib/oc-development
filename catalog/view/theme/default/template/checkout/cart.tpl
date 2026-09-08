@@ -68,6 +68,9 @@
                   <button type="button" class="btn btn-info btn-xs" data-toggle="modal" data-target="#productDesignerModal<?php echo $product['cart_id']; ?>" title="<?php echo $text_close_preview; ?>">
                     <i class="fa fa-eye"></i>
                   </button>
+                  <a href="<?php echo $product['edit_design_url']; ?>" class="btn btn-primary btn-xs">
+                    <i class="fa fa-pencil"></i>
+                  </a>
                   <?php } ?>
                   <?php if ($product['reward']) { ?>
                   <br />

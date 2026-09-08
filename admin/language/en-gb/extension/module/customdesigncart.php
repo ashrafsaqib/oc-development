@@ -9,12 +9,35 @@ $_['text_edit']        = 'Edit Custom Design Cart Module';
 $_['text_enabled']     = 'Enabled';
 $_['text_disabled']    = 'Disabled';
 $_['text_home']        = 'Home';
+$_['text_bulk_price_success'] = 'Bulk price update complete: %d product configurations updated, %d invalid configurations skipped.';
 
 // Entry
 $_['entry_status']     = 'Status';
 $_['entry_iframe_url'] = 'iFrame URL';
+$_['entry_admin_iframe_url'] = 'Admin iFrame URL';
 $_['entry_source_product'] = 'Source Product';
 $_['entry_target_products'] = 'Target Products';
+$_['entry_text_global_settings'] = 'Text Global Settings';
+$_['entry_image_global_settings'] = 'Image Global Settings';
+$_['entry_boundary_global_settings'] = 'Boundary Global Settings';
+$_['entry_boundary'] = 'Boundary';
+$_['entry_text_font'] = 'Font';
+$_['entry_text_curve'] = 'Curve';
+$_['entry_text_space'] = 'Space';
+$_['entry_text_style'] = 'Style';
+$_['entry_text_align'] = 'Align';
+$_['entry_text_size'] = 'Size';
+$_['entry_text_color'] = 'Color';
+$_['entry_text_pos'] = 'Pos';
+$_['entry_text_rot'] = 'Rot';
+$_['entry_image_upload'] = 'Upload';
+$_['entry_image_opacity'] = 'Opacity';
+$_['entry_image_size'] = 'Size';
+$_['entry_image_color'] = 'Color';
+$_['entry_image_pos'] = 'Pos';
+$_['entry_image_rot'] = 'Rot';
+$_['entry_bulk_price_update'] = 'Bulk Price Update';
+$_['entry_bulk_price'] = 'Additional Price';
 
 // Button
 $_['button_save']      = 'Save';
@@ -34,6 +57,7 @@ $_['error_permission'] = 'Warning: You do not have permission to modify Custom D
 $_['error_source_required'] = 'Please select a source product!';
 $_['error_target_required'] = 'Please select at least one target product!';
 $_['error_no_design_data'] = 'No custom design data found for the source product';
+$_['error_bulk_price_invalid'] = 'Please enter a valid bulk price.';
 
 // Custom Fonts
 $_['tab_custom_fonts'] = 'Custom Fonts';
@@ -60,6 +84,11 @@ $_['text_image_save_success'] = 'Images saved successfully!';
 $_['button_bulk_add'] = 'Bulk Add';
 $_['text_bulk_add_title'] = 'Bulk Add Images';
 $_['text_bulk_add_instructions'] = 'Enter comma-separated image paths below. Paths should be relative to the image directory.';
+
+// Pricing Settings
+$_['entry_price_custom_product'] = 'Additional Price on Custom Products';
+$_['entry_price_text_layer'] = 'Additional Price per Text Layer';
+$_['entry_price_image_layer'] = 'Additional Price per Image Layer';
 
 // Product Customization
 $_['entry_add_custom_product']      = 'Add Custom Product';

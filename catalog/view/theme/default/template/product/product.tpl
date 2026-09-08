@@ -297,10 +297,8 @@
             </div>
             <?php if ($designer_enabled) { ?>
             <div class="form-group">
-              <button type="button" data-product-id="<?php echo $product_id; ?>" class="btn btn-success btn-lg btn-block" data-toggle="modal" data-target="#productDesigner">
-                <?php echo $text_customize; ?>
-              </button>
-              <textarea style="display:none;" name="custom_data" id="customization" class="form-control"></textarea>
+              <a id="button-customize" href="<?php echo $iframe_url; ?>" data-base-url="<?php echo $iframe_url; ?>" class="btn btn-success btn-lg btn-block" target="_self"><?php echo $text_customize; ?></a>
+              
             </div>
             <?php } ?>
             <?php if ($minimum > 1) { ?>
@@ -595,68 +593,91 @@ $(document).ready(function() {
 });
 //--></script>
 <?php if ($designer_enabled) { ?>
-<!-- Modal -->
-<div class="modal fade" id="productDesigner" tabindex="-1" role="dialog" aria-labelledby="productDesignerLabel" aria-hidden="true" data-iframe-url="<?php echo $iframe_url; ?>">
-  <div class="modal-dialog" role="document" style="width: 95%; max-width: 95%; height: 95%; margin: 2.5% auto;">
-    <div class="modal-content" style="height: 100%;">
-      <div class="modal-header" style="padding: 10px 15px;">
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close" style="margin-left: 10px;">
-          <span aria-hidden="true">&times;</span>
-        </button>
-        <button type="button" class="btn btn-success btn-sm pull-right" id="saveInModalHeader" title="<?php echo $text_save_btn; ?>">
-          <i class="fa fa-save"></i>
-        </button>
-        <h4 class="modal-title" id="productDesignerLabel"><?php echo $text_product_editor; ?></h4>
-      </div>
-      <div class="modal-body" style="padding:0; height: calc(100% - 51px); overflow: hidden;">
-        <div class="iframe-container" style="height: 100%;"></div>
-      </div>
-    </div>
-  </div>
-</div>
 <script type="text/javascript">
 $(document).ready(function() {
-  const productDesigner = $('#productDesigner');
-  const saveInModalHeaderBtn = $('#saveInModalHeader');
-  const customization = $('#customization');
+  var customizeValidationStyleId = 'customize-validation-style';
 
-  // Listen for design state from iframe
-  window.addEventListener('message', function(event) {
-    if (event.data && event.data.type === 'DESIGN_STATE') {
-      customization.text(JSON.stringify(event.data.data, null, 2));
+  if (!document.getElementById(customizeValidationStyleId)) {
+    var style = document.createElement('style');
+    style.id = customizeValidationStyleId;
+    style.textContent = '#product .customize-invalid { border-color: #d9534f !important; box-shadow: inset 0 1px 1px rgba(0,0,0,.075), 0 0 6px rgba(217,83,79,.4); } #product .radio.customize-invalid, #product .checkbox.customize-invalid { border: 1px solid #d9534f; border-radius: 4px; padding: 6px 8px; margin-bottom: 6px; }';
+    document.head.appendChild(style);
+  }
+
+  function validateCustomizeRequiredOptions() {
+    var isValid = true;
+
+    $('#product .form-group').removeClass('has-error');
+    $('#product .customize-invalid').removeClass('customize-invalid');
+
+    $('#product .form-group.required').each(function() {
+      var group = $(this);
+      var controls = group.find('input[name^="option["], select[name^="option["], textarea[name^="option["], input[name="recurring_id"], select[name="recurring_id"]');
+
+      if (!controls.length) {
+        return;
+      }
+
+      var first = controls.first();
+      var type = first.attr('type');
+      var valid = true;
+
+      if (first.is('select')) {
+        valid = first.val() !== '';
+      } else if (type === 'radio' || type === 'checkbox') {
+        valid = controls.filter(':checked').length > 0;
+      } else {
+        valid = $.trim(first.val() || '') !== '';
+      }
+
+      if (!valid) {
+        isValid = false;
+        group.addClass('has-error');
+
+        if (type === 'radio' || type === 'checkbox') {
+          group.find('.radio, .checkbox').addClass('customize-invalid');
+        } else if (first.parent().hasClass('input-group')) {
+          first.parent().addClass('customize-invalid');
+          first.addClass('customize-invalid');
+        } else {
+          controls.addClass('customize-invalid');
+        }
+      }
+    });
+
+    return isValid;
+  }
+
+  function buildCustomizeUrl(baseUrl) {
+    var selector = '#product input[type=\'text\'], #product input[type=\'hidden\'], #product input[type=\'radio\']:checked, #product input[type=\'checkbox\']:checked, #product select, #product textarea';
+    var fields = $(selector).serializeArray();
+    var url = new URL(baseUrl, window.location.origin);
+
+    fields.forEach(function(field) {
+      url.searchParams.append(field.name, field.value);
+    });
+
+    return url.toString();
+  }
+
+
+  $('#button-customize').on('click', function(e) {
+    if (!validateCustomizeRequiredOptions()) {
+      e.preventDefault();
+
+      var firstError = $('#product .has-error').first();
+
+      if (firstError.length) {
+        $('html, body').animate({ scrollTop: firstError.offset().top - 20 }, 'slow');
+      }
+
+      return false;
     }
+
+    var baseUrl = $(this).attr('data-base-url') || $(this).attr('href');
+    $(this).attr('href', buildCustomizeUrl(baseUrl));
   });
 
-  // On modal show, load iframe
-  productDesigner.on('show.bs.modal', function(event) {
-    const button = event.relatedTarget || event.target;
-    let url = productDesigner.attr('data-iframe-url');
-    
-    const iframe = document.createElement('iframe');
-    iframe.src = url;
-    iframe.allowFullscreen = true;
-    iframe.style.width = '100%';
-    iframe.style.height = '100%';
-    iframe.style.border = 'none';
-
-    const container = productDesigner.find('.iframe-container')[0];
-    container.innerHTML = '';
-    container.appendChild(iframe);
-  });
-
-  // On modal hide, clean up iframe
-  productDesigner.on('hidden.bs.modal', function() {
-    productDesigner.find('.iframe-container').html('');
-  });
-
-  // Save button - close modal and trigger add to cart
-  saveInModalHeaderBtn.on('click', function() {
-    productDesigner.modal('hide');
-    // Trigger the add to cart button after modal closes
-    setTimeout(function() {
-      $('#button-cart').trigger('click');
-    }, 300);
-  });
 });
 </script>
 <?php } ?>

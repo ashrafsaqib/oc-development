@@ -155,9 +155,24 @@ class ControllerCheckoutCart extends Controller {
 						$recurring .= sprintf($this->language->get('text_payment_cancel'), $this->currency->format($this->tax->calculate($product['recurring']['price'] * $product['quantity'], $product['tax_class_id'], $this->config->get('config_tax')), $this->session->data['currency']), $product['recurring']['cycle'], $frequencies[$product['recurring']['frequency']], $product['recurring']['duration']);
 					}
 				}
+							if ($this->request->server['HTTPS']) {
+				$base = HTTPS_SERVER;
+			} else {
+				$base = HTTP_SERVER;
+			}
+
+			if (file_exists(DIR_APPLICATION . 'view/javascript/customdesigncart/translation.' . $this->session->data['language'] . '.json')) {
+				$language_file = 'translation.' . $this->session->data['language'] . '.json';
+			} else {
+				$language_file = 'translation.json';
+			}
+
 
 				$data['products'][] = array(				'product_id'   => $product['product_id'],
-				'custom_data'    => $product['custom_data'],					'cart_id'   => $product['cart_id'],
+				'custom_data'    => (isset($product['custom_data']) ? $product['custom_data'] : null),
+					'cart_id'   => $product['cart_id'],
+					'edit_design_url' => $this->config->get('module_customdesigncart_iframe_url') . '?product_id=' . $product['product_id'] . '&lang=' . $language_file . '&catalog=true&base=' . urlencode($base) . '&cart_id=' . $product['cart_id'],
+				
 					'thumb'     => $image,
 					'name'      => $product['name'],
 					'model'     => $product['model'],
