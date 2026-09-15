@@ -136,4 +136,266 @@ class ControllerExtensionModuleCustomDesignCart extends Controller
       ]));
     }
   }
+
+  private function extractOptionArrayFromFlatData($data) {
+    $option = array();
+
+    if (!is_array($data)) {
+      return $option;
+    }
+
+    foreach ($data as $key => $value) {
+      $decoded_key = urldecode((string)$key);
+
+      if (!preg_match('/^option\[(\d+)\](\[\])?$/', $decoded_key, $matches)) {
+        continue;
+      }
+
+      $option_id = (string)$matches[1];
+      $is_multi = isset($matches[2]) && $matches[2] === '[]';
+
+      if ($is_multi) {
+        if (!isset($option[$option_id]) || !is_array($option[$option_id])) {
+          $option[$option_id] = array();
+        }
+
+        if (is_array($value)) {
+          foreach ($value as $item) {
+            $option[$option_id][] = $item;
+          }
+        } else {
+          $option[$option_id][] = $value;
+        }
+      } else {
+        $option[$option_id] = $value;
+      }
+    }
+
+    return $option;
+  }
+
+  private function extractDesignDataFromPayload($data) {
+    $keys = array('custom_data', 'customization', 'design_data', 'designState', 'design_state', 'customData', 'design', 'state');
+
+    foreach ($keys as $key) {
+      if (isset($data[$key])) {
+        return $data[$key];
+      }
+    }
+
+    $containers = array('data', 'payload', 'body');
+
+    foreach ($containers as $container) {
+      if (!isset($data[$container])) {
+        continue;
+      }
+
+      $nested = $data[$container];
+
+      if (is_array($nested)) {
+        foreach ($keys as $key) {
+          if (isset($nested[$key])) {
+            return $nested[$key];
+          }
+        }
+
+        if (!isset($nested['product_id']) && !isset($nested['quantity']) && !isset($nested['option']) && !isset($nested['options']) && !isset($nested['session_id']) && !isset($nested['sessionId'])) {
+          return $nested;
+        }
+      }
+    }
+
+    return null;
+  }
+
+  private function normalizeCustomData($design_data) {
+    if ($design_data === null || $design_data === '') {
+      return null;
+    }
+
+    if (is_array($design_data) || is_object($design_data)) {
+      return json_encode($design_data);
+    }
+
+    $custom_data = (string)html_entity_decode($design_data, ENT_QUOTES, 'UTF-8');
+    $custom_data = trim($custom_data);
+
+    if ($custom_data === '' || $custom_data === 'null' || $custom_data === 'undefined') {
+      return null;
+    }
+
+    if (strpos($custom_data, '%7B') === 0 || strpos($custom_data, '%5B') === 0 || strpos($custom_data, '%7b') === 0 || strpos($custom_data, '%5b') === 0) {
+      $decoded = rawurldecode($custom_data);
+      if ($decoded !== '') {
+        $custom_data = $decoded;
+      }
+    }
+
+    return $custom_data;
+  }
+
+  private function applyCustomProductAdditionalPrice($custom_data, $data) {
+    if (!isset($data['customProductAdditionalPrice']) || !is_numeric($data['customProductAdditionalPrice'])) {
+      return $custom_data;
+    }
+
+    $design_data = json_decode($custom_data, true);
+    if (!is_array($design_data)) {
+      if ($custom_data !== null) {
+        return $custom_data;
+      }
+
+      $design_data = array();
+    }
+
+    if (!isset($design_data['globalSettings']) || !is_array($design_data['globalSettings'])) {
+      $design_data['globalSettings'] = array();
+    }
+
+    $design_data['globalSettings']['customProductAdditionalPrice'] = (float)$data['customProductAdditionalPrice'];
+
+    return json_encode($design_data);
+  }
+
+  private function mergeIncomingData($decoded_body) {
+    $base_data = array();
+
+    if (!empty($this->request->get) && is_array($this->request->get)) {
+      $base_data = array_merge($base_data, $this->request->get);
+    }
+
+    if (!empty($this->request->post) && is_array($this->request->post)) {
+      $base_data = array_merge($base_data, $this->request->post);
+    }
+
+    if (!empty($decoded_body) && is_array($decoded_body)) {
+      $base_data = array_merge($base_data, $decoded_body);
+    }
+
+    return $base_data;
+  }
+
+  public function add() {
+    $this->response->addHeader('Content-Type: application/json');
+
+    if ($this->config->get('module_customdesigncart_widget_type') == 'remote') {
+      $this->response->addHeader('Access-Control-Allow-Origin: ' . $this->config->get('module_customdesigncart_iframe_url'));
+    } else {
+      $this->response->addHeader('Access-Control-Allow-Origin: ' . $this->config->get('config_url'));
+    }
+
+    $this->response->addHeader('Access-Control-Allow-Methods: POST, OPTIONS');
+    $this->response->addHeader('Access-Control-Allow-Headers: Content-Type, Authorization');
+
+    if ($this->request->server['REQUEST_METHOD'] == 'OPTIONS') {
+      $this->response->setOutput(json_encode(array('success' => true)));
+      return;
+    }
+
+    $decoded_body = array();
+    $raw_body = file_get_contents('php://input');
+
+    if (!empty($raw_body)) {
+      $decoded = json_decode($raw_body, true);
+      if (json_last_error() === JSON_ERROR_NONE && is_array($decoded)) {
+        $decoded_body = $decoded;
+      }
+    }
+
+    $data = $this->mergeIncomingData($decoded_body);
+    $session_id = null;
+    if (isset($data['session_id'])) {
+      $session_id = (string)$data['session_id'];
+    } elseif (isset($data['sessionId'])) {
+      $session_id = (string)$data['sessionId'];
+    } elseif (isset($this->request->get['session_id'])) {
+      $session_id = (string)$this->request->get['session_id'];
+    }
+
+    if (!empty($session_id) && preg_match('/^[a-zA-Z0-9,\-]{22,52}$/', $session_id)) {
+      $this->session->start($session_id);
+      setcookie($this->config->get('session_name'), $session_id, 0, '/', '', false, true);
+    }
+
+    $has_cart_id = isset($data['cart_id']);
+    $cart_id = $has_cart_id ? (int)$data['cart_id'] : 0;
+    if ($has_cart_id && $cart_id < 1) {
+      $this->response->setOutput(json_encode(array(
+        'success' => false,
+        'message' => 'Invalid cart_id'
+      )));
+      return;
+    }
+
+    $product_id = isset($data['product_id']) ? (int)$data['product_id'] : (isset($this->request->get['product_id']) ? (int)$this->request->get['product_id'] : 0);
+    if (!$has_cart_id && empty($product_id)) {
+      $this->response->setOutput(json_encode(array(
+        'success' => false,
+        'message' => 'Invalid product_id'
+      )));
+      return;
+    }
+
+    $design_data = $this->extractDesignDataFromPayload($data);
+    $custom_data = $this->normalizeCustomData($design_data);
+  $custom_data = $this->applyCustomProductAdditionalPrice($custom_data, $data);
+
+    $option = array();
+    if (isset($data['option'])) {
+      if (is_string($data['option'])) {
+        $decoded_option = json_decode($data['option'], true);
+        if (json_last_error() === JSON_ERROR_NONE && is_array($decoded_option)) {
+          $option = $decoded_option;
+        }
+      } elseif (is_array($data['option'])) {
+        $option = $data['option'];
+      }
+    } elseif (isset($data['options']) && is_array($data['options'])) {
+      $option = $data['options'];
+    } else {
+      $option = $this->extractOptionArrayFromFlatData($data);
+    }
+
+    $quantity = isset($data['quantity']) ? (int)$data['quantity'] : 1;
+    if ($quantity < 1) {
+      $quantity = 1;
+    }
+
+    $recurring_id = isset($data['recurring_id']) ? (int)$data['recurring_id'] : 0;
+    if ($recurring_id < 0) {
+      $recurring_id = 0;
+    }
+
+    if ($has_cart_id) {
+      $cart_query = $this->db->query("SELECT cart_id FROM " . DB_PREFIX . "cart WHERE cart_id = '" . $cart_id . "'");
+
+      if (!$cart_query->num_rows) {
+        $this->response->setOutput(json_encode(array(
+          'success' => false,
+          'message' => 'Cart item not found'
+        )));
+        return;
+      }
+
+      $custom_data_value = $custom_data === null ? 'NULL' : "'" . $this->db->escape($custom_data) . "'";
+      $this->db->query("UPDATE " . DB_PREFIX . "cart SET custom_data = " . $custom_data_value . " WHERE cart_id = '" . $cart_id . "'");
+
+      unset($this->session->data['shipping_method']);
+      unset($this->session->data['shipping_methods']);
+      unset($this->session->data['payment_method']);
+      unset($this->session->data['payment_methods']);
+
+      $this->response->redirect($this->url->link('checkout/cart', '', true));
+      return;
+    }
+
+    $this->cart->add($product_id, $quantity, $option, $custom_data, $recurring_id);
+
+    unset($this->session->data['shipping_method']);
+    unset($this->session->data['shipping_methods']);
+    unset($this->session->data['payment_method']);
+    unset($this->session->data['payment_methods']);
+
+    $this->response->redirect($this->url->link('checkout/cart', '', true));
+  }
 }
