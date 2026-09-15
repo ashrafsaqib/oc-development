@@ -5,6 +5,10 @@ class Response {
 	private $output;
 
 	public function addHeader($header) {
+		if (stripos($header, 'Access-Control-') === 0) {
+			return;
+		}
+
 		$this->headers[] = $header;
 	}
 
